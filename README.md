@@ -4,10 +4,11 @@
 
 ## Revision History
 
-| **Date** | **Revision** | **Description** | **Author** |
-| --- | --- | --- | --- |
-| 02/21/2024 | 0.1 | Initial Version | Pravat Kiran Timsina |
-| 02/29/2024 | 1.0 | Ready for Phase 1 Presentation | Robert Aguirre |
+| **Date**   | **Revision** | **Description**                  | **Author** |
+|------------|--------------|----------------------------------| --- |
+| 02/21/2024 | 0.1          | Initial Version                  | Pravat Kiran Timsina |
+| 02/29/2024 | 1.0          | Ready for Phase 1 Presentation   | Robert Aguirre |
+| 03/28/2024 | 1.1          | Updates for Phase 2 finalization | Robert Aguirre |
 
 
 ## Table of Contents
@@ -17,16 +18,22 @@
 1.2. DEFINITIONS, ACRONYMS, ABBREVIATIONS  
 1.3. REFERENCES  
 1.4. OVERVIEW  
+   
+
 2. **OVERALL DESCRIPTION**  
 2.1. PRODUCT PERSPECTIVE  
 2.2. PRODUCT ARCHITECTURE  
 2.3. PRODUCT FUNCTIONALITY/FEATURES  
 2.4. CONSTRAINTS  
-2.5. ASSUMPTIONS AND DEPENDENCIES  
+2.5. ASSUMPTIONS AND DEPENDENCIES
+  
+
 3. **SPECIFIC REQUIREMENTS**  
 3.1. FUNCTIONAL REQUIREMENTS  
 3.2. EXTERNAL INTERFACE REQUIREMENTS  
 3.3. INTERNAL INTERFACE REQUIREMENTS  
+  
+
 4. **NON-FUNCTIONAL REQUIREMENTS** 
 4.1. SECURITY AND PRIVACY REQUIREMENTS  
 4.2. ENVIRONMENTAL REQUIREMENTS  
@@ -49,8 +56,8 @@ This document will catalog the user, system, and hardware requirements for the B
 **Game/Table:** Virtual space for players to play a game of blackjack.  
 **Round:** Single iteration of the blackjack game.  
 **Bet:** Wagered amount of money on a round.  
-**Card Deck:** 52-card standard deck.  
-**Hand:** Set of cards held by a player or dealer.  
+**Deck:** 52-Card standard deck.  
+**Hand:** Set of cards held by a player or dealer that has an integer value.  
 **Hit:** Requesting an additional card.  
 **Stand:** Ending a turn without additional cards.  
 **Bust:** Exceeding 21, resulting in a loss.  
@@ -115,7 +122,7 @@ using a Deck of Playing Cards.
   
 ### 3.1.2.  **Server Module Requirements:** 
   
-3.1.2.1 The server will allow for multithreading to allow for many Dealer and Player clients to
+3.1.2.1 The server will be multithreading to allow for many Dealer and Player clients to
 connect and interact with the server simultaneously.  
 3.1.2.2 Server will store and maintain the data that stores a record of each Players and Dealers usernames and passwords that will be used to allow authorized users to join the server.  
 3.1.2.3 The server will store and maintain the data that holds the records of each player's account available funds and an account balance history.  
@@ -189,7 +196,7 @@ connect and interact with the server simultaneously.
 are intuitive and user-friendly requiring minimal training for new players.  
 4.2.6 The system should provide clear and concise error messages to assist users in understanding and resolving issues.  
 
-## 4.3. Performance Requirements  
+## 4.3. Performance Requirements
 4.3.1 The game logic and interactions must be responsive, ensuring that actions such as card dealing and player decisions occur promptly to maintain a seamless and engaging gameplay experience.  
 4.3.2 The system should be designed to handle a scalable number of concurrent users, preventing performance degradation as the player base increases.  
 4.3.3 The system should Implement secure authentication for users and employees. Users should only access their accounts, and employees can only access the functionality necessary for their role.  
@@ -202,17 +209,12 @@ are intuitive and user-friendly requiring minimal training for new players.
 4.5.1 The codebase should be well-documented, allowing for easy maintenance and updates by developers.  
 4.5.2 Changes to the game rules or system configuration should be easy to implement without requiring extensive code modifications.  
 
-## UML Case Diagram
-![UseCaseDiagram](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/6b3366f9-73f5-4154-b1b9-a422e9cedb57)
-
-## Class Diagrams: Clients
-![UMLClassDiagram_Clients](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/c254f35a-7776-443d-9ff4-ecdc3587a494)
+## UML Case Diagrams:
 
 
-## Class diagrams: Game and Table
-![UMLClassDiagram_GameAndTable](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/6c8774ac-0b49-416d-a361-b521f48e3ae1)
+## Class Diagram:
 
 
 ## Sequence Diagram
-![SequenceDiagram](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/bbd4e787-9edb-4a05-a2af-858f3e14d8f5)
+
 
