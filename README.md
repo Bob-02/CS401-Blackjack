@@ -210,11 +210,20 @@ are intuitive and user-friendly requiring minimal training for new players.
 4.5.2 Changes to the game rules or system configuration should be easy to implement without requiring extensive code modifications.  
 
 ## UML Case Diagrams:
+![Phase2_UML_UseCase_Diagrams drawio](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/d93a8d63-73e8-4b26-99ee-15351b82bf6f)
 
 
 ## Class Diagram:
+![Phase2_UML_Class_Diagrams drawio](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/72df15ee-ee0b-4401-b05e-ec82388a0b28)
 
 
 ## Sequence Diagram
+![Phase2_Pravat_Login_Sequence_Diagram](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/9f51bb51-f697-4fd7-97a8-05da565b2042)
+![Phase2_Pravat_Sequence_diagram_Client-Server-GamePlay](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/6b4cbd4b-45e0-4278-9525-c8be1b539b9a)
+![Phase2_Pravat_Login_Sequence_Diagram](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/412ec538-2409-43a8-9add-6e05c71148d0)
+![Capture1](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/2563ae18-0587-4756-bb55-74ec85f51360)
+![Capture2](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/ab5df8cb-c0d8-4507-a5cd-9a927bf3094e)
+![Capture3](https://github.com/Bob-02/CS401-Blackjack/assets/111538673/2f09fb42-dd12-4824-80dc-ad930060f76b)
+
 
 
