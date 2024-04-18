@@ -1,5 +1,3 @@
-package blackJack;
-
 public class Table {
 	Dealer dealer;
 	PlayingDeck deck;

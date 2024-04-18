@@ -1,4 +1,3 @@
-package blackJack;
 
 /**
  * @author Pravat

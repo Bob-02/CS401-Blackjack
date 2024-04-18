@@ -1,5 +1,3 @@
-package blackJack;
-
 import java.util.List;
 
 public class Player {
