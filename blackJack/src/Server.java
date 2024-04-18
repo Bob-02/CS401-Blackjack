@@ -18,6 +18,8 @@ public class Server {
     	List<Dealer> onlineDealers;	// Passed to client to get server details
     	double casinoFunds;			// Passed to client to get server details
     	
+    	// make facade class of server details
+    	
     	// Print local host to console. Let others know where to connect.
         InetAddress localHost = InetAddress.getLocalHost();
         System.out.println(localHost.getHostAddress());
