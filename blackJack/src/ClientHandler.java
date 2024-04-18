@@ -33,34 +33,47 @@ public class ClientHandler implements Runnable {
 	        ObjectInputStream objectInputStream = 
 	        		new ObjectInputStream(inputStream);
 	        
-	        // get message from client.
-	        Message current = (Message) objectInputStream.readObject();
+	        // Get the first message from client. It should be a login message.
+	        // Ignore anything else.
+	        Message login = (Message) objectInputStream.readObject();
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
 	        
-	        // A valid dealer, type login, status new, text, dealer.
-	        // A valid player, type login, status new, text, player.
-	        if(current.getType() == Type.Login 
-	        		&& current.getStatus() == Status.New) {
+
+	        if(login.getType() == Type.Login 
+	        		&& login.getStatus() == Status.New) {
 	        	
 	        	
 		        // look in the server here!!!
-		        // Boolean valid = loginUser(current.getText());
-		        // if(valid) {
+	        	Boolean loginValid = loginUser(login.getText());
+	        	
+		        // A valid dealer login: type login, status new, text dealer.
+		        // A valid player login: type login, status new, text player.
+		        if(loginValid == true) {
 	
-	        	// IF account details found Set status to success
-	        	current.setStatus(Status.Success);
+		        	// IF account details found Set status to success
+		        	login.setStatus(Status.Success);
+		        	
+		        	// Send updated message back to the client
+		        	objectOutputStream.writeObject(login);
+		        	System.out.println("Login Successful from Client #"
+		        						+ id + "!\n");
+		        	
+		        	// ADD PLAYER OR DEALER TO ONLINE LIST.
+		        }
+		        // If there is not Player or Dealer valid account.
+		        // Close the client.
+		        else {
+		        	return;
+		        }
 	        	
-	        	// Send updated message back to the client
-	        	objectOutputStream.writeObject(current);
-	        	System.out.println("Login Successful from Client #"
-	        						+ id + "!\n");
+	        	Message current = (Message) objectInputStream.readObject();
 	        	
-	        	//}
-	        	
-	        	// Keep reading for text messages until we get a logout message.'
-	        	// add 'valid' flag to loop.
+	        	// Keep reading for text messages until we get a logout message.
+	        	// This is the main loop of the program.
+	        	// All actions from the GUI will go through the client and sent
+	        	// to the server here.
 	        	while(current.getType() != Type.Logout
 	        			&& current.getStatus() == Status.New) {
 	        		
@@ -97,5 +110,11 @@ public class ClientHandler implements Runnable {
 
 	public int getId() {
 		return id;
+	}
+	
+	
+	
+	public boolean loginUser(String string) {
+		return false;
 	}
 }
