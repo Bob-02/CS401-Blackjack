@@ -1,5 +1,3 @@
-package blackJack;
-
 public class Table {
 	Dealer dealer;
 	PlayingDeck deck;
@@ -11,7 +9,7 @@ public class Table {
 	}
 
 	public String getPlayingDeck() {
-		return deck.playingDeck.cards.toString();
+		return deck.toString();
 	}
 
 	public void startRound() {
@@ -19,6 +17,7 @@ public class Table {
 	}
 
 	public void shuffleCards() {
-
+		// TODO: make sure shuffling works
+		deck.shuffleDeck();
 	}
 }

@@ -1,10 +1,4 @@
-package blackJack;
-
 import java.util.List;
-
-enum Status {
-	Open, Full, Empty, NeedDealer;
-}
 
 public class Game {
 	Table table;
