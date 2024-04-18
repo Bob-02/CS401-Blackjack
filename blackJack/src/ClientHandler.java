@@ -114,7 +114,5 @@ public class ClientHandler implements Runnable {
 	
 	
 	
-	public boolean loginUser(String string) {
-		return false;
-	}
+
 }
