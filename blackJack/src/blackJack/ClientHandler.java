@@ -1,4 +1,5 @@
 //ClientHandler class
+package blackJack;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,13 +10,15 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
 	private final Socket clientSocket;
+	private final ServerDetails server;
 	private static int count = 1;
     private final int id;
 
 	// Constructor
-	public ClientHandler(Socket socket)
+	public ClientHandler(Socket socket, ServerDetails server)
 	{
 		this.clientSocket = socket;
+		this.server = server;
 		this.id = count++;
 	}
 
