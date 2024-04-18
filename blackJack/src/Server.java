@@ -4,6 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Server {
     public static void main(String[] args) 
@@ -94,7 +95,10 @@ class ClientHandler implements Runnable {
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
-	        if(current.getType() == Type.LoginDealer 
+	        
+	        // A valid dealer, type login, status new, text, dealer.
+	        // A valid player, type login, status new, text, player.
+	        if(current.getType() == Type.Login 
 	        		&& current.getStatus() == Status.New) {
 	        	
 	        	
@@ -151,6 +155,10 @@ class ClientHandler implements Runnable {
 	public int getId() {
 		return id;
 	}
+}
+
+public boolean loginUser(String string) {
+	
 }
 
 
