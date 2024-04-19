@@ -1,7 +1,7 @@
 import java.io.Serializable;
 
 enum Type{
-	LoginPlayer, LoginDealer, Logout, 
+	Login, Logout, 
 	Text,
 	CheckFunds, CheckFundHistory, AddFunds, CashOut,
 	JoinGame, LeaveGame, OpenGame, CloseGame,
