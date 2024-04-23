@@ -10,21 +10,23 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
 	private final Socket clientSocket;
-	private final ServerDetails server;
+	//private final ServerDetails server;
 	private static int count = 1;
     private final int id;
 
 	// Constructor
-	public ClientHandler(Socket socket, ServerDetails server)
+	public ClientHandler(Socket socket)
 	{
 		this.clientSocket = socket;
-		this.server = server;
+		//this.server = server;
 		this.id = count++;
 	}
 
 	public void run()
 	{
 		try {
+			// Make functions in Server call with Server.
+			Server.getServerName();
 				
 		    // Data TOO the client
 	        OutputStream outputStream = clientSocket.getOutputStream();
@@ -42,6 +44,7 @@ public class ClientHandler implements Runnable {
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
+	        
 	        
 
 	        if(login.getType() == Type.Login 
@@ -109,6 +112,11 @@ public class ClientHandler implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private Boolean loginUser(String text) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public int getId() {
