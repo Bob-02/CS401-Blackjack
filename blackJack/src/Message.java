@@ -1,4 +1,4 @@
-package blackJack;
+
 import java.io.Serializable;
 
 enum Type{
