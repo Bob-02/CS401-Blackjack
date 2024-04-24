@@ -3,12 +3,15 @@ import java.util.List;
 public class Game {
 	Table table;
 	Dealer dealer;
-	Status status;
+	TableStatus tableStatus;
 	List<Player> lobby;
 	long emptyTimeStamp;
 
-	public Game() {
-
+	public Game(Dealer dealer, List<Player> lobby) {
+		this.dealer = dealer;
+		this.lobby = lobby;
+		table = new Table(dealer);
+		tableStatus = TableStatus.Open;
 	}
 
 	public Table getTable() {
@@ -16,11 +19,11 @@ public class Game {
 	}
 
 	public boolean isTableFull() {
-		return false;
+		return tableStatus == TableStatus.Full;
 	}
 
 	public boolean isGameOpen() {
-		return false;
+		return tableStatus == TableStatus.Open;
 	}
 
 	public void setDealer(Dealer dealer) {
@@ -28,10 +31,22 @@ public class Game {
 	}
 
 	public void removePlayer(Player player) {
+		if (tableStatus == TableStatus.Full) {
+			tableStatus = TableStatus.Open;
+		}
+		table.players.remove(player);
 		lobby.remove(player);
+
 	}
 
 	public void addPlayer(Player player) {
-		lobby.add(player);
+		if (tableStatus != TableStatus.Full) {
+			lobby.add(player);
+			table.players.add(player);
+			if (table.players.size() == 7) {
+				tableStatus = TableStatus.Full;
+			}
+		}
+
 	}
 }
