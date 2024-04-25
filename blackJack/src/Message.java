@@ -11,7 +11,7 @@ enum Type{
 	
 	// Add new Types of messages as project features get built out.
 }
-enum State{
+enum Status{
 	// State added to messages to keep track of acknowledgment of an action.
 	New, Success, Failed
 }
@@ -19,16 +19,16 @@ enum State{
 
 public class Message implements Serializable {
     protected Type type;
-    protected State state;
+    protected Status status;
     protected String text;
 
     public Message(){
         setType(Type.Default);
-        setStatus(State.New);
+        setStatus(Status.New);
         setText("Undefined");
     }
 
-    public Message(Type type, State status, String text){
+    public Message(Type type, Status status, String text){
         setType(type);
         setStatus(status);
         setText(text);
@@ -38,8 +38,8 @@ public class Message implements Serializable {
     	this.type = type;
     }
 
-    public void setStatus(State status){
-    	this.state = status;
+    public void setStatus(Status status){
+    	this.status = status;
     }
 
     public void setText(String text){
@@ -50,8 +50,8 @@ public class Message implements Serializable {
     	return type;
     }
 
-    public State getStatus(){
-    	return state;
+    public Status getStatus(){
+    	return status;
     }
 
     public String getText(){
