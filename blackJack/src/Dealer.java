@@ -4,10 +4,13 @@ public class Dealer {
 	String name;
 	List<Card> hand;
 	double casinoFunds;
+	double casinoBet;
 	Table table;
 
-	public Dealer() {
-
+	public Dealer(String name, double funds) {
+		this.name = name;
+		this.casinoFunds = funds;
+		casinoBet = 0;
 	}
 
 	public String getDealerName() {
@@ -20,6 +23,24 @@ public class Dealer {
 
 	public double getCasinoFunds() {
 		return casinoFunds;
+	}
+
+	public double getBet() {
+		return casinoBet;
+	}
+
+	public void setBet(double bet) {
+		casinoBet = bet;
+	}
+
+	public void wonBet() {
+		casinoFunds += casinoBet;
+		casinoBet = 0;
+	}
+
+	public void lostBet() {
+		casinoFunds -= casinoBet;
+		casinoBet = 0;
 	}
 
 	public Table getTable() {
