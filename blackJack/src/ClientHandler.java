@@ -1,5 +1,6 @@
 //ClientHandler class
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -9,6 +10,7 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
 	private final Socket clientSocket;
+	//private final ServerDetails server;
 	private static int count = 1;
     private final int id;
 
@@ -16,12 +18,16 @@ public class ClientHandler implements Runnable {
 	public ClientHandler(Socket socket)
 	{
 		this.clientSocket = socket;
+		//this.server = server;
 		this.id = count++;
 	}
 
 	public void run()
 	{
 		try {
+			
+			// Make functions in Server call with Server.
+			Server.getServerName();
 				
 		    // Data TOO the client
 	        OutputStream outputStream = clientSocket.getOutputStream();
@@ -39,43 +45,40 @@ public class ClientHandler implements Runnable {
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
-	        
-
-	        if(login.getType() == Type.Login 
-	        		&& login.getStatus() == Status.New) {
+	        if(isNewLogin(login)) {
 	        	
-	        	
+	        	// 
 		        // look in the server here!!!
-	        	Boolean loginValid = loginUser(login.getText());
+	        	String loginType = Server.loginUser(login.getText());
 	        	
 		        // A valid dealer login: type login, status new, text dealer.
 		        // A valid player login: type login, status new, text player.
-		        if(loginValid == true) {
+		        if(loginType == "dealer" || loginType == "player") {
 	
 		        	// IF account details found Set status to success
 		        	login.setStatus(Status.Success);
+		        	login.setText(loginType);
 		        	
-		        	// Send updated message back to the client
+		        	// Send back updated message to the client.
 		        	objectOutputStream.writeObject(login);
 		        	System.out.println("Login Successful from Client #"
 		        						+ id + "!\n");
-		        	
-		        	// ADD PLAYER OR DEALER TO ONLINE LIST.
 		        }
+		        
 		        // If there is not Player or Dealer valid account.
 		        // Close the client.
 		        else {
 		        	return;
 		        }
-	        	
-	        	Message current = (Message) objectInputStream.readObject();
+
 	        	
 	        	// Keep reading for text messages until we get a logout message.
+	        	Message current = (Message) objectInputStream.readObject();
+		        
 	        	// This is the main loop of the program.
 	        	// All actions from the GUI will go through the client and sent
 	        	// to the server here.
-	        	while(current.getType() != Type.Logout
-	        			&& current.getStatus() == Status.New) {
+	        	while(!isLogginOut(current)) {
 	        		
 	        		// Get a message from the user. 
 	        		current = (Message) objectInputStream.readObject();
@@ -112,7 +115,25 @@ public class ClientHandler implements Runnable {
 		return id;
 	}
 	
+	private Boolean isNewLogin(Message login) {
+		
+		// The message is valid if of Type Login and has a Status of New.
+		if(login.getType() == Type.Login && login.getStatus() == Status.New) {
+			return true;
+		}
+		
+		return false;
+	}
 	
-	
+	private Boolean isLogginOut(Message msg) {
+		
+		// If the message is not a Logout type.
+		// AND is of any other Type and New is not a logout message.
+		if(msg.getType() != Type.Logout && msg.getStatus() == Status.New) {
+			return true;
+		}
+		
+		return false;
+	}
 
 }
