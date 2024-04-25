@@ -1,11 +1,14 @@
+import java.util.List;
+
 public class Table {
 	Dealer dealer;
 	PlayingDeck deck;
-	Player[] players = new Player[7];
+	List<Player> players;
 	double payout;
 
-	public Table() {
-
+	public Table(Dealer dealer) {
+		this.dealer = dealer;
+		deck = new PlayingDeck(3);
 	}
 
 	public String getPlayingDeck() {
@@ -17,7 +20,6 @@ public class Table {
 	}
 
 	public void shuffleCards() {
-		// TODO: make sure shuffling works
 		deck.shuffleDeck();
 	}
 }
