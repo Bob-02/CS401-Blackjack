@@ -1,17 +1,20 @@
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Server {
     public static void main(String[] args) 
     		throws IOException, ClassNotFoundException {
-    	
-    	// Load valid registered Players and Dealers from both files.
-    	loadValidUsers("players.txt", "dealers.txt");
+
+    	// Initiate server values when the server starts up.
+    	Server initServerDetails = new Server();
 
     	// Print local host to console. Let others know where to connect.
         InetAddress localHost = InetAddress.getLocalHost();
@@ -66,19 +69,39 @@ public class Server {
 		}
     }
     
+    // Server details go here. They must be static because main is static.
 	private static String serverName;			
 	private static List<Game> games;			
-	private static List<Player> validPlayers;	
-	private static List<Dealer> validDealers;	
+	private static List<String> validPlayers;	
+	private static List<String> validDealers;	
 	private static List<Player> onlinePlayers;	
 	private static List<Dealer> onlineDealers;	
-	private static double casinoFunds;	
+	private static BigDecimal casinoFunds;
+	
+	
+	// Startup of server should initiate new variables. Give server a name, 
+	// start up new instances of the variables. Add casino funds.
+	public Server() {
+		Server.serverName = "Group 5 Blackjack Server.";
+		Server.games = new ArrayList<>();
+		Server.validPlayers =  new ArrayList<>();
+		Server.validDealers =  new ArrayList<>();
+		Server.onlinePlayers =  new ArrayList<>();
+		Server.onlineDealers =  new ArrayList<>();
+		
+		// Casino starts off with 2 mil.
+		Server.casinoFunds = new BigDecimal("2000000.00");
+		
+    	// Load valid registered Players and Dealers from both files.
+    	loadValidUsers("players.txt", "dealers.txt");
+		
+	}
     
-	public static double getCasinoFunds() {
+	public static BigDecimal getCasinoFunds() {
 		return casinoFunds;
 	}
 
-	public static void setCasinoFunds(double casinoFunds) {
+	public static void setCasinoFunds(BigDecimal casinoFunds) {
 		Server.casinoFunds = casinoFunds;
 	}
 
@@ -86,11 +109,11 @@ public class Server {
 		return games;
 	}
 
-	public static List<Player> getValidPlayers() {
+	public static List<String> getValidPlayers() {
 		return validPlayers;
 	}
 
-	public static List<Dealer> getValidDealers() {
+	public static List<String> getValidDealers() {
 		return validDealers;
 	}
 
@@ -113,6 +136,52 @@ public class Server {
 	public static void loadValidUsers(String dealerFilename, 
 									  String playerFilename) {
 		
+		File dealerFile = new File(dealerFilename);
+		File playerFile = new File(dealerFilename);
+		
+		try (Scanner dealer = new Scanner(dealerFile);
+	         Scanner player = new Scanner(playerFile) ) {
+			
+	            // Continue the loop as long as either file has more data
+	            while (dealer.hasNextLine() || player.hasNextLine()) {
+	            	
+	            	// When dealer has a line read add to the list
+	                if (dealer.hasNextLine()) {
+	                	
+	                    String line1 = dealer.nextLine();
+	                    
+	                    // If the details are NOT in the list add them else do
+	                    // nothing.
+	                    if(!validDealers.contains(line1) ) {
+	                    	validDealers.add(line1);
+	                    }
+	                }
+	                
+	                if (player.hasNextLine()) {
+	                	
+	                    String line2 = player.nextLine();
+	                    // If the details are NOT in the list add them else do
+	                    // nothing.
+	                    if(!validPlayers.contains(line2) ) {
+	                    	validPlayers.add(line2);
+	                    }
+	                }
+	            }
+	        } catch (FileNotFoundException e) {
+	        	
+	            System.out.println("One of the files was not found: "
+	            				   + e.getMessage());
+	        }
+	}
+	
+	// Read from player's file, fund file.
+	// For now just do a simple add of funds to the player	
+	public static void loadPlayerFunds(Player player) {
+	}
+	
+	public static Boolean loginUser(String text) {
+		// TODO Auto-generated method stub
+		return false;
 	}
     
 }
