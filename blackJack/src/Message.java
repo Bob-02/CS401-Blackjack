@@ -1,3 +1,4 @@
+
 import java.io.Serializable;
 
 enum Type{
@@ -11,7 +12,7 @@ enum Type{
 	// Add new Types of messages as project features get built out.
 }
 enum Status{
-	// Status added to messages to keep track of acknowledgment of an action.
+	// State added to messages to keep track of acknowledgment of an action.
 	New, Success, Failed
 }
 
