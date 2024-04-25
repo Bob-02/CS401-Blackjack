@@ -1,4 +1,3 @@
-package BlackJack;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,21 +16,7 @@ public class BlackjackGUI {
 
     // Constructor
     public BlackjackGUI() {
-    	connectToServer();
         initializeGUI(); // Initialize GUI components when the object is created
-    }
-
- // Connect to the server and setup streams.
-    private void connectToServer() {
-        try {
-            socket = new Socket("localhost", 12345);
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            inputStream = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Unable to connect to server", "Connection Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-            System.exit(1);  // Exit if cannot connect
-        }
     }
 
 	// Method to initialize the whole GUI
