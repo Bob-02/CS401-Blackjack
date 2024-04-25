@@ -181,6 +181,11 @@ public class Server {
 	
 	public static String loginUser(String text) {
 		String userType;
+		
+		
+		
+		
+		
 		// TODO Auto-generated method stub
 		return userType;
 	}

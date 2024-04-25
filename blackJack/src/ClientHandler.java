@@ -53,34 +53,32 @@ public class ClientHandler implements Runnable {
 	        	
 		        // A valid dealer login: type login, status new, text dealer.
 		        // A valid player login: type login, status new, text player.
-		        if(loginType == "dealer") {
+		        if(loginType == "dealer" || loginType == "player") {
 	
 		        	// IF account details found Set status to success
 		        	login.setStatus(Status.Success);
+		        	login.setText(loginType);
 		        	
-
-		        	
-		        	// ADD PLAYER OR DEALER TO ONLINE LIST.
+		        	// Send back updated message to the client.
+		        	objectOutputStream.writeObject(login);
+		        	System.out.println("Login Successful from Client #"
+		        						+ id + "!\n");
 		        }
+		        
 		        // If there is not Player or Dealer valid account.
 		        // Close the client.
 		        else {
 		        	return;
 		        }
-		        
-	        	// Send updated message back to the client
-	        	objectOutputStream.writeObject(login);
-	        	System.out.println("Login Successful from Client #"
-	        						+ id + "!\n");
-	        	
-	        	Message current = (Message) objectInputStream.readObject();
+
 	        	
 	        	// Keep reading for text messages until we get a logout message.
+	        	Message current = (Message) objectInputStream.readObject();
+		        
 	        	// This is the main loop of the program.
 	        	// All actions from the GUI will go through the client and sent
 	        	// to the server here.
-	        	while(current.getType() != Type.Logout
-	        			&& current.getStatus() == Status.New) {
+	        	while(!isLogginOut(current)) {
 	        		
 	        		// Get a message from the user. 
 	        		current = (Message) objectInputStream.readObject();
@@ -127,5 +125,15 @@ public class ClientHandler implements Runnable {
 		return false;
 	}
 	
+	private Boolean isLogginOut(Message msg) {
+		
+		// If the message is not a Logout type.
+		// AND is of any other Type and New is not a logout message.
+		if(msg.getType() != Type.Logout && msg.getStatus() == Status.New) {
+			return true;
+		}
+		
+		return false;
+	}
 
 }
