@@ -1,16 +1,17 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
 	Table table;
 	Dealer dealer;
-	TableStatus tableStatus;
+	static TableStatus tableStatus;
 	List<Player> lobby;
 	long emptyTimeStamp;
 
 	public Game(Dealer dealer, List<Player> lobby) {
 		this.dealer = dealer;
 		this.lobby = lobby;
-		table = new Table(dealer);
+		table = new Table(dealer, lobby);
 		tableStatus = TableStatus.Open;
 	}
 
@@ -48,5 +49,20 @@ public class Game {
 				tableStatus = TableStatus.Full;
 			}
 		}
+	}
+
+	public static void main(String[] args) {
+		Dealer dealer = new Dealer("Billy", 1000);
+		List<Player> testPlayers = new ArrayList<Player>();
+
+		Player testPlayer = new Player("Bob", 1000);
+		testPlayers.add(testPlayer);
+
+		Game testGame = new Game(dealer, testPlayers);
+
+		testGame.table.dealCards();
+		testGame.table.dealCards();
+		testGame.table.dealCards();
+
 	}
 }

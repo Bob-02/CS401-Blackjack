@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -7,9 +8,15 @@ public class Table {
 	List<Player> players;
 	double payout;
 
-	public Table(Dealer dealer) {
+	public Table(Dealer dealer, List<Player> players) {
 		this.dealer = dealer;
 		deck = new PlayingDeck(3);
+
+		this.players = new ArrayList<Player>();
+		for (Player player : players) {
+			this.players.add(new Player(player.getPlayerName(), player.getPlayerFunds()));
+		}
+
 	}
 
 	public String getPlayingDeck() {
@@ -37,11 +44,9 @@ public class Table {
 	}
 
 	public Card pickRandomCard() {
-		Random rand = new Random();
+		Deck selectedDeck = deck.playingDeck.get(pickRandomIndex(0, deck.playingDeck.size()));
 
-		Deck selectedDeck = deck.playingDeck.get(rand.nextInt((deck.playingDeck.size() - 0) + 1) + 0);
-
-		Card selectedCard = selectedDeck.cards.get(((selectedDeck.cards.size() - 0) + 1) + 0);
+		Card selectedCard = selectedDeck.cards.get(pickRandomIndex(0, selectedDeck.cards.size()));
 
 		selectedDeck.cards.remove(selectedCard);
 
@@ -50,10 +55,12 @@ public class Table {
 
 	public void addCardToPlayerHand(Player player, Card card) {
 		player.getPlayerHand().add(card);
+		System.out.println("Player, " + player.getPlayerName() + ", has Hand: " + player.getPlayerHand().toString());
 	}
 
 	public void addCardToDealerHand(Dealer dealer, Card card) {
 		dealer.getDealerHand().add(card);
+		System.out.println("Dealer, " + dealer.getDealerName() + ", has Hand: " + dealer.getDealerHand().toString());
 	}
 
 	public void clearAllHands() {
@@ -71,6 +78,10 @@ public class Table {
 			selectedDeck.cards.add(player.getPlayerHand().get(i));
 			player.getPlayerHand().remove(i);
 		}
+	}
+
+	public static int pickRandomIndex(int Min, int Max) {
+		return (int) (Math.random() * (Max - Min)) + Min;
 	}
 
 	public void clearDealerHand(Dealer dealer) {

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
@@ -10,6 +11,8 @@ public class Player {
 		this.name = name;
 		this.funds = funds;
 		currentBet = 0;
+
+		this.hand = new ArrayList<Card>();
 	}
 
 	public String getPlayerName() {
