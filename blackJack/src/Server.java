@@ -179,9 +179,10 @@ public class Server {
 	public static void loadPlayerFunds(Player player) {
 	}
 	
-	public static Boolean loginUser(String text) {
+	public static String loginUser(String text) {
+		String userType;
 		// TODO Auto-generated method stub
-		return false;
+		return userType;
 	}
     
 }

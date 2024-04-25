@@ -25,6 +25,7 @@ public class ClientHandler implements Runnable {
 	public void run()
 	{
 		try {
+			
 			// Make functions in Server call with Server.
 			Server.getServerName();
 				
@@ -44,27 +45,20 @@ public class ClientHandler implements Runnable {
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
-	        
-	        
-
-	        if(login.getType() == Type.Login 
-	        		&& login.getStatus() == Status.New) {
+	        if(isNewLogin(login)) {
 	        	
-	        	
+	        	// 
 		        // look in the server here!!!
-	        	Boolean loginValid = loginUser(login.getText());
+	        	String loginType = Server.loginUser(login.getText());
 	        	
 		        // A valid dealer login: type login, status new, text dealer.
 		        // A valid player login: type login, status new, text player.
-		        if(loginValid == true) {
+		        if(loginType == "dealer") {
 	
 		        	// IF account details found Set status to success
 		        	login.setStatus(Status.Success);
 		        	
-		        	// Send updated message back to the client
-		        	objectOutputStream.writeObject(login);
-		        	System.out.println("Login Successful from Client #"
-		        						+ id + "!\n");
+
 		        	
 		        	// ADD PLAYER OR DEALER TO ONLINE LIST.
 		        }
@@ -73,6 +67,11 @@ public class ClientHandler implements Runnable {
 		        else {
 		        	return;
 		        }
+		        
+	        	// Send updated message back to the client
+	        	objectOutputStream.writeObject(login);
+	        	System.out.println("Login Successful from Client #"
+	        						+ id + "!\n");
 	        	
 	        	Message current = (Message) objectInputStream.readObject();
 	        	
@@ -114,16 +113,19 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	private Boolean loginUser(String text) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public int getId() {
 		return id;
 	}
 	
-	
+	private Boolean isNewLogin(Message login) {
+		
+		// The message is valid if of Type Login and has a Status of New.
+		if(login.getType() == Type.Login && login.getStatus() == Status.New) {
+			return true;
+		}
+		
+		return false;
+	}
 	
 
 }
