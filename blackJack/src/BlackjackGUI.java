@@ -2,17 +2,39 @@ package BlackJack;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.io.*;
+import java.net.Socket;
 
 public class BlackjackGUI {
     private JFrame frame; // Main window frame for the GUI
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private Socket socket;
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
 
     // Constructor
     public BlackjackGUI() {
+    	connectToServer();
         initializeGUI(); // Initialize GUI components when the object is created
     }
 
-    // Method to initialize the whole GUI
+ // Connect to the server and setup streams.
+    private void connectToServer() {
+        try {
+            socket = new Socket("localhost", 12345);
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            inputStream = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Unable to connect to server", "Connection Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            System.exit(1);  // Exit if cannot connect
+        }
+    }
+
+	// Method to initialize the whole GUI
     private void initializeGUI() {
         frame = new JFrame("Blackjack Casino Game"); // Create the frame with a title
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Set default close operation
@@ -48,16 +70,34 @@ public class BlackjackGUI {
         cardPanel.add(gamePanel, "Game");
 
         // Action Listeners for buttons
-        loginButton.addActionListener(e -> cardLayout.show(cardPanel, "Game")); // Show game panel on login
-        registerButton.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Registration Module")); // Popup for registration
+        loginButton.addActionListener(e -> sendLogin(usernameField.getText(), new String(passwordField.getPassword())));
+        registerButton.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Registration Module not implemented."));
 
-        // Add the card panel to the frame and make it visible
         frame.add(cardPanel);
         frame.setVisible(true);
     }
 
-    // Main method to run the application
+    // Handle login by sending a message to the server and processing the response.
+    private void sendLogin(String username, String password) {
+        try {
+            Message loginMessage = new Message(Type.Login, Status.New, username + ":" + password);
+            outputStream.writeObject(loginMessage);
+            outputStream.flush();
+            Message response = (Message) inputStream.readObject();
+            if (response.getStatus() == Status.Success) {
+                JOptionPane.showMessageDialog(frame, "Login Successful");
+                cardLayout.show(cardPanel, "Game");
+            } else {
+                JOptionPane.showMessageDialog(frame, "Login Failed");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(frame, "Error communicating with server");
+            e.printStackTrace();
+        }
+    }
+
+    // Main method to run the application.
     public static void main(String[] args) {
-        new BlackjackGUI(); // Create an instance of the GUI to run it
+        SwingUtilities.invokeLater(BlackjackGUI::new);
     }
 }
