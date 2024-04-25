@@ -34,6 +34,7 @@ public class Game {
 		if (tableStatus == TableStatus.Full) {
 			tableStatus = TableStatus.Open;
 		}
+		table.clearPlayerHand(player);
 		table.players.remove(player);
 		lobby.remove(player);
 
@@ -47,6 +48,5 @@ public class Game {
 				tableStatus = TableStatus.Full;
 			}
 		}
-
 	}
 }

@@ -5,8 +5,9 @@ public class Player {
 	List<Card> hand;
 	double funds;
 
-	public Player() {
-
+	public Player(String name, double funds) {
+		this.name = name;
+		this.funds = funds;
 	}
 
 	public String getPlayerName() {
