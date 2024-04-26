@@ -95,7 +95,7 @@ public class Server {
 		Server.onlinePlayers =  new ArrayList<>();
 		Server.onlineDealers =  new ArrayList<>();
 		
-		// Casino starts off with 2 mil.
+		// Casino starts off with 2 million bucks.
 		Server.casinoFunds = new BigDecimal("2000000.00");
 		
     	// Load valid registered Players and Dealers from both files.
@@ -254,10 +254,10 @@ public class Server {
 			
 			// Subtract requested amount from the casino funds.
 			casinoFunds.subtract(rounded);
+			return rounded.doubleValue();
 		}
-
 		
-		return rounded.doubleValue();
+		return 0;
 	}
 	
 	
@@ -266,6 +266,18 @@ public class Server {
 	// of cash to use for now.
 	public static double getPlayerFunds(String player) {
 		return 10000.00;
+	}
+	
+	
+	// This adds a set amount of funds to the casino.
+	public static void addCasinoFunds(String amount) {
+		
+		// Convert amount string to a decimal value.
+		BigDecimal bdAmount = 
+				new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN);
+		
+		// Add to casinoFunds.
+		casinoFunds.add(bdAmount);
 	}
     
 }
