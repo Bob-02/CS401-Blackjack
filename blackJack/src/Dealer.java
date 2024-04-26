@@ -7,6 +7,7 @@ public class Dealer {
 	double casinoFunds;
 	double casinoBet;
 	Table table;
+	boolean hasBlackJack;
 
 	public Dealer(String name, double funds) {
 		this.name = name;
@@ -48,5 +49,33 @@ public class Dealer {
 
 	public Table getTable() {
 		return table;
+	}
+
+	public boolean doesTheDealerHaveBlackJack() {
+		return hasBlackJack;
+	}
+
+	public int calculateHandTotal() {
+		int handTotal = 0;
+		boolean cardIsAce = false;
+
+		for (int i = 0; i < hand.size(); i++) {
+			int value = hand.get(i).getCardValue();
+			if (value > 10) {
+				value = 10;
+			} else if (value == 1) {
+				cardIsAce = true;
+			}
+			handTotal += value;
+		}
+		if (cardIsAce && handTotal + 10 <= 21) {
+			handTotal += 10;
+		}
+		return handTotal;
+	}
+
+	public boolean peek() {
+		int handValue = calculateHandTotal();
+		return handValue == 1 || handValue >= 10;
 	}
 }

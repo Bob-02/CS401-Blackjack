@@ -34,23 +34,15 @@ public class Table {
 
 	public void dealCards() {
 
-		shuffleCards();
-
 		for (Player player : players) {
-			addCardToPlayerHand(player, pickRandomCard());
+			addCardToPlayerHand(player, deal());
 		}
 
-		addCardToDealerHand(dealer, pickRandomCard());
+		addCardToDealerHand(dealer, deal());
 	}
 
-	public Card pickRandomCard() {
-		Deck selectedDeck = deck.playingDeck.get(pickRandomIndex(0, deck.playingDeck.size()));
-
-		Card selectedCard = selectedDeck.cards.get(pickRandomIndex(0, selectedDeck.cards.size()));
-
-		selectedDeck.cards.remove(selectedCard);
-
-		return selectedCard;
+	public Card deal() {
+		return deck.dealACard();
 	}
 
 	public void addCardToPlayerHand(Player player, Card card) {
