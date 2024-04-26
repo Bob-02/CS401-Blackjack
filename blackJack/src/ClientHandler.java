@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
 	        login = validateUser(login);
 		        
 	        // add this part into validateUser()
-	        /* From HERE */
+	    /* From HERE */
 	        
 	        // If the login is validated then login is a success and we can send
 	        // back the message to the client.
@@ -67,7 +67,7 @@ public class ClientHandler implements Runnable {
 								   	+ "closing socket!");
 				clientSocket.close();
 			}
-			/* To HERE */
+		/* To HERE */
 
 			// Keep reading for messages until we get a logout message.
 			Message current = (Message) objectInputStream.readObject();
@@ -98,7 +98,7 @@ public class ClientHandler implements Runnable {
 
 			// Set the logout process in isLogginout()
 			
-			/* From Here */
+		/* From Here */
 			
 			// On receipt of a ‘logout message’ should break out of the loop.
 			// Then a status will be returned with ‘Success’, then the 
@@ -115,7 +115,7 @@ public class ClientHandler implements Runnable {
 			// Don't forget to close the client durr.
 			clientSocket.close();
 			
-			/* To Here */
+		/* To Here */
 
 		}
 		catch (IOException e) {
@@ -145,12 +145,16 @@ public class ClientHandler implements Runnable {
 		
 		// If the message is of Type Logout and New return TRUE.
 		if(msg.getType() == Type.Logout && msg.getStatus() == Status.New) {
+			
+			// logout process Here!
+			// Copy from above.
+			
 			return true;
 		}
 		
-		// logout process Here!
-		// Copy from above.
-		
+
+		// Else this message is not a logout message. Proceed to process the
+		// message accordingly.
 		return false;
 	}
 
@@ -179,9 +183,30 @@ public class ClientHandler implements Runnable {
 	        login.setText(loginType);
 		}
 		
-		// Add logged in succesful message code here!
+		// Add logged in successful message code here!
 		
 		
 		return login;		
 	}
+	
+	// make a general send to client function
+	// to send a message to the client whenever called from a function in switch
+	private void sendToClient(Message message) {
+		
+	    // Data TOO the client
+        OutputStream outputStream;
+		try {
+			
+			// Object
+			outputStream = clientSocket.getOutputStream();
+	        ObjectOutputStream objectOutputStream =
+	        		new ObjectOutputStream(outputStream);
+	        
+	        objectOutputStream.writeObject(message);
+	        
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
