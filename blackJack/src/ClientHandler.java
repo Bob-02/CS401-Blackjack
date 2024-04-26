@@ -10,34 +10,31 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
 	private final Socket clientSocket;
-	//private final ServerDetails server;
+
 	private static int count = 1;
     private final int id;
+    
+    private OutputStream outputStream;
+    private ObjectOutputStream objectOutputStream;
+    private InputStream inputStream;
+    private ObjectInputStream objectInputStream;
 
 	// Constructor
-	public ClientHandler(Socket socket)
+	public ClientHandler(Socket socket) throws IOException
 	{
 		this.clientSocket = socket;
-		//this.server = server;
 		this.id = count++;
+		
+		this.outputStream = this.clientSocket.getOutputStream();
+		this.objectOutputStream = new ObjectOutputStream(this.outputStream);
+		
+		this.inputStream = this.clientSocket.getInputStream();
+		this.objectInputStream = new ObjectInputStream(this.inputStream);
 	}
 
 	public void run()
 	{
 		try {
-			
-			// Make functions in Server call with Server.
-			Server.getServerName();
-				
-		    // Data TOO the client
-	        OutputStream outputStream = clientSocket.getOutputStream();
-	        ObjectOutputStream objectOutputStream =
-	        		new ObjectOutputStream(outputStream);
-	        
-	        // Data FROM the client
-	        InputStream inputStream = clientSocket.getInputStream();
-	        ObjectInputStream objectInputStream = 
-	        		new ObjectInputStream(inputStream);
 	        
 	        // Get the first message from client. It should be a login message.
 	        // Ignore anything else.
@@ -46,17 +43,13 @@ public class ClientHandler implements Runnable {
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
 	        login = validateUser(login);
-		        
-	        // add this part into validateUser()
-	    /* From HERE */
+
 	        
 	        // If the login is validated then login is a success and we can send
 	        // back the message to the client.
 			if(login.getStatus() == Status.Success) {
-				System.out.println("Login Successful -- Client #" + id + "\n");
-				
-				// Send back updated message to the client.
-				objectOutputStream.writeObject(login);
+
+				sendToClient(login);
 			}
 			
 			// If status of the message was not updated to Success then it has 
@@ -67,7 +60,7 @@ public class ClientHandler implements Runnable {
 								   	+ "closing socket!");
 				clientSocket.close();
 			}
-		/* To HERE */
+
 
 			// Keep reading for messages until we get a logout message.
 			Message current = (Message) objectInputStream.readObject();
@@ -89,33 +82,28 @@ public class ClientHandler implements Runnable {
 				//
 
 				// Send back updated message to the Client.
-				objectOutputStream.writeObject(current);
+				//objectOutputStream.writeObject(current);
+				sendToClient(current);
 
 				// Get another message from the client
 				// In the future this might change to a List of Message.
 				current = (Message) objectInputStream.readObject();
 			}
 
-			// Set the logout process in isLogginout()
-			
-		/* From Here */
-			
 			// On receipt of a ‘logout message’ should break out of the loop.
 			// Then a status will be returned with ‘Success’, then the 
 			// connection will be closed and the thread terminates.
 			current.setStatus(Status.Success);
 			
-			// 
 
 			// Send updated message back to the client
-			objectOutputStream.writeObject(current);
+			//objectOutputStream.writeObject(current);
+			sendToClient(current);
 			System.out.println("Client #" + id + " Logged out at "
 					+ new Date().getCurrentDate());
 
 			// Don't forget to close the client durr.
 			clientSocket.close();
-			
-		/* To Here */
 
 		}
 		catch (IOException e) {
@@ -171,27 +159,27 @@ public class ClientHandler implements Runnable {
         	
         	// IF account details found Set status to success
 	        if(loginType == "dealer" || loginType == "player") {
-
+	        	
+	        	System.out.println("Login Successful -- Client #" + id + "\n");
 	        	login.setStatus(Status.Success);
 	        }
 	        
 	        // If neither player or dealer then the login is invalid
 	        else {
+	        	
+	        	System.out.println("Login Failed -- Client #" + id + "\n");
 	        	login.setStatus(Status.Failed);
 	        }
 	        
 	        login.setText(loginType);
-		}
-		
-		// Add logged in successful message code here!
-		
-		
+		}	
 		return login;		
 	}
 	
 	// make a general send to client function
-	// to send a message to the client whenever called from a function in switch
-	private void sendToClient(Message message) {
+	// to send a message to the client whenever called from a function in the
+	// main loop's switch.
+	private void sendToClient(Message message) throws IOException {
 		
 	    // Data TOO the client
         OutputStream outputStream;
@@ -205,6 +193,8 @@ public class ClientHandler implements Runnable {
 	        objectOutputStream.writeObject(message);
 	        
 		} catch (IOException e) {
+			System.out.println("Something Borked! Closing socket!\n");
+			clientSocket.close();
 			e.printStackTrace();
 		}
 	}
