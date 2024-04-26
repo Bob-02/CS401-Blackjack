@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -14,7 +16,7 @@ public class Client {
     private static final int DEFAULT_SERVER_PORT = 7777;               // default server port
     
 	public static void main(String[] args) throws Exception {
-		BlackjackGUI blackjackGUI = new BlackjackGUI();
+//		BlackjackGUI blackjackGUI = new BlackjackGUI();
 		
 		int port = DEFAULT_SERVER_PORT;
 		String host = DEFAULT_SERVER_ADDRESS;
@@ -26,16 +28,24 @@ public class Client {
 		// Output stream socket.
 		OutputStream outputStream = socket.getOutputStream();
 
+		//Input Stream socket
+		InputStream inputStream = socket.getInputStream();
+
 		// Create object output stream from the output stream to send an object through it
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
 
 		// List of Message objects
-		List<Message> messages = new ArrayList<>();
-		messages.add(new Message(Type.Login, Status.New, "This is a test message!"));
+//		List<Message> messages = new ArrayList<>();
+		
+//		messages.add(new Message(Type.Login, Status.New, "user1:letmein"));
 
+		Message message = new Message(Type.Login,Status.New,"user1:letmein");
 		System.out.println("Sending Message Objects");
-		objectOutputStream.writeObject(messages);
+		objectOutputStream.writeObject(message);
 
+//		objectInputStream.readObject()
 		System.out.println("Closing socket");
 		socket.close();
 		
