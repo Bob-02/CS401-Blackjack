@@ -46,7 +46,10 @@ public class ClientHandler implements Runnable {
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
 	        login = validateUser(login);
-		        	
+		        
+	        // add this part into validateUser()
+	        /* From HERE */
+	        
 	        // If the login is validated then login is a success and we can send
 	        // back the message to the client.
 			if(login.getStatus() == Status.Success) {
@@ -64,6 +67,7 @@ public class ClientHandler implements Runnable {
 								   	+ "closing socket!");
 				clientSocket.close();
 			}
+			/* To HERE */
 
 			// Keep reading for messages until we get a logout message.
 			Message current = (Message) objectInputStream.readObject();
@@ -73,9 +77,6 @@ public class ClientHandler implements Runnable {
 			// to the server here.
 			while (!isLogginOut(current)) {
 
-				// Get a message from the client
-				// In the future this might change to a List of Message.
-				current = (Message) objectInputStream.readObject();
 
 				//
 				// Switch to handle all the various types of messages.
@@ -89,12 +90,22 @@ public class ClientHandler implements Runnable {
 
 				// Send back updated message to the Client.
 				objectOutputStream.writeObject(current);
+
+				// Get another message from the client
+				// In the future this might change to a List of Message.
+				current = (Message) objectInputStream.readObject();
 			}
 
+			// Set the logout process in isLogginout()
+			
+			/* From Here */
+			
 			// On receipt of a ‘logout message’ should break out of the loop.
 			// Then a status will be returned with ‘Success’, then the 
 			// connection will be closed and the thread terminates.
 			current.setStatus(Status.Success);
+			
+			// 
 
 			// Send updated message back to the client
 			objectOutputStream.writeObject(current);
@@ -103,6 +114,8 @@ public class ClientHandler implements Runnable {
 
 			// Don't forget to close the client durr.
 			clientSocket.close();
+			
+			/* To Here */
 
 		}
 		catch (IOException e) {
@@ -135,6 +148,9 @@ public class ClientHandler implements Runnable {
 			return true;
 		}
 		
+		// logout process Here!
+		// Copy from above.
+		
 		return false;
 	}
 
@@ -162,6 +178,9 @@ public class ClientHandler implements Runnable {
 	        
 	        login.setText(loginType);
 		}
+		
+		// Add logged in succesful message code here!
+		
 		
 		return login;		
 	}
