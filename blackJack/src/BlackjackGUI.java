@@ -67,7 +67,7 @@ public class BlackjackGUI {
         try {
             Message loginMessage = new Message(Type.Login, Status.New, username + ":" + password);
             outputStream.writeObject(loginMessage);
-            outputStream.flush();
+            //outputStream.flush();
             Message response = (Message) inputStream.readObject();
             if (response.getStatus() == Status.Success) {
                 JOptionPane.showMessageDialog(frame, "Login Successful");
