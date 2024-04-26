@@ -3,12 +3,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-	Table table;
-	Dealer dealer;
+	static Table table;
+	static Dealer dealer;
 	static TableStatus tableStatus;
-	List<Player> lobby;
+	static List<Player> lobby;
 	long emptyTimeStamp;
-	private Scanner gameManager = new Scanner(System.in);
+	private static Scanner gameManager = new Scanner(System.in);
 
 	public Game(Dealer dealer, List<Player> lobby) {
 		this.dealer = dealer;
@@ -33,7 +33,7 @@ public class Game {
 		this.dealer = dealer;
 	}
 
-	public void removePlayer(Player player) {
+	public static void removePlayer(Player player) {
 		if (tableStatus == TableStatus.Full) {
 			tableStatus = TableStatus.Open;
 		}
@@ -53,9 +53,8 @@ public class Game {
 		}
 	}
 
-	public void getBets() {
+	public static void getBets() {
 		double betValue;
-
 		for (int i = 0; i < table.players.size(); i++) {
 			if (table.players.get(i).getPlayerFunds() > 0) {
 				do {
@@ -68,11 +67,9 @@ public class Game {
 			}
 
 		}
-
 	}
 
-	// Initial check for dealer or player Blackjack
-	public void checkBlackjack() {
+	public static void checkBlackjack() {
 		// System.out.println();
 
 		if (dealer.doesTheDealerHaveBlackJack()) {
@@ -100,8 +97,7 @@ public class Game {
 		}
 	}
 
-	// This code takes the user commands to hit or stand
-	public void hitOrStand() {
+	public static void hitOrStand() {
 		String command;
 		char c;
 		for (int i = 0; i < table.players.size(); i++) {
@@ -126,10 +122,7 @@ public class Game {
 		}
 	}
 
-	// This code calculates all possible outcomes and adds or removes the player
-	// bets
-
-	public void settleBets() {
+	public static void settleBets() {
 		System.out.println();
 
 		for (int i = 0; i < table.players.size(); i++) {
@@ -157,6 +150,53 @@ public class Game {
 
 	}
 
+	public static void dealerTurn() {
+
+		System.out.println();
+		while (dealer.calculateHandTotal() <= 16) {
+			System.out.println("Dealer has " + dealer.calculateHandTotal() + " and hits");
+			table.addCardToDealerHand(dealer, table.deck.dealACard());
+			System.out.println("Dealer " + dealer.getDealerHand().toString());
+		}
+		if (dealer.calculateHandTotal() > 21) {
+			System.out.println("Dealer busts. " + dealer.getDealerHand().toString());
+		} else {
+			System.out.println("Dealer stands. " + dealer.getDealerHand().toString());
+		}
+
+	}
+
+	public static void printFunds() {
+		for (int i = 0; i < table.players.size(); i++) {
+			if (table.players.get(i).getPlayerFunds() > 0) {
+				System.out.println(
+						table.players.get(i).getPlayerName() + " has " + table.players.get(i).getPlayerFunds());
+			}
+			if (table.players.get(i).getPlayerFunds() == 0) {
+				System.out.println(table.players.get(i).getPlayerName() + " has "
+						+ table.players.get(i).getPlayerFunds() + " and is out of the game.");
+				removePlayer(table.players.get(i));
+			}
+		}
+	}
+
+	public static void clearHands() {
+		for (int i = 0; i < table.players.size(); i++) {
+			table.players.get(i).clearHand();
+		}
+		dealer.clearHand();
+	}
+
+	public static void printHands() {
+		for (int i = 0; i < table.players.size(); i++) {
+			if (table.players.get(i).getPlayerFunds() > 0) {
+				System.out.println(table.players.get(i).getPlayerName() + " has "
+						+ table.players.get(i).getPlayerHand().toString());
+			}
+		}
+		System.out.println("Dealer has " + dealer.hand.toString());
+	}
+
 	public static void main(String[] args) {
 		Dealer dealer = new Dealer("Billy", 1000);
 		List<Player> testPlayers = new ArrayList<Player>();
@@ -166,22 +206,34 @@ public class Game {
 
 		Game testGame = new Game(dealer, testPlayers);
 
-		testGame.table.dealCards();
-		testGame.table.dealCards();
-		testGame.table.dealCards();
+		table.shuffleCards();
+		getBets();
+		table.dealCards();
 
-		testPlayer.setBet(500);
-		dealer.setBet(500);
+		checkBlackjack();
+		hitOrStand();
+		dealerTurn();
+		settleBets();
+		printFunds();
+		clearHands();
 
-		System.out.println("Player, " + testPlayer.getPlayerName() + " has bet: " + testPlayer.getBet());
-		System.out.println("Dealer, " + dealer.getDealerName() + " has bet: " + dealer.getBet());
-
-		testPlayer.wonBet();
-		dealer.lostBet();
-
-		System.out
-				.println("Player, " + testPlayer.getPlayerName() + " has total funds: " + testPlayer.getPlayerFunds());
-		System.out.println("Dealer, " + dealer.getDealerName() + " has total funds: " + dealer.getCasinoFunds());
+		/*
+		 * testGame.table.dealCards(); testGame.table.dealCards();
+		 * testGame.table.dealCards();
+		 * 
+		 * testPlayer.setBet(500); dealer.setBet(500);
+		 * 
+		 * System.out.println("Player, " + testPlayer.getPlayerName() + " has bet: " +
+		 * testPlayer.getBet()); System.out.println("Dealer, " + dealer.getDealerName()
+		 * + " has bet: " + dealer.getBet());
+		 * 
+		 * testPlayer.wonBet(); dealer.lostBet();
+		 * 
+		 * System.out .println("Player, " + testPlayer.getPlayerName() +
+		 * " has total funds: " + testPlayer.getPlayerFunds());
+		 * System.out.println("Dealer, " + dealer.getDealerName() + " has total funds: "
+		 * + dealer.getCasinoFunds());
+		 */
 
 	}
 }

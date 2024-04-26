@@ -54,6 +54,10 @@ public class Player {
 		currentBet = 0;
 	}
 
+	public void clearHand() {
+		hand.clear();
+	}
+
 	public int calculateHandTotal() {
 		int handTotal = 0;
 		boolean cardIsAce = false;

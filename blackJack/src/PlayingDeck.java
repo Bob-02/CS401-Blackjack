@@ -43,6 +43,6 @@ public class PlayingDeck {
 		if (nextCardIndex < 0 || nextCardIndex > 51) {
 			System.out.println("Future exception goes here");
 		}
-		return playingDeck.get(nextCardIndex++).cards.get(nextCardIndex);
+		return playingDeck.get(0).cards.get(nextCardIndex);
 	}
 }

@@ -78,4 +78,8 @@ public class Dealer {
 		int handValue = calculateHandTotal();
 		return handValue == 1 || handValue >= 10;
 	}
+
+	public void clearHand() {
+		hand.clear();
+	}
 }
