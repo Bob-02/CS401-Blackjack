@@ -45,61 +45,77 @@ public class ClientHandler implements Runnable {
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
-	        if(isNewLogin(login)) {
-	        	
-	        	// 
-		        // look in the server here!!!
-	        	String loginType = Server.loginUser(login.getText());
-	        	
-		        // A valid dealer login: type login, status new, text dealer.
-		        // A valid player login: type login, status new, text player.
-		        if(loginType == "dealer" || loginType == "player") {
-	
-		        	// IF account details found Set status to success
-		        	login.setStatus(Status.Success);
-		        	login.setText(loginType);
-		        	
-		        	// Send back updated message to the client.
-		        	objectOutputStream.writeObject(login);
-		        	System.out.println("Login Successful from Client #"
-		        						+ id + "!\n");
-		        }
+	        login = validateUser(login);
 		        
-		        // If there is not Player or Dealer valid account.
-		        // Close the client.
-		        else {
-		        	return;
-		        }
+	        // add this part into validateUser()
+	        /* From HERE */
+	        
+	        // If the login is validated then login is a success and we can send
+	        // back the message to the client.
+			if(login.getStatus() == Status.Success) {
+				System.out.println("Login Successful -- Client #" + id + "\n");
+				
+				// Send back updated message to the client.
+				objectOutputStream.writeObject(login);
+			}
+			
+			// If status of the message was not updated to Success then it has 
+			// to be a failed login.
+			// Close the client.
+			else {
+				System.out.println("Invalid credentials supplied, "
+								   	+ "closing socket!");
+				clientSocket.close();
+			}
+			/* To HERE */
 
-	        	
-	        	// Keep reading for text messages until we get a logout message.
-	        	Message current = (Message) objectInputStream.readObject();
-		        
-	        	// This is the main loop of the program.
-	        	// All actions from the GUI will go through the client and sent
-	        	// to the server here.
-	        	while(!isLogginOut(current)) {
-	        		
-	        		// Get a message from the user. 
-	        		current = (Message) objectInputStream.readObject();
-	        		
-	        		//
-	        		// Switch to handle all the various types of messages?
-	        		//
-	        		
-	        		}
-	        	
-	        	
-	        	// On receipt of logout, a ‘logout message’ will be returned
-	        	// with status of ‘success’, then the connection will be
-	        	// closed by the server and the thread terminates.
-	        	current.setStatus(Status.Success);
-	        	
-	        	// Send updated message back to the client
-	        	objectOutputStream.writeObject(current);
-	        	System.out.println("Client #" + id + " Logged out at "
-	        			+ new Date().getCurrentDate());
-	        }
+			// Keep reading for messages until we get a logout message.
+			Message current = (Message) objectInputStream.readObject();
+
+			// This is the main loop of the program.
+			// All actions from the GUI will go through the client and sent
+			// to the server here.
+			while (!isLogginOut(current)) {
+
+
+				//
+				// Switch to handle all the various types of messages.
+				// Will be controlled by enum Type
+				// Data supplied for the servers action should be in the Message
+				// text area.
+				//
+				// Build out the functions as needed and remember to update
+				// the message before sending to the Client.
+				//
+
+				// Send back updated message to the Client.
+				objectOutputStream.writeObject(current);
+
+				// Get another message from the client
+				// In the future this might change to a List of Message.
+				current = (Message) objectInputStream.readObject();
+			}
+
+			// Set the logout process in isLogginout()
+			
+			/* From Here */
+			
+			// On receipt of a ‘logout message’ should break out of the loop.
+			// Then a status will be returned with ‘Success’, then the 
+			// connection will be closed and the thread terminates.
+			current.setStatus(Status.Success);
+			
+			// 
+
+			// Send updated message back to the client
+			objectOutputStream.writeObject(current);
+			System.out.println("Client #" + id + " Logged out at "
+					+ new Date().getCurrentDate());
+
+			// Don't forget to close the client durr.
+			clientSocket.close();
+			
+			/* To Here */
 
 		}
 		catch (IOException e) {
@@ -127,13 +143,45 @@ public class ClientHandler implements Runnable {
 	
 	private Boolean isLogginOut(Message msg) {
 		
-		// If the message is not a Logout type.
-		// AND is of any other Type and New is not a logout message.
-		if(msg.getType() != Type.Logout && msg.getStatus() == Status.New) {
+		// If the message is of Type Logout and New return TRUE.
+		if(msg.getType() == Type.Logout && msg.getStatus() == Status.New) {
 			return true;
 		}
+		
+		// logout process Here!
+		// Copy from above.
 		
 		return false;
 	}
 
+	
+	private Message validateUser(Message login) {
+		
+        // If we get a NEW login message, check the text supplied in the
+        // message and check the server account details in text file.
+		if(isNewLogin(login)) {
+
+	        // Login user will return a string as either a:
+			// "dealer", "player" or "invalid".
+        	String loginType = Server.loginUser(login.getText());
+        	
+        	// IF account details found Set status to success
+	        if(loginType == "dealer" || loginType == "player") {
+
+	        	login.setStatus(Status.Success);
+	        }
+	        
+	        // If neither player or dealer then the login is invalid
+	        else {
+	        	login.setStatus(Status.Failed);
+	        }
+	        
+	        login.setText(loginType);
+		}
+		
+		// Add logged in succesful message code here!
+		
+		
+		return login;		
+	}
 }
