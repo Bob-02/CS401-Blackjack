@@ -2,11 +2,22 @@
 import java.io.Serializable;
 
 enum Type{
+	// Client related Types
 	Login, Logout, 
-	Text,
+
+	// Funds related Types
 	CheckFunds, CheckFundHistory, AddFunds, CashOut,
+	
+	// Game class related Types
+	QuickJoin,
 	JoinGame, LeaveGame, OpenGame, CloseGame,
+	
+	// Table class related Types
 	JoinTable, LeaveTable,
+	
+	// Server class, server detail related Types
+	ListGames, ListPlayers, 
+	
 	Default
 	
 	// Add new Types of messages as project features get built out.

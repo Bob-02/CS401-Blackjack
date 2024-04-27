@@ -76,4 +76,30 @@ public class Player {
 		}
 		return handTotal;
 	}
+	
+	
+	// Prints all cards in the players hand.
+	public String toStringPlayersHand() {
+		String playersHand = null;
+		
+		// For every card in the hand add it to the string.
+		//
+		// Card of Suit, Card of Suit, ... , Card of Suit
+		//
+		
+		Card lastCard = hand.get(hand.size() -1);
+		
+		for(Card c : hand) {
+			
+			// If on the last card don't print with a comma.
+			if(c.equals(lastCard) ) {
+				playersHand += c.toString();
+			}
+			
+			playersHand += c.toString() + ",";
+			
+		}
+		
+		return playersHand;
+	}
 }

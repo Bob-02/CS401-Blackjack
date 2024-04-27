@@ -7,18 +7,44 @@ public class Game {
 	static Dealer dealer;
 	static TableStatus tableStatus;
 	static List<Player> lobby;
-	long emptyTimeStamp;
+	private String timeStamp;
 	private static Scanner gameManager = new Scanner(System.in);
+	
+	private static int count = 1;
+    private final String id;
 
 	public Game(Dealer dealer, List<Player> lobby) {
 		this.dealer = dealer;
 		this.lobby = lobby;
 		table = new Table(dealer, lobby);
 		tableStatus = TableStatus.Open;
+		
+		this.timeStamp = new Date().getCurrentDate();
+		this.id = String.valueOf(count++);	// Need a way to track game number.
 	}
 
 	public Table getTable() {
 		return table;
+	}
+	
+	public Dealer getDealer() {
+		return dealer;
+	}
+	
+	public TableStatus getTableStatus() {
+		return tableStatus;
+	}
+	
+	public List<Player> getLobby() {
+		return lobby;
+	}
+	
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+	
+	public String getID() {
+		return id;
 	}
 
 	public boolean isTableFull() {
