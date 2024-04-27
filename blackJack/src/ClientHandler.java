@@ -316,10 +316,12 @@ public class ClientHandler implements Runnable {
 				listPlayersInGame(message);
 				break;
 				
+			// Opens a new game on the Server and returns the new Game ID.
 			case OpenGame:
 				openGame(message);
 				break;
 				
+			// Closes a Game on the Server using a Game ID from the Client.
 			case CloseGame:
 				closeGame(message);
 				break;
@@ -557,6 +559,14 @@ public class ClientHandler implements Runnable {
 	private void closeGame(Message message) {
 
 		Game gameToRemove = Server.getTargetGame(message.getText());
+		
+		// If we didnt find the game to remove
+		if(gameToRemove == null) {
+			updateMessageFailed(message, "No Game with that ID!");
+			return;
+		}
+		
+		// Else remove the game.
 		Server.getGames().remove(gameToRemove);
 		updateMessageSuccess(message, message.getText());
 	}		
