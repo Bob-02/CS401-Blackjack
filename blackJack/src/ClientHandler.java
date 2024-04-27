@@ -101,8 +101,6 @@ public class ClientHandler implements Runnable {
 			//
 			// The Player or Dealer will be removed from the Server's 
 			// onlinePlayers or onlineDealrs.
-			// Username is supplied in the message.
-			
 
 			// Send updated LOGOUT message back to the client
 			objectOutputStream.writeObject(current);
@@ -122,6 +120,7 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+
 	public int getClientID() {
 		return id;
 	}
@@ -136,6 +135,10 @@ public class ClientHandler implements Runnable {
 		return false;
 	}
 	
+	
+	// Checks the message to see if a Client is requesting to logout and then
+	// updates the message.
+	// Used to break out of the ClientHandler.
 	private Boolean isLogginOut(Message msg) {
 		
 		// If the message is of Type Logout and New return TRUE.
@@ -143,7 +146,9 @@ public class ClientHandler implements Runnable {
 			
 			// Acknowledge logout Message
 			msg.setStatus(Status.Success);
-			msg.setText("Logged Out");
+			
+			// Username is supplied in the message.
+			logoutUser(msg.getText());
 			
 			// Print message to the terminal (make a log of what happened).
 			logMessage(msg);
@@ -154,6 +159,26 @@ public class ClientHandler implements Runnable {
 		// Else this message is not a logout message. Proceed to process the
 		// message accordingly.
 		return false;
+	}
+	
+	
+	// A Dealer or Player name is given and is removed from Server if valid.
+	private void logoutUser(String user) {
+		
+		Player player = Server.getTargetPlayer(user);
+		Dealer dealer = Server.getTargetDealer(user);
+		
+		// Remove Player
+		if(player != null && dealer == null) {
+			
+			Server.getOnlinePlayers().remove(player);
+		}
+		
+		// Remove Dealer
+		else if(dealer != null && player == null ) {
+			
+			Server.getOnlineDealers().remove(dealer);
+		}		
 	}
 
 	
