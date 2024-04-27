@@ -20,6 +20,7 @@ public class ClientHandler implements Runnable {
     private InputStream inputStream;
     private ObjectInputStream objectInputStream;
     
+    // make a SINGLE generic type to hold either Player or Dealer
     private Player playerUser;
     private Dealer dealerUser;
 
@@ -97,6 +98,9 @@ public class ClientHandler implements Runnable {
 			// On receipt of a ‘logout message’ should break out of the loop.
 			// Then a status will be returned with ‘Success’, then the 
 			// connection will be closed and the thread terminates.
+			//
+			// The Player or Dealer will be removed from the Server's 
+			// onlinePlayers or onlineDealrs.
 
 			// Send updated LOGOUT message back to the client
 			objectOutputStream.writeObject(current);
@@ -116,7 +120,7 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	public int getId() {
+	public int getClientID() {
 		return id;
 	}
 	
@@ -295,9 +299,14 @@ public class ClientHandler implements Runnable {
 		Type request = message.getType();
 		Status status = message.getStatus();
 		String data = message.getText();
+		String timeStamp = new Date().getCurrentDate();
+		int id = getClientID();
 		
-		// <type>[status]: data
-		System.out.println("<" + request + ">[" + status + "]:\n" + data);
+		
+		// Client# id <type>[status]: timeStamp 
+		// data
+		System.out.println("Client# " + id + " <" + request + ">[" + status 
+						   + "]:" + timeStamp + "\n" + data);
 	}
 
 
@@ -333,8 +342,8 @@ public class ClientHandler implements Runnable {
 		// Iterate through the list.
 		// For Each Games concat a string: 
 		//
-		// Game+ID:TableStatus:DealerName:NumberOfPlayers\n
-		// Game+ID:TableStatus:DealerName:NumberOfPlayers
+		// GameID:TableStatus:DealerName:NumberOfPlayers\n
+		// GameID:TableStatus:DealerName:NumberOfPlayers
 		//
 		
 		String gameListString = null;
@@ -353,24 +362,19 @@ public class ClientHandler implements Runnable {
 			// If at last game on the list, print without newline character.
 			if(g.equals(lastGame) ) {
 				
-				gameListString += "Game" + g.getID() + ":" 
+				gameListString += g.getID() + ":" 
 							    + g.getTableStatus() + ":"
 							    + g.getDealer().getDealerName() + ":"
 							    + g.getTable().getPlayers().size();
 			}
 			
 			// Else add the details to the string WITH newline characters.
-			gameListString += "Game" + g.getID() + ":" 
+			gameListString += g.getID() + ":" 
 							+ g.getTableStatus() + ":"
 							+ g.getDealer().getDealerName() + ":"
 							+ g.getTable().getPlayers().size() + "\n";
 		}
 		
-		// Update the Status of the Message.
-//		message.setStatus(Status.Success);
-		
-		// Update the text area with list of the games and details.
-//		message.setText(gameListString);
 		
 		// Update the Status of the Message.
 		// Update the text area with list of the games and details.
@@ -417,7 +421,7 @@ public class ClientHandler implements Runnable {
 				listOfPlayers += p.getPlayerName() + ":"
 							   + p.toStringPlayersHand() + ":"
 							   + p.getPlayerFunds() + ":"
-							   + p.currentBet;
+							   + p.getBet();
 			}
 			
 			// Else add the details to the string WITH newline characters.
