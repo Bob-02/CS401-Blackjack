@@ -42,7 +42,9 @@ public class ClientHandler implements Runnable {
 			System.out.println(Server.getServerName());
 	    	System.out.println(Server.getCasinoFunds());
 	    	System.out.println(Server.getValidDealers());
+	    	System.out.println(Server.getOnlineDealers());
 	    	System.out.println(Server.getValidPlayers());
+	    	System.out.println(Server.getOnlinePlayers());
 	        
 	        // Get the first message from client. It should be a login message.
 	        // Ignore anything else.
@@ -57,9 +59,10 @@ public class ClientHandler implements Runnable {
 	        // If the login is validated then login is a success and we can send
 	        // back the message to the client.
 			if(login.getStatus() == Status.Success) {
-
-				//objectOutputStream.writeObject(login);
-				sendToClient(login);
+				
+				// Explicitly send message back to the Client b/c sendToClient()
+				// does not handle logins.
+				objectOutputStream.writeObject(login);
 			}
 			
 			// If status of the message was not updated to Success then it has 
@@ -76,8 +79,8 @@ public class ClientHandler implements Runnable {
 			Message current = (Message) objectInputStream.readObject();
 
 			// This is the main loop of the program.
-			// All actions from the GUI will go through the client and sent
-			// to the server here.
+			// All actions from the GUI will go through the client and send
+			// requests to the server here.
 			while (!isLogginOut(current)) {
 				
 				// Send back updated message to the Client.
@@ -134,9 +137,13 @@ public class ClientHandler implements Runnable {
 			
 			// Acknowledge logout Message
 			msg.setStatus(Status.Success);
+			msg.setText("Logged Out");
+			
+			// Print message to the terminal (make a log of what happened).
+			logMessage(msg);
+			
 			return true;
-		}
-		
+		}		
 
 		// Else this message is not a logout message. Proceed to process the
 		// message accordingly.
@@ -185,8 +192,8 @@ public class ClientHandler implements Runnable {
 	        		System.out.println(Server.getOnlinePlayers());
 	        	}
 	        	
-	        	System.out.println("Login Successful -- " + loginType
-	        			+ " Client #" + id + "\n");
+	        	System.out.println("Login Successful -- <" + loginType
+	        			+ "> Client #" + id + "\n");
 	        	
 	        	login.setStatus(Status.Success);
 	        }
@@ -199,19 +206,18 @@ public class ClientHandler implements Runnable {
 	        }
 	        
 	        // Login should still contain the User Details.
-	        // loginType should be
-	        
-	        
-	        
 	        login.setText(loginType);
-		}	
+		}
+		// Print message to the terminal (make a log of what happened).
+		logMessage(login);
+		
 		return login;		
 	}
 	
-	// make a general send to client function
-	// to send a message to the client whenever called from a function in the
-	// main loop's switch.
-	// Does not work, maybe not neaded?
+	// A general send Message back to Client function.
+	// A Message request is supplied by the Client and gets handled by the 
+	// message handler. Then updates the message accordingly and sends the 
+	// response back to the Client.
 	private void sendToClient(Message message) throws IOException {
 		try {
 
@@ -223,7 +229,16 @@ public class ClientHandler implements Runnable {
 				
 				// Send acknowledgment back to the client.
 				objectOutputStream.writeObject(message);
-			}	
+				
+				// Print message to the terminal (make a log of what happened).
+				logMessage(message);
+			}
+			
+			// If its not a brand new message than its an invalid request from 
+			// the Client.
+			else {
+				System.out.println("Invalid Request from the Client!");
+			}
 	
 		} catch (IOException e) {
 			
@@ -235,12 +250,17 @@ public class ClientHandler implements Runnable {
 
 	}
 	
+
+	
+	
+	// Message handler
 	private void handleMessage(Message message) {
 
 		// Switch to handle all the various types of messages.
-		// Will be controlled by enum Type
-		// Data supplied for the servers action should be in the Message
-		// text area.
+		// Controlled by the Message's Type.
+		// Message request data is supplied in the Message text field. A servers
+		// action should be the Message Type and data associated in the text
+		// area.
 		//
 		// Build out the functions as needed and remember to update
 		// the message before sending to the Client.
@@ -266,6 +286,18 @@ public class ClientHandler implements Runnable {
 				// DO NOTHING
 				break;
 		}
+	}	
+	
+	
+	// Prints a log to the terminal saying what was sent to the Client. 
+	private void logMessage(Message message) {
+		
+		Type request = message.getType();
+		Status status = message.getStatus();
+		String data = message.getText();
+		
+		// <type>[status]: data
+		System.out.println("<" + request + ">[" + status + "]:\n" + data);
 	}
 
 
@@ -307,6 +339,12 @@ public class ClientHandler implements Runnable {
 		
 		String gameListString = null;
 		List<Game> gameList = Server.getGames();
+		
+		// If there are no game send back to the Client a Failed message.
+		if(gameList == null) {
+			updateMessageFailed(message, "There are no active Games!");
+			return;
+		}
 		
 		Game lastGame = gameList.get(gameList.size() -1);
 		
@@ -361,6 +399,13 @@ public class ClientHandler implements Runnable {
 		String gameID = message.getText();
 		
 		Game game = Server.getTargetGame(gameID);
+		
+		// If there is no game by supplied ID
+		if(game == null) {
+			updateMessageFailed(message, "Game Not Found!");
+			return;
+		}
+		
 		List<Player> players = game.getTable().getPlayers();
 		
 		Player lastPlayer = players.get(players.size() -1);
@@ -394,9 +439,16 @@ public class ClientHandler implements Runnable {
 	private void quickJoin(Message message) {
 		
 		String gameID = null;
+		List<Game> games = Server.getGames();
+		
+		// If there are no game send back to the Client a Failed message.
+		if(games == null) {
+			updateMessageFailed(message, "There are no open Games!");
+			return;
+		}
 		
 		// For every game on the server.
-		for(Game g : Server.getGames()) {
+		for(Game g : games) {
 			
 			// If the Table is Open, add the player to the game/table.
 			if(g.getTableStatus() == TableStatus.Open) {
