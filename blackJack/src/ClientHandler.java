@@ -258,11 +258,11 @@ public class ClientHandler implements Runnable {
 				// If its a new message then handle that request from the Client
 				handleMessage(message);
 				
-				// Send acknowledgment back to the client.
-				objectOutputStream.writeObject(message);
-				
 				// Print message to the terminal (make a log of what happened).
 				logMessage(message);
+				
+				// Send acknowledgment back to the client.
+				objectOutputStream.writeObject(message);
 			}
 			
 			// If its not a brand new message than its an invalid request from 
@@ -302,10 +302,18 @@ public class ClientHandler implements Runnable {
 			case ListGames:
 				listGames(message);
 				break;
+			
+			// Sends a list of all online Players on the Server.
+			case ListPlayersOnline:
+				listPlayersOnline(message);
+				
+			// Sends a list of all online Players on the Server.
+			case ListDealersOnline :
+				listDealersOnline(message);
 				
 			// Sends a list of all Players in a Game by its Game ID.
-			case ListPlayers:
-				listPlayers(message);
+			case ListPlayersInGame:
+				listPlayersInGame(message);
 				break;
 				
 			// Sends back the Game ID of which game the Player was put into.
@@ -318,8 +326,8 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}	
-	
-	
+
+
 	// Prints a log to the terminal saying what was sent to the Client. 
 	private void logMessage(Message message) {
 		
@@ -409,13 +417,75 @@ public class ClientHandler implements Runnable {
 	}
 	
 	
+	// Lists all Players online in the Server or nothing at all.
+	private void listPlayersOnline(Message message) {
+
+		String playersOnlineString = null;
+		List<Player> playersOnline = Server.getOnlinePlayers();
+		
+		// If no Players online send a Success message back to the client.
+		if(playersOnline == null) {
+			updateMessageSuccess(message, "There are no Players online!");
+			return;
+		}
+		
+		Player lastPlayer = playersOnline.get(playersOnline.size() -1);
+		
+		// Each player on the list gets printed.
+		for(Player p : playersOnline) {
+			
+			// If at the last Player on the list print w/o the comma.
+			if(p.equals(lastPlayer) ) {
+				playersOnlineString += p.getPlayerName();
+			}
+			
+			playersOnlineString += p.getPlayerName() + ",";
+		}
+		
+		// Update the Status of the Message.
+		// Update the text area with list of the games and details.
+		updateMessageSuccess(message, playersOnlineString);
+	}
+	
+	
+	// List all Dealers online in the Server.
+	private void listDealersOnline(Message message) {
+
+		String dealersOnlineString = null;
+		List<Dealer> dealersOnline = Server.getOnlineDealers();
+		
+		// If no Dealers online send a Success message back to the client.
+		if(dealersOnline == null) {
+			updateMessageSuccess(message, "There are no Dealers online!");
+			return;
+		}
+		
+		Dealer lastDealer = dealersOnline.get(dealersOnline.size() -1);
+		
+		// Each player on the list gets printed.
+		for(Dealer d : dealersOnline) {
+			
+			// If at the last Player on the list print w/o the comma.
+			if(d.equals(lastDealer) ) {
+				dealersOnlineString += d.getDealerName();
+			}
+			
+			dealersOnlineString += d.getDealerName() + ",";
+		}
+		
+		// Update the Status of the Message.
+		// Update the text area with list of the games and details.
+		updateMessageSuccess(message, dealersOnlineString);
+	}
+	
+	
 	// Lists the Players within a certain game.
 	// The text area should contain the game's ID that wants to display its 
 	// players.
 	//
 	// The message will update the text area in the Message with a string with 
 	// that game's players.
-	private void listPlayers(Message message) {
+	private void listPlayersInGame(Message message) {
 		
 		// Get list of players.
 		// Iterate through the list of players.
