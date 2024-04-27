@@ -60,8 +60,7 @@ public class ClientHandler implements Runnable {
 	        // back the message to the client.
 			if(login.getStatus() == Status.Success) {
 
-				//objectOutputStream.writeObject(login);
-				sendToClient(login);
+				objectOutputStream.writeObject(login);
 			}
 			
 			// If status of the message was not updated to Success then it has 
