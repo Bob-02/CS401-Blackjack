@@ -279,6 +279,44 @@ public class Server {
 		// Add to casinoFunds.
 		casinoFunds.add(bdAmount);
 	}
+	
+	
+	// Gets a target Player using a supplied name.
+	public static Player getTargetPlayer(String username) {
+		
+		// Go through the list and if we find a matching player by the username
+		// return that player.
+		for(Player p : onlinePlayers ) {
+			
+			if(p.getPlayerName().equals(username) ) {
+				
+				return p;
+			}
+		}
+		
+		
+		// If not found on the list.
+		return null;
+	}
+	
+	
+	// Gets a target Dealer using a supplied name.
+	public static Dealer getTargetDealer(String username) {
+		
+		// Go through the list and if we find a matching Dealer by the username
+		// return that Dealer.
+		for(Dealer d : onlineDealers) {
+			
+			if(d.getDealerName().equals(username) ) {
+				
+				return d;
+			}
+		}
+		
+		
+		// If not found on the list.
+		return null;
+	}
     
 }
 
