@@ -7,11 +7,15 @@ public class Client {
 
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;
+    private static final int TIMEOUT_MS = 5000; // 5 seconds
 
     public static void main(String[] args) {
     	
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
             System.out.println("Connected to server.");
+            
+            // Set socket timeout
+            socket.setSoTimeout(TIMEOUT_MS);
 
             // Initialize streams
             OutputStream outputStream = socket.getOutputStream();
@@ -31,16 +35,44 @@ public class Client {
 
             // Receive and process response
             Message response = receiveMessage();
+            if (response == null) {
+                System.err.println("Error: Timed out while waiting for response.");
+                return; // Exit the program or handle the error accordingly
+            }
             System.out.println("Received: " + response.getType() + " " + response.getStatus());
 
-            // Sending additional messages
-            sendMessage(new Message(Type.AddFunds, Status.New, "1user1"));
-            response = receiveMessage();
-            System.out.println("Received: " + response.getType() + " " + response.getStatus() + " " + response.getText());
+            if (response != null && response.getStatus() == Status.Success) {
+                System.out.println("Login successful.");
+
+                // Main loop to send and receive messages
+                while (true) {
+                    // Send a message
+                    createAndSendMessage();
+
+                    // Receive a message
+                    Message receivedMessage = receiveMessage();
+                    if (receivedMessage != null) {
+                        System.out.println("Received: " + receivedMessage.getText());
+
+                        // Check if it's a logout message
+                        if (receivedMessage.getType() == Type.Logout && receivedMessage.getStatus() == Status.New) {
+                            System.out.println("Received logout message. Exiting.");
+                            break;
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Login failed.");
+            }
             
-            sendMessage(new Message(Type.JoinGame,Status.New, "1user1"));
-            response = receiveMessage();
-            System.out.println("Received: " + response.getType() + " " + response.getStatus() + " " + response.getText());
+//            // Sending additional messages
+//            sendMessage(new Message(Type.AddFunds, Status.New, "1user1"));
+//            response = receiveMessage();
+//            System.out.println("Received: " + response.getType() + " " + response.getStatus() + " " + response.getText());
+//            
+//            sendMessage(new Message(Type.JoinGame,Status.New, "1user1"));
+//            response = receiveMessage();
+//            System.out.println("Received: " + response.getType() + " " + response.getStatus() + " " + response.getText());
 
             // Close the socket
             socket.close();
@@ -50,7 +82,19 @@ public class Client {
         }
     }
 
-    private static void sendMessage(Message message) {
+    private static void createAndSendMessage() {
+		// TODO Auto-generated method stub
+    	// Create and send the message
+        sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
+        sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
+        sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
+        sendMessage(new Message(Type.ListPlayers, Status.New, "ListPlayers"));
+        sendMessage(new Message(Type.JoinGame, Status.New, "JoinGame"));
+        sendMessage(new Message(Type.CashOut, Status.New, "CashOut"));
+        sendMessage(new Message(Type.Logout, Status.New, "Logout"));
+	}
+
+	private static void sendMessage(Message message) {
         try {
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
