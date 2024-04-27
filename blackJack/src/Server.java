@@ -17,10 +17,10 @@ public class Server {
     	// Initiate server values when the server starts up.
     	Server initServerDetails = new Server();
     	
-    	System.out.println(Server.getServerName());
-    	System.out.println(Server.getCasinoFunds());
-    	System.out.println(Server.getValidDealers());
-    	System.out.println(Server.getValidPlayers());
+//    	System.out.println(Server.getServerName());
+//    	System.out.println(Server.getCasinoFunds());
+//    	System.out.println(Server.getValidDealers());
+//    	System.out.println(Server.getValidPlayers());
 
     	// Print local host to console. Let others know where to connect.
         InetAddress localHost = InetAddress.getLocalHost();
@@ -314,6 +314,24 @@ public class Server {
 		}
 		
 		
+		// If not found on the list.
+		return null;
+	}
+	
+	
+	// Gets a target game by its ID.
+	public static Game getTargetGame(String ID) {
+		
+		// Go through all the games on the list until we find a matching ID.
+		for(Game g : games) {
+			
+			// If a game matches the ID wanted return that game.
+			if(g.getID() == ID) {
+				
+				return g;
+			}	
+		}
+
 		// If not found on the list.
 		return null;
 	}
