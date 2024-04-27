@@ -79,8 +79,8 @@ public class ClientHandler implements Runnable {
 			Message current = (Message) objectInputStream.readObject();
 
 			// This is the main loop of the program.
-			// All actions from the GUI will go through the client and sent
-			// to the server here.
+			// All actions from the GUI will go through the client and send
+			// requests to the server here.
 			while (!isLogginOut(current)) {
 				
 				// Send back updated message to the Client.
@@ -137,6 +137,11 @@ public class ClientHandler implements Runnable {
 			
 			// Acknowledge logout Message
 			msg.setStatus(Status.Success);
+			msg.setText("Logged Out");
+			
+			// Print message to the terminal (make a log of what happened).
+			logMessage(msg);
+			
 			return true;
 		}		
 
@@ -202,7 +207,10 @@ public class ClientHandler implements Runnable {
 	        
 	        // Login should still contain the User Details.
 	        login.setText(loginType);
-		}	
+		}
+		// Print message to the terminal (make a log of what happened).
+		logMessage(login);
+		
 		return login;		
 	}
 	
@@ -221,6 +229,9 @@ public class ClientHandler implements Runnable {
 				
 				// Send acknowledgment back to the client.
 				objectOutputStream.writeObject(message);
+				
+				// Print message to the terminal (make a log of what happened).
+				logMessage(message);
 			}
 			
 			// If its not a brand new message than its an invalid request from 
@@ -299,9 +310,6 @@ public class ClientHandler implements Runnable {
 		
 		// Update the text area.
 		message.setText(text);
-		
-		// Print message to the terminal (make a log of what happened).
-		logMessage(message);
 	}
 	
 	
@@ -314,9 +322,6 @@ public class ClientHandler implements Runnable {
 		
 		// Update the text area.
 		message.setText(text);
-		
-		// Print message to the terminal (make a log of what happened).
-		logMessage(message);
 	}
 	
 
