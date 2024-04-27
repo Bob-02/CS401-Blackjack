@@ -88,7 +88,7 @@ public class Client {
         sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
         sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
         sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
-        sendMessage(new Message(Type.ListPlayers, Status.New, "1"));
+        sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
         sendMessage(new Message(Type.JoinGame, Status.New, "dealer3"));
         sendMessage(new Message(Type.CashOut, Status.New, "CashOut"));
         sendMessage(new Message(Type.Logout, Status.New, "dealer3"));
