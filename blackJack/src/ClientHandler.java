@@ -217,28 +217,16 @@ public class ClientHandler implements Runnable {
 	private void sendToClient(Message message) throws IOException {
 		try {
 
-			//
-			// Switch to handle all the various types of messages.
-			// Will be controlled by enum Type
-			// Data supplied for the servers action should be in the Message
-			// text area.
-			//
-			// Build out the functions as needed and remember to update
-			// the message before sending to the Client.
-			//
-			
-			switch(message.getType()) {
-				case ListGames:
-					listGames(message);
-					break;
-					
-				default:
-					
-					break;
-			}
-			
-			objectOutputStream.writeObject(message);
-			
+			// Only brand new Message's with a Status of New will get handled.
+			if(message.getStatus() == Status.New) {
+				
+				// If its a new message then handle that request from the Client
+				handleMessage(message);
+				
+				// Send acknowledgment back to the client.
+				objectOutputStream.writeObject(message);
+			}	
+	
 		} catch (IOException e) {
 			
 			System.out.println("Something Borked! Closing socket!\n");
@@ -247,6 +235,29 @@ public class ClientHandler implements Runnable {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private void handleMessage(Message message) {
+		//
+		// Switch to handle all the various types of messages.
+		// Will be controlled by enum Type
+		// Data supplied for the servers action should be in the Message
+		// text area.
+		//
+		// Build out the functions as needed and remember to update
+		// the message before sending to the Client.
+		//
+		
+		switch(message.getType()) {
+			
+			case ListGames:
+				listGames(message);
+				break;
+				
+			default:
+				
+				break;
+		}
 	}
 
 	private void listGames(Message message) {
@@ -257,10 +268,33 @@ public class ClientHandler implements Runnable {
 		// 'Game+ID:TableStatus:DealerName:NumberOfPlayers\n
 		//  Game+ID:TableStatus:DealerName:NumberOfPlayers'
 		
-		String gameListString = "";
+		String gameListString = null;
 		List<Game> gameList = Server.getGames();
 		
+		Game last = gameList.get( gameList.size() -1);
 		
-	}
-	
+		for(Game g : gameList) {
+			
+			// If at last game on the list print without newline character.
+			if(g.equals(last) ) {
+				gameListString += "Game" + g.getID() + ":" 
+						+ g.getTableStatus() + ":"
+						+ g.getDealer().getDealerName() + ":"
+						+ g.getTable().getPlayers().size();
+				
+			}
+			
+			// Else add the details to the string.
+			gameListString += "Game" + g.getID() + ":" 
+							+ g.getTableStatus() + ":"
+							+ g.getDealer().getDealerName() + ":"
+							+ g.getTable().getPlayers().size() + "\n";
+		}
+		
+		// Update the Status of the Message.
+		message.setStatus(Status.Success);
+		
+		// Update the text area with list of the games and details.
+		message.setText(gameListString);
+	}	
 }
