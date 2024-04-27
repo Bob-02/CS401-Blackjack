@@ -101,6 +101,8 @@ public class ClientHandler implements Runnable {
 			//
 			// The Player or Dealer will be removed from the Server's 
 			// onlinePlayers or onlineDealrs.
+			// Username is supplied in the message.
+			
 
 			// Send updated LOGOUT message back to the client
 			objectOutputStream.writeObject(current);
