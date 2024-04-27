@@ -22,6 +22,15 @@ public class Game {
 		this.timeStamp = new Date().getCurrentDate();
 		this.id = String.valueOf(count++);	// Need a way to track game number.
 	}
+	
+	public Game() {
+		table = new Table(dealer, lobby);
+		this.dealer = null;
+		tableStatus = TableStatus.Open;
+		this.lobby = new ArrayList<>();
+		this.timeStamp = new Date().getCurrentDate();
+		this.id = String.valueOf(count++);	// Need a way to track game number.
+	}
 
 	public Table getTable() {
 		return table;
