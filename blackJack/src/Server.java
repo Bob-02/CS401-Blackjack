@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
+// make private?
+// make a Server varivale and refert to itself in constructor.
+// make a getter for Server so that client handler can user getters from here?
 public class Server {
     public static void main(String[] args) 
     		throws IOException, ClassNotFoundException {
@@ -51,8 +53,7 @@ public class Server {
 								   + " at " + new Date().getCurrentDate());
 
 				// create a new thread object
-				ClientHandler clientSock = 
-						new ClientHandler(client);
+				ClientHandler clientSock = new ClientHandler(client);
 
 				// This thread will handle the client
 				// separately
