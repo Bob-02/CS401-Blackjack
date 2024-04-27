@@ -156,6 +156,6 @@ public class BlackjackGUI {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(GUITest::new);
+        SwingUtilities.invokeLater(BlackjackGUI::new);
     }
 }
