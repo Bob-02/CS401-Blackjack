@@ -1,89 +1,114 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Client {
-    private static final String DEFAULT_SERVER_ADDRESS = "localhost";   // default server address
-    private static final int DEFAULT_SERVER_PORT = 7777;               // default server port
-    
-    	// Output stream socket.
- 		private static ObjectOutputStream objectOutputStream;
- 		//Input Stream socket
-		private static ObjectInputStream objectInputStream;
-    
-	public static void main(String[] args) throws Exception {
-//		BlackjackGUI blackjackGUI = new BlackjackGUI();
-		
-		int port = DEFAULT_SERVER_PORT;
-		String host = DEFAULT_SERVER_ADDRESS;
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int SERVER_PORT = 7777;
 
-		// Connect to the ServerSocket at host:port
-		Socket socket = new Socket(host, port);
-		System.out.println("Connected to " + host + ":" + port);
-		
-		// Output stream socket
-		OutputStream outputStream = socket.getOutputStream();
+    private static ObjectOutputStream objectOutputStream;
+    private static ObjectInputStream objectInputStream;
+    private static final int TIMEOUT_MS = 5000; // 5 seconds
 
-		//Input Stream socket
-		InputStream inputStream = socket.getInputStream();
-		
-		// Create object output stream from the output stream to send an object through it
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-		Message message = new Message(Type.Login,Status.New,"luser1:letmein");
-		System.out.println("Sending Message Objects");
-		objectOutputStream.writeObject(message);
-		
-		//Create object input stream to get messages from the server 
-		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-		
-		// Read the object from the input stream and cast it to Message
-		Message receivedMessage = (Message) objectInputStream.readObject();
-		
-		System.out.println(receivedMessage.getType()+" "+receivedMessage.getStatus());
-		
-		// List of Message objects
-//		List<Message> messages = new ArrayList<>();
-		
-//		messages.add(new Message(Type.Login, Status.New, "luser1:letmein"));
-		
-		playBlackJack(new Message(Type.JoinTable,Status.New,"1user1"));
-		//System.out.println("Closing socket");
-		//socket.close();
-		
-	}
+    public static void main(String[] args) {
+    	
+        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
+            System.out.println("Connected to server.");
+            
+            // Set socket timeout
+            socket.setSoTimeout(TIMEOUT_MS);
 
-	private static void playBlackJack(Message message) {
-		sendMessage(message);
-		
+            // Initialize streams
+            OutputStream outputStream = socket.getOutputStream();
+            InputStream inputStream = socket.getInputStream();
+            objectOutputStream = new ObjectOutputStream(outputStream);
+            objectInputStream = new ObjectInputStream(inputStream);
+            
+            BlackjackGUI gui = new BlackjackGUI();
+           
+            // Send login message
+            String credentials = gui.getLoginCredentials();
+            sendMessage(new Message(Type.Login, Status.New, "dealer3:letmein"));
+//            sendMessage(new Message(Type.Login, Status.New, credentials));
+            System.out.println("Sent Credential-" + credentials);
+            //gui.setLoginListener((username, password) -> sendLoginDetails(username, password)); // Set login listener
+           
+
+            // Receive and process response
+            Message response = receiveMessage();
+            if (response == null) {
+                System.err.println("Error: Timed out while waiting for response.");
+                return; // Exit the program or handle the error accordingly
+            }
+            System.out.println("Received: " + response.getType() + " " + response.getStatus());
+
+            if (response != null && response.getStatus() == Status.Success) {
+                System.out.println("Login successful.");
+
+                // Main loop to send and receive messages
+                while (true) {
+                    // Send a message
+                    createAndSendMessage();
+
+                    // Receive a message
+                    Message receivedMessage = receiveMessage();
+                    if (receivedMessage != null) {
+                        System.out.println("Received: " + receivedMessage.getText());
+
+                        // Check if it's a logout message
+                        if (receivedMessage.getType() == Type.Logout && receivedMessage.getStatus() == Status.Success) {
+                            System.out.println("Received logout message. Exiting.");
+                            break;
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Login failed.");
+            }
+            
+//            // Sending additional messages
+//            sendMessage(new Message(Type.AddFunds, Status.New, "1user1"));
+//            response = receiveMessage();
+//            System.out.println("Received: " + response.getType() + " " + response.getStatus() + " " + response.getText());
+//            
+//            sendMessage(new Message(Type.JoinGame,Status.New, "1user1"));
+//            response = receiveMessage();
+//            System.out.println("Received: " + response.getType() + " " + response.getStatus() + " " + response.getText());
+
+            // Close the socket
+            socket.close();
+            System.out.println("Disconnected from server.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void createAndSendMessage() {
+		// TODO Auto-generated method stub
+    	// Create and send the message
+        sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
+        sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
+        sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
+        sendMessage(new Message(Type.ListPlayers, Status.New, "1"));
+        sendMessage(new Message(Type.JoinGame, Status.New, "dealer3"));
+        sendMessage(new Message(Type.CashOut, Status.New, "CashOut"));
+        sendMessage(new Message(Type.Logout, Status.New, "dealer3"));
 	}
 
 	private static void sendMessage(Message message) {
-		try {
-            // Write the message object to the output stream
+        try {
             objectOutputStream.writeObject(message);
-            
-            // Flush the output stream to ensure the message is sent immediately
             objectOutputStream.flush();
-            
-            // Read the response from the server
-            Message receivedMessage = (Message) objectInputStream.readObject();
-            
-            // Process the received message as needed
-            System.out.println("Received: " + receivedMessage.getType() + " " + receivedMessage.getStatus());
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error sending message: " + e.getMessage());
         }
-		
-	}
+    }
 
-
+    private static Message receiveMessage() {
+        try {
+            return (Message) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error receiving message: " + e.getMessage());
+            return null;
+        }
+    }
 }

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
+// make private?
+// make a Server varivale and refert to itself in constructor.
+// make a getter for Server so that client handler can user getters from here?
 public class Server {
     public static void main(String[] args) 
     		throws IOException, ClassNotFoundException {
@@ -17,10 +19,10 @@ public class Server {
     	// Initiate server values when the server starts up.
     	Server initServerDetails = new Server();
     	
-    	System.out.println(Server.getServerName());
-    	System.out.println(Server.getCasinoFunds());
-    	System.out.println(Server.getValidDealers());
-    	System.out.println(Server.getValidPlayers());
+//    	System.out.println(Server.getServerName());
+//    	System.out.println(Server.getCasinoFunds());
+//    	System.out.println(Server.getValidDealers());
+//    	System.out.println(Server.getValidPlayers());
 
     	// Print local host to console. Let others know where to connect.
         InetAddress localHost = InetAddress.getLocalHost();
@@ -51,8 +53,7 @@ public class Server {
 								   + " at " + new Date().getCurrentDate());
 
 				// create a new thread object
-				ClientHandler clientSock = 
-						new ClientHandler(client);
+				ClientHandler clientSock = new ClientHandler(client);
 
 				// This thread will handle the client
 				// separately
@@ -95,7 +96,7 @@ public class Server {
 		Server.onlinePlayers =  new ArrayList<>();
 		Server.onlineDealers =  new ArrayList<>();
 		
-		// Casino starts off with 2 mil.
+		// Casino starts off with 2 million bucks.
 		Server.casinoFunds = new BigDecimal("2000000.00");
 		
     	// Load valid registered Players and Dealers from both files.
@@ -254,10 +255,10 @@ public class Server {
 			
 			// Subtract requested amount from the casino funds.
 			casinoFunds.subtract(rounded);
+			return rounded.doubleValue();
 		}
-
 		
-		return rounded.doubleValue();
+		return 0;
 	}
 	
 	
@@ -266,6 +267,74 @@ public class Server {
 	// of cash to use for now.
 	public static double getPlayerFunds(String player) {
 		return 10000.00;
+	}
+	
+	
+	// This adds a set amount of funds to the casino.
+	public static void addCasinoFunds(String amount) {
+		
+		// Convert amount string to a decimal value.
+		BigDecimal bdAmount = 
+				new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN);
+		
+		// Add to casinoFunds.
+		casinoFunds.add(bdAmount);
+	}
+	
+	
+	// Gets a target Player using a supplied name.
+	public static Player getTargetPlayer(String username) {
+		
+		// Go through the list and if we find a matching player by the username
+		// return that player.
+		for(Player p : onlinePlayers ) {
+			
+			if(p.getPlayerName().equals(username) ) {
+				
+				return p;
+			}
+		}
+		
+		
+		// If not found on the list.
+		return null;
+	}
+	
+	
+	// Gets a target Dealer using a supplied name.
+	public static Dealer getTargetDealer(String username) {
+		
+		// Go through the list and if we find a matching Dealer by the username
+		// return that Dealer.
+		for(Dealer d : onlineDealers) {
+			
+			if(d.getDealerName().equals(username) ) {
+				
+				return d;
+			}
+		}
+		
+		
+		// If not found on the list.
+		return null;
+	}
+	
+	
+	// Gets a target game by its ID.
+	public static Game getTargetGame(String ID) {
+		
+		// Go through all the games on the list until we find a matching ID.
+		for(Game g : games) {
+			
+			// If a game matches the ID wanted return that game.
+			if(g.getID() == ID) {
+				
+				return g;
+			}	
+		}
+
+		// If not found on the list.
+		return null;
 	}
     
 }

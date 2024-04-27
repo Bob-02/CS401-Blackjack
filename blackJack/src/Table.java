@@ -22,6 +22,10 @@ public class Table {
 	public String getPlayingDeck() {
 		return deck.toString();
 	}
+	
+	public List<Player> getPlayers() {
+		return players;
+	}
 
 	public void startRound() {
 		clearAllHands();
