@@ -11,7 +11,7 @@ public class Game {
 	private static Scanner gameManager = new Scanner(System.in);
 	
 	private static int count = 1;
-    private final int id;
+    private final String id;
 
 	public Game(Dealer dealer, List<Player> lobby) {
 		this.dealer = dealer;
@@ -20,7 +20,7 @@ public class Game {
 		tableStatus = TableStatus.Open;
 		
 		this.timeStamp = new Date().getCurrentDate();
-		this.id = count++;	// Need a way to track game number.
+		this.id = String.valueOf(count++);	// Need a way to track game number.
 	}
 
 	public Table getTable() {
@@ -43,7 +43,7 @@ public class Game {
 		return timeStamp;
 	}
 	
-	public int getID() {
+	public String getID() {
 		return id;
 	}
 
