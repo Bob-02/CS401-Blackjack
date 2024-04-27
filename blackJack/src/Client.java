@@ -1,15 +1,9 @@
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Client {
     private static final String DEFAULT_SERVER_ADDRESS = "localhost";   // default server address
@@ -37,13 +31,16 @@ public class Client {
 		InputStream inputStream = socket.getInputStream();
 		
 		// Create object output stream from the output stream to send an object through it
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		//ObjectOutputStream 
+		objectOutputStream = new ObjectOutputStream(outputStream);
 		Message message = new Message(Type.Login,Status.New,"luser1:letmein");
 		System.out.println("Sending Message Objects");
 		objectOutputStream.writeObject(message);
+		objectOutputStream.flush();
 		
 		//Create object input stream to get messages from the server 
-		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		//ObjectInputStream 
+		objectInputStream = new ObjectInputStream(inputStream);
 		
 		// Read the object from the input stream and cast it to Message
 		Message receivedMessage = (Message) objectInputStream.readObject();
@@ -55,9 +52,29 @@ public class Client {
 		
 //		messages.add(new Message(Type.Login, Status.New, "luser1:letmein"));
 		
-		playBlackJack(new Message(Type.JoinTable,Status.New,"1user1"));
-		//System.out.println("Closing socket");
-		//socket.close();
+		message = new Message(Type.AddFunds,Status.New,"1user1");
+		objectOutputStream.writeObject(message);
+		receivedMessage = (Message) objectInputStream.readObject();
+		System.out.println(receivedMessage.getType()+" "+receivedMessage.getStatus()+" "+receivedMessage.getText());
+		
+		message = (new Message(Type.JoinTable,Status.New,"1user1"));
+		objectOutputStream.writeObject(message);
+		receivedMessage = (Message) objectInputStream.readObject();
+		System.out.println(receivedMessage.getType()+" " +receivedMessage.getStatus()+" "+receivedMessage.getText());
+		
+		message = (new Message(Type.LeaveGame,Status.New,"1user1"));
+		objectOutputStream.writeObject(message);
+		receivedMessage = (Message) objectInputStream.readObject();
+		System.out.println(receivedMessage.getType()+" " +receivedMessage.getStatus()+" "+receivedMessage.getText());
+		
+		message = (new Message(Type.Logout,Status.New,"1user1"));
+		objectOutputStream.writeObject(message);
+		receivedMessage = (Message) objectInputStream.readObject();
+		System.out.println(receivedMessage.getType()+" " +receivedMessage.getStatus()+" "+receivedMessage.getText());
+		
+		
+		System.out.println("Closing socket");
+		socket.close();
 		
 	}
 
