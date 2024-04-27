@@ -254,37 +254,58 @@ public class ClientHandler implements Runnable {
 				listGames(message);
 				break;
 				
+			case ListPlayers:
+				listPlayers(message);
+				break;
+				
 			default:
 				
 				break;
 		}
 	}
 
+	
+	// Updates the Message's Status to Success and sets whatever text in text
+	// field.
+	private void updateMessageSuccess(Message message, String text) {
+		
+		// Update the Status of the Message.
+		message.setStatus(Status.Success);
+		
+		// Update the text area with list of the games and details.
+		message.setText(text);
+	}
+	
+
+	// Sends a String back to the client with a list of all the games on the
+	// Server with some details.
 	private void listGames(Message message) {
 		
 		// Get list of games from Server.getGames()
 		// Iterate through the list.
 		// For Each Games concat a string: 
-		// 'Game+ID:TableStatus:DealerName:NumberOfPlayers\n
-		//  Game+ID:TableStatus:DealerName:NumberOfPlayers'
+		//
+		// Game+ID:TableStatus:DealerName:NumberOfPlayers\n
+		// Game+ID:TableStatus:DealerName:NumberOfPlayers
+		//
 		
 		String gameListString = null;
 		List<Game> gameList = Server.getGames();
 		
-		Game last = gameList.get( gameList.size() -1);
+		Game lastGame = gameList.get(gameList.size() -1);
 		
 		for(Game g : gameList) {
 			
-			// If at last game on the list print without newline character.
-			if(g.equals(last) ) {
-				gameListString += "Game" + g.getID() + ":" 
-						+ g.getTableStatus() + ":"
-						+ g.getDealer().getDealerName() + ":"
-						+ g.getTable().getPlayers().size();
+			// If at last game on the list, print without newline character.
+			if(g.equals(lastGame) ) {
 				
+				gameListString += "Game" + g.getID() + ":" 
+							    + g.getTableStatus() + ":"
+							    + g.getDealer().getDealerName() + ":"
+							    + g.getTable().getPlayers().size();
 			}
 			
-			// Else add the details to the string.
+			// Else add the details to the string WITH newline characters.
 			gameListString += "Game" + g.getID() + ":" 
 							+ g.getTableStatus() + ":"
 							+ g.getDealer().getDealerName() + ":"
@@ -292,9 +313,61 @@ public class ClientHandler implements Runnable {
 		}
 		
 		// Update the Status of the Message.
-		message.setStatus(Status.Success);
+//		message.setStatus(Status.Success);
 		
 		// Update the text area with list of the games and details.
-		message.setText(gameListString);
-	}	
+//		message.setText(gameListString);
+		
+		// Update the Status of the Message.
+		// Update the text area with list of the games and details.
+		updateMessageSuccess(message, gameListString);
+	}
+	
+	
+	// Lists the Players within a certain game.
+	// The text area should contain the game's ID that wants to display its 
+	// players.
+	//
+	// The message will update the text area in the Message with a string with 
+	// that game's players.
+	private void listPlayers(Message message) {
+		
+		// Get list of players.
+		// Iterate through the list of players.
+		// For each Player in the Game concat a string:
+		//
+		// PlayerName:Card,...,Card:Funds:CurrentBet\n
+		// PlayerName:Card,...,Card:Funds:CurrentBet
+		//
+		// Where Card,...,Card is the players hand.
+		
+		String listOfPlayers = null;
+		String gameID = message.getText();
+		
+		Game game = Server.getTargetGame(gameID);
+		List<Player> players = game.getTable().getPlayers();
+		
+		Player lastPlayer = players.get(players.size() -1);
+		
+		for(Player p : players) {
+			
+			// If at the last player on list, print without newline character.
+			if(p.equals(lastPlayer)) {
+				listOfPlayers += p.getPlayerName() + ":"
+							   + p.toStringPlayersHand() + ":"
+							   + p.getPlayerFunds() + ":"
+							   + p.currentBet;
+			}
+			
+			// Else add the details to the string WITH newline characters.
+			listOfPlayers += p.getPlayerName() + ":"
+					   + p.toStringPlayersHand() + ":"
+					   + p.getPlayerFunds() + ":"
+					   + p.getBet() + "\n";
+		}
+		
+		// Update the Status of the Message.
+		// Update the text area with list of the games and details.
+		updateMessageSuccess(message, listOfPlayers);
+	}
 }
