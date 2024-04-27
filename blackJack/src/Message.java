@@ -16,7 +16,7 @@ enum Type{
 	JoinTable, LeaveTable,
 	
 	// Server class, server detail related Types
-	ListGames, ListPlayers, 
+	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
 	
 	Default
 	
