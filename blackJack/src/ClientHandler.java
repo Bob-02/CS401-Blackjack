@@ -316,6 +316,14 @@ public class ClientHandler implements Runnable {
 				listPlayersInGame(message);
 				break;
 				
+			case OpenGame:
+				openGame(message);
+				break;
+				
+			case CloseGame:
+				closeGame(message);
+				break;
+				
 			// Sends back the Game ID of which game the Player was put into.
 			case QuickJoin:
 				quickJoin(message);
@@ -326,6 +334,7 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}	
+
 
 
 	// Prints a log to the terminal saying what was sent to the Client. 
@@ -533,6 +542,25 @@ public class ClientHandler implements Runnable {
 		updateMessageSuccess(message, listOfPlayers);
 	}
 	
+
+	// Opens/Creates a game and returns a Game ID.
+	private void openGame(Message message) {
+
+		Game newGame = new Game();
+		Server.getGames().add(newGame);
+		updateMessageSuccess(message, newGame.getID());
+		
+	}
+	
+	
+	// Closes the game with the supplied Game ID and returns the same ID.
+	private void closeGame(Message message) {
+
+		Game gameToRemove = Server.getTargetGame(message.getText());
+		Server.getGames().remove(gameToRemove);
+		updateMessageSuccess(message, message.getText());
+	}		
+	
 	
 	// User join the first Open Game's Table.
 	// Nothing is supplied by the message.
@@ -562,8 +590,5 @@ public class ClientHandler implements Runnable {
 				updateMessageSuccess(message, gameID);
 			}
 		}
-		
-		// If there are no Open Games, update the message as Failed.
-		updateMessageFailed(message, "No open Games!");
 	}
 }
