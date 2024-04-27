@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientHandler implements Runnable {
 	private final Socket clientSocket;
@@ -18,6 +19,9 @@ public class ClientHandler implements Runnable {
     private ObjectOutputStream objectOutputStream;
     private InputStream inputStream;
     private ObjectInputStream objectInputStream;
+    
+    private Player playerUser;
+    private Dealer dealerUser;
 
 	// Constructor
 	public ClientHandler(Socket socket) throws IOException
@@ -35,6 +39,10 @@ public class ClientHandler implements Runnable {
 	public void run()
 	{
 		try {
+			System.out.println(Server.getServerName());
+	    	System.out.println(Server.getCasinoFunds());
+	    	System.out.println(Server.getValidDealers());
+	    	System.out.println(Server.getValidPlayers());
 	        
 	        // Get the first message from client. It should be a login message.
 	        // Ignore anything else.
@@ -42,6 +50,7 @@ public class ClientHandler implements Runnable {
 	        
 	        // If we get a NEW login message, check the text supplied in the
 	        // message and check the server account details in text file.
+	        // Will also set the clientHandler to either a Player or Dealer.
 	        login = validateUser(login);
 
 	        
@@ -49,6 +58,7 @@ public class ClientHandler implements Runnable {
 	        // back the message to the client.
 			if(login.getStatus() == Status.Success) {
 
+				//objectOutputStream.writeObject(login);
 				sendToClient(login);
 			}
 			
@@ -69,19 +79,10 @@ public class ClientHandler implements Runnable {
 			// All actions from the GUI will go through the client and sent
 			// to the server here.
 			while (!isLogginOut(current)) {
-
-
-				//
-				// Switch to handle all the various types of messages.
-				// Will be controlled by enum Type
-				// Data supplied for the servers action should be in the Message
-				// text area.
-				//
-				// Build out the functions as needed and remember to update
-				// the message before sending to the Client.
-				//
-
+				
 				// Send back updated message to the Client.
+				// At this point the only message passed would be a logout Type
+				// Message.
 				//objectOutputStream.writeObject(current);
 				sendToClient(current);
 
@@ -93,12 +94,11 @@ public class ClientHandler implements Runnable {
 			// On receipt of a ‘logout message’ should break out of the loop.
 			// Then a status will be returned with ‘Success’, then the 
 			// connection will be closed and the thread terminates.
-			current.setStatus(Status.Success);
-			
 
 			// Send updated message back to the client
 			//objectOutputStream.writeObject(current);
 			sendToClient(current);
+			
 			System.out.println("Client #" + id + " Logged out at "
 					+ new Date().getCurrentDate());
 
@@ -134,9 +134,8 @@ public class ClientHandler implements Runnable {
 		// If the message is of Type Logout and New return TRUE.
 		if(msg.getType() == Type.Logout && msg.getStatus() == Status.New) {
 			
-			// logout process Here!
-			// Copy from above.
-			
+			// Acknowledge logout Message
+			msg.setStatus(Status.Success);
 			return true;
 		}
 		
@@ -160,7 +159,37 @@ public class ClientHandler implements Runnable {
         	// IF account details found Set status to success
 	        if(loginType == "dealer" || loginType == "player") {
 	        	
-	        	System.out.println("Login Successful -- Client #" + id + "\n");
+	        	String details[] = login.getText().split(":");
+	    		String username = details[0];
+	        	
+	    		// Set target dealer to the client handler.
+	    		// Set Player to null.
+	    		// Get the Dealer from Server.getTargetDealer();
+	        	if(loginType == "dealer") {
+	        		
+	        		dealerUser = Server.getTargetDealer(username);
+	        		playerUser = null;
+	        		
+	        		
+	        		// Print the list of the current online Dealers.
+	        		//System.out.println(Server.getOnlineDealers());
+	        	}
+	        	
+	        	// Set target player to client handler.
+	        	// Set Dealer to null;
+	        	// Get the player from Server.getTargetPlayer();
+	        	if(loginType == "player") {
+	        		
+	        		playerUser = Server.getTargetPlayer(username);
+	        		dealerUser = null;
+	        		
+	        		// Print the list of the current online Players.
+	        		System.out.println(Server.getOnlinePlayers());
+	        	}
+	        	
+	        	System.out.println("Login Successful -- " + loginType
+	        			+ " Client #" + id + "\n");
+	        	
 	        	login.setStatus(Status.Success);
 	        }
 	        
@@ -171,6 +200,11 @@ public class ClientHandler implements Runnable {
 	        	login.setStatus(Status.Failed);
 	        }
 	        
+	        // Login should still contain the User Details.
+	        // loginType should be
+	        
+	        
+	        
 	        login.setText(loginType);
 		}	
 		return login;		
@@ -179,24 +213,54 @@ public class ClientHandler implements Runnable {
 	// make a general send to client function
 	// to send a message to the client whenever called from a function in the
 	// main loop's switch.
+	// Does not work, maybe not neaded?
 	private void sendToClient(Message message) throws IOException {
-		
-	    // Data TOO the client
-        OutputStream outputStream;
 		try {
+
+			//
+			// Switch to handle all the various types of messages.
+			// Will be controlled by enum Type
+			// Data supplied for the servers action should be in the Message
+			// text area.
+			//
+			// Build out the functions as needed and remember to update
+			// the message before sending to the Client.
+			//
 			
-			// Object
-			outputStream = clientSocket.getOutputStream();
-	        ObjectOutputStream objectOutputStream =
-	        		new ObjectOutputStream(outputStream);
-	        
-	        objectOutputStream.writeObject(message);
-	        
+			switch(message.getType()) {
+				case ListGames:
+					listGames(message);
+					break;
+					
+				default:
+					
+					break;
+			}
+			
+			objectOutputStream.writeObject(message);
+			
 		} catch (IOException e) {
+			
 			System.out.println("Something Borked! Closing socket!\n");
 			clientSocket.close();
+			
 			e.printStackTrace();
 		}
+
+	}
+
+	private void listGames(Message message) {
+		
+		// Get list of games from Server.getGames()
+		// Iterate through the list.
+		// For Each Games concat a string: 
+		// 'Game+ID:TableStatus:DealerName:NumberOfPlayers\n
+		//  Game+ID:TableStatus:DealerName:NumberOfPlayers'
+		
+		String gameListString = "";
+		List<Game> gameList = Server.getGames();
+		
+		
 	}
 	
 }
