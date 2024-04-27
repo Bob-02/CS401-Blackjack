@@ -59,7 +59,9 @@ public class ClientHandler implements Runnable {
 	        // If the login is validated then login is a success and we can send
 	        // back the message to the client.
 			if(login.getStatus() == Status.Success) {
-
+				
+				// Explicitly send message back to the Client b/c sendToClient()
+				// does not handle logins.
 				objectOutputStream.writeObject(login);
 			}
 			
@@ -136,8 +138,7 @@ public class ClientHandler implements Runnable {
 			// Acknowledge logout Message
 			msg.setStatus(Status.Success);
 			return true;
-		}
-		
+		}		
 
 		// Else this message is not a logout message. Proceed to process the
 		// message accordingly.
@@ -186,8 +187,8 @@ public class ClientHandler implements Runnable {
 	        		System.out.println(Server.getOnlinePlayers());
 	        	}
 	        	
-	        	System.out.println("Login Successful -- " + loginType
-	        			+ " Client #" + id + "\n");
+	        	System.out.println("Login Successful -- <" + loginType
+	        			+ "> Client #" + id + "\n");
 	        	
 	        	login.setStatus(Status.Success);
 	        }
@@ -200,10 +201,6 @@ public class ClientHandler implements Runnable {
 	        }
 	        
 	        // Login should still contain the User Details.
-	        // loginType should be
-	        
-	        
-	        
 	        login.setText(loginType);
 		}	
 		return login;		
@@ -224,7 +221,13 @@ public class ClientHandler implements Runnable {
 				
 				// Send acknowledgment back to the client.
 				objectOutputStream.writeObject(message);
-			}	
+			}
+			
+			// If its not a brand new message than its an invalid request from 
+			// the Client.
+			else {
+				System.out.println("Invalid Request from the Client!");
+			}
 	
 		} catch (IOException e) {
 			
@@ -235,6 +238,8 @@ public class ClientHandler implements Runnable {
 		}
 
 	}
+	
+
 	
 	
 	// Message handler
@@ -270,6 +275,18 @@ public class ClientHandler implements Runnable {
 				// DO NOTHING
 				break;
 		}
+	}	
+	
+	
+	// Prints a log to the terminal saying what was sent to the Client. 
+	private void logMessage(Message message) {
+		
+		Type request = message.getType();
+		Status status = message.getStatus();
+		String data = message.getText();
+		
+		// <type>[status]: data
+		System.out.println("<" + request + ">[" + status + "]:\n" + data);
 	}
 
 
@@ -282,6 +299,9 @@ public class ClientHandler implements Runnable {
 		
 		// Update the text area.
 		message.setText(text);
+		
+		// Print message to the terminal (make a log of what happened).
+		logMessage(message);
 	}
 	
 	
@@ -294,6 +314,9 @@ public class ClientHandler implements Runnable {
 		
 		// Update the text area.
 		message.setText(text);
+		
+		// Print message to the terminal (make a log of what happened).
+		logMessage(message);
 	}
 	
 
