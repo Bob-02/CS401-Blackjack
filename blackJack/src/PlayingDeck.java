@@ -5,6 +5,7 @@ import java.util.List;
 public class PlayingDeck {
 
 	List<Deck> playingDeck = new ArrayList<Deck>();
+	private int nextCardIndex;
 
 	public PlayingDeck(int numOfDecks) {
 		generatePlayingDeck(numOfDecks);
@@ -35,5 +36,13 @@ public class PlayingDeck {
 			result += deck.toString() + "\n \n";
 		}
 		return result;
+	}
+
+	public Card dealACard() {
+
+		if (nextCardIndex < 0 || nextCardIndex > 51) {
+			System.out.println("Future exception goes here");
+		}
+		return playingDeck.get(0).cards.get(++nextCardIndex);
 	}
 }
