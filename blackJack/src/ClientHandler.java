@@ -95,16 +95,14 @@ public class ClientHandler implements Runnable {
 			// Then a status will be returned with ‘Success’, then the 
 			// connection will be closed and the thread terminates.
 
-			// Send updated message back to the client
-			//objectOutputStream.writeObject(current);
-			sendToClient(current);
+			// Send updated LOGOUT message back to the client
+			objectOutputStream.writeObject(current);
 			
 			System.out.println("Client #" + id + " Logged out at "
 					+ new Date().getCurrentDate());
 
 			// Don't forget to close the client durr.
 			clientSocket.close();
-
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -238,7 +236,7 @@ public class ClientHandler implements Runnable {
 	}
 	
 	private void handleMessage(Message message) {
-		//
+
 		// Switch to handle all the various types of messages.
 		// Will be controlled by enum Type
 		// Data supplied for the servers action should be in the Message
@@ -247,24 +245,30 @@ public class ClientHandler implements Runnable {
 		// Build out the functions as needed and remember to update
 		// the message before sending to the Client.
 		//
-		
 		switch(message.getType()) {
 			
+			// Sends a list of all Games on the server.
 			case ListGames:
 				listGames(message);
 				break;
 				
+			// Sends a list of all Players in a Game by its Game ID.
 			case ListPlayers:
 				listPlayers(message);
 				break;
 				
-			default:
+			// Sends back the Game ID of which game the Player was put into.
+			case QuickJoin:
+				quickJoin(message);
+				break;
 				
+			default:
+				// DO NOTHING
 				break;
 		}
 	}
 
-	
+
 	// Updates the Message's Status to Success and sets whatever text in text
 	// field.
 	private void updateMessageSuccess(Message message, String text) {
@@ -272,7 +276,19 @@ public class ClientHandler implements Runnable {
 		// Update the Status of the Message.
 		message.setStatus(Status.Success);
 		
-		// Update the text area with list of the games and details.
+		// Update the text area.
+		message.setText(text);
+	}
+	
+	
+	// Updates the Message's Status to Success and sets whatever text in text
+	// field.
+	private void updateMessageFailed(Message message, String text) {
+		
+		// Update the Status of the Message.
+		message.setStatus(Status.Failed);
+		
+		// Update the text area.
 		message.setText(text);
 	}
 	
@@ -367,7 +383,34 @@ public class ClientHandler implements Runnable {
 		}
 		
 		// Update the Status of the Message.
-		// Update the text area with list of the games and details.
+		// Update the text area with list of the players and details.
 		updateMessageSuccess(message, listOfPlayers);
+	}
+	
+	
+	// User join the first Open Game's Table.
+	// Nothing is supplied by the message.
+	// Return the Game's ID that the player has joined.
+	private void quickJoin(Message message) {
+		
+		String gameID = null;
+		
+		// For every game on the server.
+		for(Game g : Server.getGames()) {
+			
+			// If the Table is Open, add the player to the game/table.
+			if(g.getTableStatus() == TableStatus.Open) {
+				
+				gameID = g.getID();
+				g.addPlayer(playerUser);
+				
+				// Update the status of the Message as Success.
+				// Send back the Client a Game's ID.
+				updateMessageSuccess(message, gameID);
+			}
+		}
+		
+		// If there are no Open Games, update the message as Failed.
+		updateMessageFailed(message, "No open Games!");
 	}
 }
