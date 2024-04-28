@@ -385,6 +385,11 @@ public class ClientHandler implements Runnable {
 				checkFunds(message);
 				break;
 				
+			// A player wants to add funds.
+			case AddFunds:
+				addFunds(message);
+				break;
+				
 			
 			// The Dealer starts a round of Blackjack. Client supplies Game's ID
 			case StartRound:
@@ -403,8 +408,22 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	
-
+	// A player wants to add funds to their account by giving a their name and
+	// how much
+	//
+	// username:fundsToAdd
+	//
+	private void addFunds(Message message) {
+		
+		String request[] = message.getText().split(":");
+		
+		Player player = Server.getTargetPlayer(request[0]);
+		Double fundsToAdd = Double.valueOf(request[1]);
+		
+		// Just add the funds to the player.
+		player.currentBet += fundsToAdd;
+		
+	}
 
 	// A request a from the Client to place bets for Players.
 	// this will update usersGame.
