@@ -51,8 +51,14 @@ class PlayingDeckTest {
 
 	@Test
 	void testShuffleDeck() {
+		int numOfDecks = 3;
 		List<Deck> playingDeck = new ArrayList<Deck>();
+
+		for (int i = 0; i < numOfDecks; i++) {
+			playingDeck.add(new Deck());
+		}
 		Card testCard = playingDeck.get(0).cards.get(0);
+
 		assertEquals(testCard, playingDeck.get(0).cards.get(0));
 
 		for (Deck deck : playingDeck) {
