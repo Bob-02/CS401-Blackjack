@@ -1,6 +1,5 @@
 //ClientHandler class
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -75,19 +74,21 @@ public class ClientHandler implements Runnable {
 				clientSocket.close();
 			}
 
-			// Keep reading for messages until we get a logout message.
-			Message current = (Message) objectInputStream.readObject();
 
 			// This is the main loop of the program.
 			// All actions from the GUI will go through the client and send
 			// requests to the server here.
-			
+			//
 			// On receipt of a ‘logout message’ should break out of the loop.
 			// Then a status will be returned with ‘Success’, then the 
 			// connection will be closed and the thread terminates.
 			//
 			// The Player or Dealer will be removed from the Server's 
-			// onlinePlayers or onlineDealrs.
+			// onlinePlayers or onlineDealers List.
+
+			// Keep reading for messages until we get a logout message.
+			Message current = (Message) objectInputStream.readObject();
+			
 			while (!isLogginOut(current)) {
 				
 				// Send back updated message to the Client.
@@ -305,7 +306,7 @@ public class ClientHandler implements Runnable {
 				listPlayersOnline(message);
 				
 			// Sends a list of all online Players on the Server.
-			case ListDealersOnline :
+			case ListDealersOnline:
 				listDealersOnline(message);
 				
 			// Sends a list of all Players in a Game by its Game ID.
