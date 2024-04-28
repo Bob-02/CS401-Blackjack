@@ -89,7 +89,7 @@ public class Client {
     	// Create and send the message
         sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
         sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
-    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+    	sendMessage(new Message(Type.OpenGame, Status.New, "luser1"));
 //    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
 //    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
 //    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
@@ -98,11 +98,11 @@ public class Client {
 //        sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
 //        sendMessage(new Message(Type.ListDealersOnline, Status.New, "ListDealersOnline"));
 //        sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
-        sendMessage(new Message(Type.QuickJoin, Status.New, "dealer3"));
+//        sendMessage(new Message(Type.QuickJoin, Status.New, "dealer3"));
         sendMessage(new Message(Type.LeaveGame, Status.New, "1"));
         sendMessage(new Message(Type.CloseGame, Status.New, "1"));
         //sendMessage(new Message(Type.CashOut, Status.New, "CashOut"));
-        sendMessage(new Message(Type.Logout, Status.New, "dealer3"));
+        sendMessage(new Message(Type.Logout, Status.New, "luser1"));
 	}
 
 	private static void sendMessage(Message message) {
@@ -121,5 +121,5 @@ public class Client {
             System.err.println("Error receiving message: " + e.getMessage());
             return null;
         }
-    }
+    }  
 }
