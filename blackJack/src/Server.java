@@ -343,9 +343,16 @@ public class Server {
 		
 		Game game = getTargetGame(GameID);
 		
-		game.table.shuffleCards();
-		game.getBets();
-		game.table.dealCards();
+		// If not a valid game just do nothing.
+		if(game ==  null) {
+			return;
+		}
+		
+		game.table.shuffleCards();	// Client handler does nothing
+		game.getBets();				// getBets takes all players bets.
+		game.table.dealCards();		// updates all players hands
+		
+									// update gui here.. They get to see all new hands and bets.
 		
 		game.checkBlackjack();
 		game.hitOrStand();
