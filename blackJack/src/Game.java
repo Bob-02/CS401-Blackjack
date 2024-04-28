@@ -22,6 +22,15 @@ public class Game {
 		this.timeStamp = new Date().getCurrentDate();
 		this.id = String.valueOf(count++);	// Need a way to track game number.
 	}
+	
+	public Game() {
+		table = new Table(dealer, lobby);
+		this.dealer = null;
+		tableStatus = TableStatus.Open;
+		this.lobby = new ArrayList<>();
+		this.timeStamp = new Date().getCurrentDate();
+		this.id = String.valueOf(count++);	// Need a way to track game number.
+	}
 
 	public Table getTable() {
 		return table;
@@ -56,7 +65,10 @@ public class Game {
 	}
 
 	public void setDealer(Dealer dealer) {
+		// Auto set for simplicity right now to both the Game and Table
+		
 		this.dealer = dealer;
+		table.dealer = dealer;
 	}
 
 	public static void removePlayer(Player player) {
@@ -67,6 +79,14 @@ public class Game {
 		table.players.remove(player);
 		lobby.remove(player);
 
+	}
+	
+	public static void removeDealer(Dealer dealer) {
+
+		tableStatus = TableStatus.NeedDealer;
+		table.clearDealerHand(dealer);
+		table.dealer = null;
+		dealer = null;
 	}
 
 	public void addPlayer(Player player) {

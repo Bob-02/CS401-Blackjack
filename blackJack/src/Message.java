@@ -16,10 +16,12 @@ enum Type{
 	JoinTable, LeaveTable,
 	
 	// Server class, server detail related Types
-	ListGames, ListPlayers, 
+	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
+	
+	// Player/Dealer Game actions related Types
+	Bet, Hit, Stand, SettleBet,
 	
 	Default
-	
 	// Add new Types of messages as project features get built out.
 }
 enum Status{

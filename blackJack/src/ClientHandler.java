@@ -1,6 +1,5 @@
 //ClientHandler class
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -76,39 +75,29 @@ public class ClientHandler implements Runnable {
 			}
 
 
-			// Keep reading for messages until we get a logout message.
-			Message current = (Message) objectInputStream.readObject();
-
 			// This is the main loop of the program.
 			// All actions from the GUI will go through the client and send
 			// requests to the server here.
+			//
+			// On receipt of a ‘logout message’ should break out of the loop.
+			// Then a status will be returned with ‘Success’, then the 
+			// connection will be closed and the thread terminates.
+			//
+			// The Player or Dealer will be removed from the Server's 
+			// onlinePlayers or onlineDealers List.
+
+			// Keep reading for messages until we get a logout message.
+			Message current = (Message) objectInputStream.readObject();
+			
 			while (!isLogginOut(current)) {
 				
 				// Send back updated message to the Client.
-				// At this point the only message passed would be a logout Type
-				// Message.
-				//objectOutputStream.writeObject(current);
 				sendToClient(current);
 
 				// Get another message from the client
 				// In the future this might change to a List of Message.
 				current = (Message) objectInputStream.readObject();
 			}
-
-			// On receipt of a ‘logout message’ should break out of the loop.
-			// Then a status will be returned with ‘Success’, then the 
-			// connection will be closed and the thread terminates.
-			//
-			// The Player or Dealer will be removed from the Server's 
-			// onlinePlayers or onlineDealrs.
-			// Username is supplied in the message.
-			
-
-			// Send updated LOGOUT message back to the client
-			objectOutputStream.writeObject(current);
-			
-			System.out.println("Client #" + id + " Logged out at "
-					+ new Date().getCurrentDate());
 
 			// Don't forget to close the client durr.
 			clientSocket.close();
@@ -121,6 +110,7 @@ public class ClientHandler implements Runnable {
 			e.printStackTrace();
 		}
 	}
+
 
 	public int getClientID() {
 		return id;
@@ -136,24 +126,54 @@ public class ClientHandler implements Runnable {
 		return false;
 	}
 	
-	private Boolean isLogginOut(Message msg) {
+	
+	// Checks the message to see if a Client is requesting to logout and then
+	// updates the message.
+	// Used to break out of the ClientHandler.
+	private Boolean isLogginOut(Message msg) throws IOException {
 		
 		// If the message is of Type Logout and New return TRUE.
 		if(msg.getType() == Type.Logout && msg.getStatus() == Status.New) {
 			
 			// Acknowledge logout Message
 			msg.setStatus(Status.Success);
-			msg.setText("Logged Out");
+			
+			// Username is supplied in the message. Log user out of the Server.
+			logoutUser(msg.getText());
 			
 			// Print message to the terminal (make a log of what happened).
 			logMessage(msg);
 			
+			// Send updated LOGOUT message back to the client
+			objectOutputStream.writeObject(msg);
+
 			return true;
 		}		
 
 		// Else this message is not a logout message. Proceed to process the
 		// message accordingly.
 		return false;
+	}
+	
+	
+	// A Dealer or Player name is given and is removed from Server if valid.
+	private void logoutUser(String user) {
+		
+		Player player = Server.getTargetPlayer(user);
+		Dealer dealer = Server.getTargetDealer(user);
+		
+		// Remove Player
+		if(player != null && dealer == null) {
+			
+			Server.getOnlinePlayers().remove(player);
+			return;
+		}
+		
+		// Remove Dealer
+		if(dealer != null && player == null ) {
+			
+			Server.getOnlineDealers().remove(dealer);
+		}		
 	}
 
 	
@@ -232,19 +252,22 @@ public class ClientHandler implements Runnable {
 				
 				// If its a new message then handle that request from the Client
 				handleMessage(message);
-				
-				// Send acknowledgment back to the client.
-				objectOutputStream.writeObject(message);
-				
-				// Print message to the terminal (make a log of what happened).
-				logMessage(message);
 			}
 			
-			// If its not a brand new message than its an invalid request from 
+			// If its not a brand New Message than its an invalid request from 
 			// the Client.
 			else {
-				System.out.println("Invalid Request from the Client!");
+
+				updateMessageFailed(message, 
+						"Invalid Request from the Client!");
 			}
+			
+			// Print message to the terminal (make a log of what happened).
+			logMessage(message);
+			
+			// Send acknowledgment back to the client.
+			objectOutputStream.writeObject(message);
+			
 	
 		} catch (IOException e) {
 			
@@ -277,10 +300,38 @@ public class ClientHandler implements Runnable {
 			case ListGames:
 				listGames(message);
 				break;
+			
+			// Sends a list of all online Players on the Server.
+			case ListPlayersOnline:
+				listPlayersOnline(message);
+				
+			// Sends a list of all online Players on the Server.
+			case ListDealersOnline:
+				listDealersOnline(message);
 				
 			// Sends a list of all Players in a Game by its Game ID.
-			case ListPlayers:
-				listPlayers(message);
+			case ListPlayersInGame:
+				listPlayersInGame(message);
+				break;
+				
+			// Opens a new game on the Server and returns the new Game ID.
+			case OpenGame:
+				openGame(message);
+				break;
+				
+			// Closes a Game on the Server using a Game ID from the Client.
+			case CloseGame:
+				closeGame(message);
+				break;
+			
+			// Player/Dealer is added to game. Client supplies the Game's ID.
+			case JoinGame:
+				joinGame(message);
+				break;
+			
+			// Player/Dealer is removed from game. Client supplies Games' ID.
+			case LeaveGame:
+				leaveGame(message);
 				break;
 				
 			// Sends back the Game ID of which game the Player was put into.
@@ -293,8 +344,8 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}	
-	
-	
+
+
 	// Prints a log to the terminal saying what was sent to the Client. 
 	private void logMessage(Message message) {
 		
@@ -384,13 +435,75 @@ public class ClientHandler implements Runnable {
 	}
 	
 	
+	// Lists all Players online in the Server or nothing at all.
+	private void listPlayersOnline(Message message) {
+
+		String playersOnlineString = null;
+		List<Player> playersOnline = Server.getOnlinePlayers();
+		
+		// If no Players online send a Success message back to the client.
+		if(playersOnline == null) {
+			updateMessageSuccess(message, "There are no Players online!");
+			return;
+		}
+		
+		Player lastPlayer = playersOnline.get(playersOnline.size() -1);
+		
+		// Each player on the list gets printed.
+		for(Player p : playersOnline) {
+			
+			// If at the last Player on the list print w/o the comma.
+			if(p.equals(lastPlayer) ) {
+				playersOnlineString += p.getPlayerName();
+			}
+			
+			playersOnlineString += p.getPlayerName() + ",";
+		}
+		
+		// Update the Status of the Message.
+		// Update the text area with list of the games and details.
+		updateMessageSuccess(message, playersOnlineString);
+	}
+	
+	
+	// List all Dealers online in the Server.
+	private void listDealersOnline(Message message) {
+
+		String dealersOnlineString = null;
+		List<Dealer> dealersOnline = Server.getOnlineDealers();
+		
+		// If no Dealers online send a Success message back to the client.
+		if(dealersOnline == null) {
+			updateMessageSuccess(message, "There are no Dealers online!");
+			return;
+		}
+		
+		Dealer lastDealer = dealersOnline.get(dealersOnline.size() -1);
+		
+		// Each player on the list gets printed.
+		for(Dealer d : dealersOnline) {
+			
+			// If at the last Player on the list print w/o the comma.
+			if(d.equals(lastDealer) ) {
+				dealersOnlineString += d.getDealerName();
+			}
+			
+			dealersOnlineString += d.getDealerName() + ",";
+		}
+		
+		// Update the Status of the Message.
+		// Update the text area with list of the games and details.
+		updateMessageSuccess(message, dealersOnlineString);
+	}
+	
+	
 	// Lists the Players within a certain game.
 	// The text area should contain the game's ID that wants to display its 
 	// players.
 	//
 	// The message will update the text area in the Message with a string with 
 	// that game's players.
-	private void listPlayers(Message message) {
+	private void listPlayersInGame(Message message) {
 		
 		// Get list of players.
 		// Iterate through the list of players.
@@ -438,6 +551,72 @@ public class ClientHandler implements Runnable {
 		updateMessageSuccess(message, listOfPlayers);
 	}
 	
+
+	// Opens/Creates a game and returns a Game ID.
+	private void openGame(Message message) {
+
+		Game newGame = new Game();
+		Server.getGames().add(newGame);
+		updateMessageSuccess(message, newGame.getID());
+		
+	}
+	
+	
+	// Closes the game with the supplied Game ID and returns the same ID.
+	private void closeGame(Message message) {
+
+		Game gameToRemove = Server.getTargetGame(message.getText());
+		
+		// If we didn't find the game to remove.
+		if(gameToRemove == null) {
+			updateMessageFailed(message, "No Game with that ID!");
+			return;
+		}
+		
+		// Else remove the game.
+		Server.getGames().remove(gameToRemove);
+		updateMessageSuccess(message, message.getText());
+	}		
+
+
+	// The message will have the Game ID that the PlayerUser or DealerUser wants
+	// to join.
+	private void joinGame(Message message) {
+		
+		Game gameToJoin = Server.getTargetGame(message.getText());
+		
+		// If a Dealer wants to join a game as a DEALER
+		if(dealerUser != null && playerUser == null) {
+			
+			gameToJoin.setDealer(dealerUser);
+			return;
+		}
+		
+		// If a Player wants to join a game
+		if(playerUser != null && dealerUser == null) {
+			gameToJoin.addPlayer(playerUser);
+		}
+	}
+
+	
+	// The message will have the Game ID. A playerUser or dealerUser will be 
+	// removed from that game.
+	private void leaveGame(Message message) {
+		
+		Game gameToLeave = Server.getTargetGame(message.getText());
+
+		// If a Dealer wants to leave a game.
+		if(dealerUser != null && playerUser == null) {
+			gameToLeave.removeDealer(dealerUser);
+			return;
+		}
+		
+		// If a Player wants to leave a game.
+		if(playerUser != null && dealerUser == null) {
+			gameToLeave.removePlayer(playerUser);
+		}
+		
+	}
 	
 	// User join the first Open Game's Table.
 	// Nothing is supplied by the message.
@@ -467,8 +646,5 @@ public class ClientHandler implements Runnable {
 				updateMessageSuccess(message, gameID);
 			}
 		}
-		
-		// If there are no Open Games, update the message as Failed.
-		updateMessageFailed(message, "No open Games!");
 	}
 }

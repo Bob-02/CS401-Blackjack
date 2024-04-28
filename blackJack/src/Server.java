@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 // make private?
-// make a Server varivale and refert to itself in constructor.
+// make a Server variable and refer to itself in constructor.
 // make a getter for Server so that client handler can user getters from here?
 public class Server {
     public static void main(String[] args) 
