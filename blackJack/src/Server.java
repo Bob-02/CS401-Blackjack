@@ -336,6 +336,27 @@ public class Server {
 		// If not found on the list.
 		return null;
 	}
+	
+	
+	// Runs a round of Blackjack
+	public static void startRound(String GameID) {
+		
+		Game game = getTargetGame(GameID);
+		
+		game.table.shuffleCards();
+		game.getBets();
+		game.table.dealCards();
+		
+		game.checkBlackjack();
+		game.hitOrStand();
+		game.dealerTurn();
+		game.settleBets();
+		game.printFunds();	// might not be needed?
+		game.clearHands();
+	}
     
 }
+
+
+
 
