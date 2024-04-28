@@ -12,6 +12,9 @@ public class Table {
 		this.dealer = dealer;
 		deck = new PlayingDeck(3);
 
+		
+		// Getting a null error here when opening a game.
+		// Null error when iterating 
 		this.players = new ArrayList<Player>();
 		for (Player player : players) {
 			this.players.add(new Player(player.getPlayerName(), player.getPlayerFunds()));
