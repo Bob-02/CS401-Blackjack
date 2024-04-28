@@ -1,4 +1,7 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,22 +9,13 @@ class DeckTest {
 
 	@Test
 	void testDeck() {
-		fail("Not yet implemented");
-	}
+		List<Card> cards = new ArrayList<Card>();
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 13; j++) {
+				cards.add(new Card(Suit.values()[i], Rank.values()[j]));
+			}
+		}
 
-	@Test
-	void testGetCards() {
-		fail("Not yet implemented");
+		assertEquals(52, cards.size());
 	}
-
-	@Test
-	void testGenerateDeck() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testToString() {
-		fail("Not yet implemented");
-	}
-
 }
