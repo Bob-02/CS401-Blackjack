@@ -1,20 +1,14 @@
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
-import java.util.concurrent.Semaphore;
 
-
-public class BlackjackGUI {
+public class GUITest {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private String iconPath = "icon.png"; // Path to the icon image
-    private String credentials;
-    private JTextArea gameListArea, playerListArea;
-    private Semaphore loginSemaphore = new Semaphore(0);
+    private String iconPath = "C:/Users/Zayyyy/Documents/CS401_BlackJack1/CS401-Blackjack/project pictures/icon.png"; // Path to the icon image
 
-    public BlackjackGUI() {
+
+    public GUITest() {
         initializeGUI();
     }
 
@@ -30,8 +24,6 @@ public class BlackjackGUI {
         initializeLoginPanel();
         initializeGamePanel();
         initializeBlackjackTablePanel();
-        initializeGameListPanel();
-        initializePlayerListPanel();
 
         frame.add(cardPanel);
         frame.setVisible(true);
@@ -87,8 +79,7 @@ public class BlackjackGUI {
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();  // Fetch the username entered
             String password = new String(passwordField.getPassword());  // Fetch the password entered
-            credentials = username + ":" + password;  // Combine username and password with a colon separator 
-            notifyLogin(); // Notify the client that login is complete
+            String credentials = username + ":" + password;  // Combine username and password with a colon separator
             cardLayout.show(cardPanel, "Game");  // Move to the game panel
         });
 
@@ -103,16 +94,18 @@ public class BlackjackGUI {
     }
 
     private void initializeGamePanel() {
+        // Custom game panel - This will be your actual game interface
         JPanel gamePanel = new JPanel(new GridBagLayout());
         gamePanel.setBackground(new Color(0, 102, 0)); // Set to a green resembling a blackjack table
+
         GridBagConstraints gbcGame = new GridBagConstraints();
         gbcGame.gridwidth = GridBagConstraints.REMAINDER;
         gbcGame.anchor = GridBagConstraints.CENTER;
         gbcGame.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel welcomeToBlackjack = new JLabel("Welcome to BLACKJACK!", SwingConstants.CENTER);
-        welcomeToBlackjack.setForeground(Color.WHITE); 
-        welcomeToBlackjack.setFont(new Font("Arial", Font.BOLD, 40));
+        welcomeToBlackjack.setForeground(Color.WHITE); // White text
+        welcomeToBlackjack.setFont(new Font("Arial", Font.BOLD, 40)); // Larger font size for the title
         gbcGame.insets = new Insets(20, 0, 20, 0);
         gamePanel.add(welcomeToBlackjack, gbcGame);
 
@@ -122,24 +115,9 @@ public class BlackjackGUI {
         gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(playButton, gbcGame);
 
-        // Add button to view game list
-        JButton viewGamesButton = new JButton("View Game List");
-        customizeButton(viewGamesButton);
-        viewGamesButton.addActionListener(e -> cardLayout.show(cardPanel, "Game List"));
-        gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(viewGamesButton, gbcGame);
-
-        // Add button to view player list
-        JButton viewPlayersButton = new JButton("View Player List");
-        customizeButton(viewPlayersButton);
-        viewPlayersButton.addActionListener(e -> cardLayout.show(cardPanel, "Player List"));
-        gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(viewPlayersButton, gbcGame);
-
         JButton exitButton = new JButton("EXIT");
         customizeButton(exitButton);
         exitButton.addActionListener(e -> frame.dispose());
-        gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(exitButton, gbcGame);
 
         JLabel footerLabel = new JLabel("This game is brought to you by Group 5", SwingConstants.CENTER);
@@ -155,100 +133,45 @@ public class BlackjackGUI {
         JPanel blackjackTablePanel = new JPanel(new BorderLayout());
         blackjackTablePanel.setBackground(new Color(0, 102, 0)); // Green table background
 
-        // Dealer area
-        JPanel dealerPanel = new JPanel();
-        dealerPanel.setBackground(new Color(0, 150, 0));
-        JLabel dealerLabel = new JLabel("Dealer: ");
+        // Dealer's area
+        JLabel dealerLabel = new JLabel("Dealer's Area", SwingConstants.CENTER);
         dealerLabel.setForeground(Color.WHITE);
-        dealerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        dealerPanel.add(dealerLabel);
-        blackjackTablePanel.add(dealerPanel, BorderLayout.NORTH);
+        dealerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        blackjackTablePanel.add(dealerLabel, BorderLayout.NORTH);
 
-        // Player area
-        JPanel playerPanel = new JPanel();
-        playerPanel.setBackground(new Color(0, 150, 0));
-        playerPanel.setLayout(new GridLayout(0, 1)); // Vertical layout for multiple players
-        JLabel playerLabel = new JLabel("Player: ");
-        playerLabel.setForeground(Color.WHITE);
-        playerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        playerPanel.add(playerLabel);
+        // Player's area
+        JPanel playerArea = new JPanel();
+        playerArea.setBackground(new Color(0, 150, 0)); // Slightly different green for contrast
+        playerArea.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        // Add components for player actions: Hit, Stand, Double Down, etc.
-        JPanel actionsPanel = new JPanel(new FlowLayout());
+        // Card placeholders for players
+        JLabel card1 = new JLabel(new ImageIcon("path_to_card_image"));
+        JLabel card2 = new JLabel(new ImageIcon("path_to_card_image"));
+        playerArea.add(card1);
+        playerArea.add(card2);
+
+        // Player actions
         JButton hitButton = new JButton("Hit");
         JButton standButton = new JButton("Stand");
         JButton doubleDownButton = new JButton("Double Down");
+        playerArea.add(hitButton);
+        playerArea.add(standButton);
+        playerArea.add(doubleDownButton);
+
         customizeButton(hitButton);
         customizeButton(standButton);
         customizeButton(doubleDownButton);
-        actionsPanel.add(hitButton);
-        actionsPanel.add(standButton);
-        actionsPanel.add(doubleDownButton);
-        playerPanel.add(actionsPanel);
 
-        blackjackTablePanel.add(playerPanel, BorderLayout.CENTER);
+        blackjackTablePanel.add(playerArea, BorderLayout.CENTER);
 
-        // Status and control area
-        JPanel statusPanel = new JPanel();
-        statusPanel.setBackground(new Color(0, 100, 0));
-        JLabel statusLabel = new JLabel("Status: Waiting for players...");
-        statusLabel.setForeground(Color.WHITE);
-        statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        statusPanel.add(statusLabel);
-        blackjackTablePanel.add(statusPanel, BorderLayout.SOUTH);
+        // Status area for messages like "You Win!" or "You Lose!"
+        JLabel statusLabel = new JLabel("Place Your Bets", SwingConstants.CENTER);
+        statusLabel.setForeground(Color.YELLOW);
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        blackjackTablePanel.add(statusLabel, BorderLayout.SOUTH);
 
         cardPanel.add(blackjackTablePanel, "BlackjackTable");
     }
-    
-    private void initializeGameListPanel() {
-        JPanel gameListPanel = new JPanel(new BorderLayout());
-        gameListArea = new JTextArea(10, 50);
-        gameListArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(gameListArea);
-        gameListPanel.add(scrollPane, BorderLayout.CENTER);
-
-        JButton refreshGamesButton = new JButton("Refresh Games");
-        refreshGamesButton.addActionListener(e -> refreshGames());
-        gameListPanel.add(refreshGamesButton, BorderLayout.SOUTH);
-
-        cardPanel.add(gameListPanel, "Game List");
-    }
-    
-    private void initializePlayerListPanel() {
-        JPanel playerListPanel = new JPanel(new BorderLayout());
-        playerListArea = new JTextArea(10, 50);
-        playerListArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(playerListArea);
-        playerListPanel.add(scrollPane, BorderLayout.CENTER);
-
-        JButton refreshPlayersButton = new JButton("Refresh Players");
-        refreshPlayersButton.addActionListener(e -> refreshPlayers());
-        playerListPanel.add(refreshPlayersButton, BorderLayout.SOUTH);
-
-        cardPanel.add(playerListPanel, "Player List");
-    }
-    
-    
-    private void refreshGames() {
-        // Simulation: Fetch game list from server
-        List<Game> games = Server.getGames(); 
-        StringBuilder sb = new StringBuilder();
-        for (Game game : games) {
-            sb.append(game.toString()).append("\n"); 
-        }
-        gameListArea.setText(sb.toString());
-    }
-
-    private void refreshPlayers() {
-        // Simulation: Fetch player list from server
-        List<Player> players = Server.getOnlinePlayers(); 
-        StringBuilder sb = new StringBuilder();
-        for (Player player : players) {
-            sb.append(player.getPlayerName()).append("\n"); 
-        }
-        playerListArea.setText(sb.toString());
-    }
-    
 
     private void customizeComponent(JComponent component) {
         component.setPreferredSize(new Dimension(150, 30));
@@ -267,23 +190,6 @@ public class BlackjackGUI {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(BlackjackGUI::new);
-    }
-
-	public String getLoginCredentials() {
-		// Somehow we should manage to return string to client in string format. 
-		return credentials;
-	}
-	
-	public void notifyLogin() {
-        loginSemaphore.release();
-    }
-	public String waitForLogin() {
-        try {
-            loginSemaphore.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return credentials;
+        SwingUtilities.invokeLater(GUITest::new);
     }
 }
