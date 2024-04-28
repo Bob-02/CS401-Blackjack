@@ -7,7 +7,7 @@ public class Client {
 
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;
-    private static final int TIMEOUT_MS = 5000; // 5 seconds
+    private static final int TIMEOUT_MS = 25000; // 25 seconds
 
     public static void main(String[] args) {
     	
@@ -27,11 +27,13 @@ public class Client {
            
             // Send login message
             String credentials = gui.getLoginCredentials();
-            sendMessage(new Message(Type.Login, Status.New, "dealer3:letmein"));
-//            sendMessage(new Message(Type.Login, Status.New, credentials));
+            while (credentials != null) {
+            	sendMessage(new Message(Type.Login, Status.New, credentials));	
+            
+//          sendMessage(new Message(Type.Login, Status.New, credentials));
             System.out.println("Sent Credential-" + credentials);
             //gui.setLoginListener((username, password) -> sendLoginDetails(username, password)); // Set login listener
-           
+            }
 
             // Receive and process response
             Message response = receiveMessage();
@@ -85,17 +87,17 @@ public class Client {
     private static void createAndSendMessage() {
 		// TODO Auto-generated method stub
     	// Create and send the message
-        //sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
-        //sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
+        sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
+        sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
     	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-        sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
-        sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
-        sendMessage(new Message(Type.ListDealersOnline, Status.New, "ListDealersOnline"));
-        sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
+//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+//        sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
+//        sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
+//        sendMessage(new Message(Type.ListDealersOnline, Status.New, "ListDealersOnline"));
+//        sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
         sendMessage(new Message(Type.QuickJoin, Status.New, "dealer3"));
         sendMessage(new Message(Type.LeaveGame, Status.New, "1"));
         sendMessage(new Message(Type.CloseGame, Status.New, "1"));

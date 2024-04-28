@@ -7,7 +7,8 @@ public class BlackjackGUI {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private String iconPath = "C:/Users/Zayyyy/Documents/CS401_BlackJack1/CS401-Blackjack/project pictures/icon.png"; // Path to the icon image
-
+    public String credentials;
+    
     public BlackjackGUI() {
         initializeGUI();
     }
@@ -79,7 +80,7 @@ public class BlackjackGUI {
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();  // Fetch the username entered
             String password = new String(passwordField.getPassword());  // Fetch the password entered
-            String credentials = username + ":" + password;  // Combine username and password with a colon separator
+            credentials = username + ":" + password;  // Combine username and password with a colon separator
             System.out.println("Combined credentials: " + credentials);  // Optionally, print the combined credentials
             cardLayout.show(cardPanel, "Game");  // Move to the game panel
         });
@@ -161,6 +162,6 @@ public class BlackjackGUI {
 
 	public String getLoginCredentials() {
 		// Somehow we should manage to return string to client in string format. 
-		return "luser1:letmein";
+		return credentials;
 	}
 }
