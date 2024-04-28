@@ -7,8 +7,8 @@ public class BlackjackGUI {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private String iconPath = "C:/Users/Zayyyy/Documents/CS401_BlackJack1/CS401-Blackjack/project pictures/icon.png"; // Path to the icon image
-
-
+    public String credentials;
+    
     public BlackjackGUI() {
         initializeGUI();
     }
@@ -80,7 +80,8 @@ public class BlackjackGUI {
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();  // Fetch the username entered
             String password = new String(passwordField.getPassword());  // Fetch the password entered
-            String credentials = username + ":" + password;  // Combine username and password with a colon separator
+            credentials = username + ":" + password;  // Combine username and password with a colon separator
+            System.out.println("Combined credentials: " + credentials);  // Optionally, print the combined credentials
             cardLayout.show(cardPanel, "Game");  // Move to the game panel
         });
 
@@ -131,50 +132,10 @@ public class BlackjackGUI {
     }
 
     private void initializeBlackjackTablePanel() {
-        JPanel blackjackTablePanel = new JPanel(new BorderLayout());
+        // Placeholder for the actual blackjack table panel
+        JPanel blackjackTablePanel = new JPanel();
         blackjackTablePanel.setBackground(new Color(0, 102, 0)); // Green table background
-
-        // Dealer area
-        JPanel dealerPanel = new JPanel();
-        dealerPanel.setBackground(new Color(0, 150, 0));
-        JLabel dealerLabel = new JLabel("Dealer: ");
-        dealerLabel.setForeground(Color.WHITE);
-        dealerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        dealerPanel.add(dealerLabel);
-        blackjackTablePanel.add(dealerPanel, BorderLayout.NORTH);
-
-        // Player area
-        JPanel playerPanel = new JPanel();
-        playerPanel.setBackground(new Color(0, 150, 0));
-        playerPanel.setLayout(new GridLayout(0, 1)); // Vertical layout for multiple players
-        JLabel playerLabel = new JLabel("Player: ");
-        playerLabel.setForeground(Color.WHITE);
-        playerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        playerPanel.add(playerLabel);
-
-        // Add components for player actions: Hit, Stand, Double Down, etc.
-        JPanel actionsPanel = new JPanel(new FlowLayout());
-        JButton hitButton = new JButton("Hit");
-        JButton standButton = new JButton("Stand");
-        JButton doubleDownButton = new JButton("Double Down");
-        customizeButton(hitButton);
-        customizeButton(standButton);
-        customizeButton(doubleDownButton);
-        actionsPanel.add(hitButton);
-        actionsPanel.add(standButton);
-        actionsPanel.add(doubleDownButton);
-        playerPanel.add(actionsPanel);
-
-        blackjackTablePanel.add(playerPanel, BorderLayout.CENTER);
-
-        // Status and control area
-        JPanel statusPanel = new JPanel();
-        statusPanel.setBackground(new Color(0, 100, 0));
-        JLabel statusLabel = new JLabel("Status: Waiting for players...");
-        statusLabel.setForeground(Color.WHITE);
-        statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        statusPanel.add(statusLabel);
-        blackjackTablePanel.add(statusPanel, BorderLayout.SOUTH);
+        // TODO: Add actual game components here
 
         cardPanel.add(blackjackTablePanel, "BlackjackTable");
     }
@@ -201,6 +162,6 @@ public class BlackjackGUI {
 
 	public String getLoginCredentials() {
 		// Somehow we should manage to return string to client in string format. 
-		return "luser1:letmein";
+		return credentials;
 	}
 }
