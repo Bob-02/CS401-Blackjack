@@ -71,6 +71,9 @@ public class ClientHandler implements Runnable {
 			else {
 				System.out.println("Invalid credentials supplied, "
 								   	+ "closing socket!");
+				updateMessageFailed(login, login.getText());
+				logMessage(login);
+				
 				clientSocket.close();
 			}
 
@@ -215,7 +218,7 @@ public class ClientHandler implements Runnable {
 	        		dealerUser = null;
 	        		
 	        		// Print the list of the current online Players.
-	        		System.out.println(Server.getOnlinePlayers());
+	        		System.out.println(Server.getOnlinePlayers().toString());
 	        	}
 	        	
 	        	login.setStatus(Status.Success);
@@ -342,7 +345,7 @@ public class ClientHandler implements Runnable {
 			case ListPlayersOnline:
 				listPlayersOnline(message);
 				
-			// Sends a list of all online Players on the Server.
+			// Sends a list of all online Dealers on the Server.
 			case ListDealersOnline:
 				listDealersOnline(message);
 				
@@ -376,12 +379,32 @@ public class ClientHandler implements Runnable {
 				quickJoin(message);
 				break;
 			
+			// The Dealer starts a round of Blackjack. Client supplies Game's ID
+			case StartRound:
+				startRound(message);
+				break;
+			
+			// A Player places a bet. 
+			case Bet:
+				playerBet(message);
+				break;
+				
+				
 			// DO NOTHING
 			default:
 				break;
 		}
 	}
 	
+
+	// When the dealer wants to start a game of Blackjack in a game. The client
+	// will request that action by sending a request of Type StartRound.
+	// This will start a round in the Server.
+	private void startRound(Message message) {
+		
+		String gameID = message.getText();
+		Server.startRound(gameID);
+	}
 
 	// Sends a String back to the client with a list of all the games on the
 	// Server with some details.
