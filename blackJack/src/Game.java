@@ -24,10 +24,11 @@ public class Game {
 	}
 	
 	public Game() {
+		this.lobby = new ArrayList<>();
 		table = new Table(dealer, lobby);
 		this.dealer = null;
 		tableStatus = TableStatus.Open;
-		this.lobby = new ArrayList<>();
+		
 		this.timeStamp = new Date().getCurrentDate();
 		this.id = String.valueOf(count++);	// Need a way to track game number.
 	}

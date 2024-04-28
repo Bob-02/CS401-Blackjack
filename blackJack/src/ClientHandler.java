@@ -87,16 +87,16 @@ public class ClientHandler implements Runnable {
 			// onlinePlayers or onlineDealers List.
 
 			// Keep reading for messages until we get a logout message.
-			Message current = (Message) objectInputStream.readObject();
+			Message request = (Message) objectInputStream.readObject();
 			
-			while (!isLogginOut(current)) {
+			while (!isLogginOut(request)) {
 				
-				// Send back updated message to the Client.
-				sendToClient(current);
+				// Respond back to Client's request with an updated message.
+				respondToClient(request);
 
 				// Get another message from the client
 				// In the future this might change to a List of Message.
-				current = (Message) objectInputStream.readObject();
+				request = (Message) objectInputStream.readObject();
 			}
 
 			// Don't forget to close the client durr.
@@ -218,16 +218,12 @@ public class ClientHandler implements Runnable {
 	        		System.out.println(Server.getOnlinePlayers());
 	        	}
 	        	
-	        	System.out.println("Login Successful -- <" + loginType
-	        			+ "> Client #" + id + "\n");
-	        	
 	        	login.setStatus(Status.Success);
 	        }
 	        
 	        // If neither player or dealer then the login is invalid
 	        else {
-	        	
-	        	System.out.println("Login Failed -- Client #" + id + "\n");
+
 	        	login.setStatus(Status.Failed);
 	        }
 	        
@@ -239,12 +235,54 @@ public class ClientHandler implements Runnable {
 		
 		return login;		
 	}
+
+
+	// Prints a log to the terminal saying what was sent to the Client. 
+	private void logMessage(Message message) {
+		
+		Type request = message.getType();
+		Status status = message.getStatus();
+		String data = message.getText();
+		String timeStamp = new Date().getCurrentDate();
+		int id = getClientID();
+		
+		
+		// Client# id <type>[status]: timeStamp 
+		// data
+		System.out.println("Client# " + id + " <" + request + ">[" + status 
+						   + "]:" + timeStamp + "\n" + data);
+	}
+
+
+	// Updates the Message's Status to Success and sets whatever text in text
+	// field.
+	private void updateMessageSuccess(Message message, String text) {
+		
+		// Update the Status of the Message.
+		message.setStatus(Status.Success);
+		
+		// Update the text area.
+		message.setText(text);
+	}
+	
+	
+	// Updates the Message's Status to Success and sets whatever text in text
+	// field.
+	private void updateMessageFailed(Message message, String text) {
+		
+		// Update the Status of the Message.
+		message.setStatus(Status.Failed);
+		
+		// Update the text area.
+		message.setText(text);
+	}
+	
 	
 	// A general send Message back to Client function.
 	// A Message request is supplied by the Client and gets handled by the 
 	// message handler. Then updates the message accordingly and sends the 
 	// response back to the Client.
-	private void sendToClient(Message message) throws IOException {
+	private void respondToClient(Message message) throws IOException {
 		try {
 
 			// Only brand new Message's with a Status of New will get handled.
@@ -279,18 +317,17 @@ public class ClientHandler implements Runnable {
 
 	}
 	
-
-	
 	
 	// Message handler
+	//
+	// Switch to handle all the various types of messages.
+	// Controlled by the Message's Type.
+	// Message's request data is supplied in the Message text field. A servers
+	// action should be tied to the Message Type and data associated in the text
+	// area.
+	//
 	private void handleMessage(Message message) {
 
-		// Switch to handle all the various types of messages.
-		// Controlled by the Message's Type.
-		// Message request data is supplied in the Message text field. A servers
-		// action should be the Message Type and data associated in the text
-		// area.
-		//
 		// Build out the functions as needed and remember to update
 		// the message before sending to the Client.
 		//
@@ -338,52 +375,11 @@ public class ClientHandler implements Runnable {
 			case QuickJoin:
 				quickJoin(message);
 				break;
-				
+			
+			// DO NOTHING
 			default:
-				// DO NOTHING
 				break;
 		}
-	}	
-
-
-	// Prints a log to the terminal saying what was sent to the Client. 
-	private void logMessage(Message message) {
-		
-		Type request = message.getType();
-		Status status = message.getStatus();
-		String data = message.getText();
-		String timeStamp = new Date().getCurrentDate();
-		int id = getClientID();
-		
-		
-		// Client# id <type>[status]: timeStamp 
-		// data
-		System.out.println("Client# " + id + " <" + request + ">[" + status 
-						   + "]:" + timeStamp + "\n" + data);
-	}
-
-
-	// Updates the Message's Status to Success and sets whatever text in text
-	// field.
-	private void updateMessageSuccess(Message message, String text) {
-		
-		// Update the Status of the Message.
-		message.setStatus(Status.Success);
-		
-		// Update the text area.
-		message.setText(text);
-	}
-	
-	
-	// Updates the Message's Status to Success and sets whatever text in text
-	// field.
-	private void updateMessageFailed(Message message, String text) {
-		
-		// Update the Status of the Message.
-		message.setStatus(Status.Failed);
-		
-		// Update the text area.
-		message.setText(text);
 	}
 	
 
