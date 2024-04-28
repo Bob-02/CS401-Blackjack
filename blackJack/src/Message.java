@@ -18,8 +18,10 @@ enum Type{
 	// Server class, server detail related Types
 	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
 	
-	Default
+	// Player/Dealer Game actions related Types
+	Bet, Hit, Stand, SettleBet,
 	
+	Default
 	// Add new Types of messages as project features get built out.
 }
 enum Status{
