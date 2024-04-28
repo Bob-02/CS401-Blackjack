@@ -75,7 +75,6 @@ public class ClientHandler implements Runnable {
 				clientSocket.close();
 			}
 
-
 			// Keep reading for messages until we get a logout message.
 			Message current = (Message) objectInputStream.readObject();
 
@@ -85,9 +84,6 @@ public class ClientHandler implements Runnable {
 			while (!isLogginOut(current)) {
 				
 				// Send back updated message to the Client.
-				// At this point the only message passed would be a logout Type
-				// Message.
-				//objectOutputStream.writeObject(current);
 				sendToClient(current);
 
 				// Get another message from the client
@@ -257,19 +253,21 @@ public class ClientHandler implements Runnable {
 				
 				// If its a new message then handle that request from the Client
 				handleMessage(message);
-				
-				// Print message to the terminal (make a log of what happened).
-				logMessage(message);
-				
-				// Send acknowledgment back to the client.
-				objectOutputStream.writeObject(message);
 			}
 			
 			// If its not a brand new message than its an invalid request from 
 			// the Client.
 			else {
-				System.out.println("Invalid Request from the Client!");
+
+				updateMessageFailed(message, "Invalid Request from the Client!");
 			}
+			
+			// Print message to the terminal (make a log of what happened).
+			logMessage(message);
+			
+			// Send acknowledgment back to the client.
+			objectOutputStream.writeObject(message);
+			
 	
 		} catch (IOException e) {
 			
@@ -325,6 +323,16 @@ public class ClientHandler implements Runnable {
 			case CloseGame:
 				closeGame(message);
 				break;
+			
+			// Player/Dealer is added to game. Client supplies the Game's ID.
+			case JoinGame:
+				joinGame(message);
+				break;
+			
+			// Player/Dealer is removed from game. Client supplies Games' ID.
+			case LeaveGame:
+				leaveGame(message);
+				break;
 				
 			// Sends back the Game ID of which game the Player was put into.
 			case QuickJoin:
@@ -336,7 +344,6 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}	
-
 
 
 	// Prints a log to the terminal saying what was sent to the Client. 
@@ -560,7 +567,7 @@ public class ClientHandler implements Runnable {
 
 		Game gameToRemove = Server.getTargetGame(message.getText());
 		
-		// If we didnt find the game to remove
+		// If we didn't find the game to remove.
 		if(gameToRemove == null) {
 			updateMessageFailed(message, "No Game with that ID!");
 			return;
@@ -570,7 +577,22 @@ public class ClientHandler implements Runnable {
 		Server.getGames().remove(gameToRemove);
 		updateMessageSuccess(message, message.getText());
 	}		
+
+
+	// The message will have the Game ID that the PlayerUser or DealerUser wants
+	// to join.
+	private void joinGame(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
+	// The message will have the Game ID. A playerUser or dealerUser will be 
+	// removed from that game.
+	private void leaveGame(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	// User join the first Open Game's Table.
 	// Nothing is supplied by the message.
