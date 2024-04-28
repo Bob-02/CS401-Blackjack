@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable {
     // make a SINGLE generic type to hold either Player or Dealer
     private Player playerUser;
     private Dealer dealerUser;
+    private Game usersGame;
 
 	// Constructor
 	public ClientHandler(Socket socket) throws IOException
@@ -378,6 +379,12 @@ public class ClientHandler implements Runnable {
 			case QuickJoin:
 				quickJoin(message);
 				break;
+				
+			// A Player wants to see their funds. A Dealer the Casino's funds.
+			case CheckFunds:
+				checkFunds(message);
+				break;
+				
 			
 			// The Dealer starts a round of Blackjack. Client supplies Game's ID
 			case StartRound:
@@ -386,7 +393,7 @@ public class ClientHandler implements Runnable {
 			
 			// A Player places a bet. 
 			case Bet:
-				playerBet(message);
+				playersBet(message);
 				break;
 				
 				
@@ -395,7 +402,19 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}
+
 	
+
+
+	// A request a from the Client to place bets for Players.
+	// this will update usersGame.
+	// The string should come in as follows:
+	// 
+	// 
+	private void playersBet(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	// When the dealer wants to start a game of Blackjack in a game. The client
 	// will request that action by sending a request of Type StartRound.
@@ -608,12 +627,14 @@ public class ClientHandler implements Runnable {
 		if(dealerUser != null && playerUser == null) {
 			
 			gameToJoin.setDealer(dealerUser);
+			usersGame = gameToJoin;
 			return;
 		}
 		
 		// If a Player wants to join a game
 		if(playerUser != null && dealerUser == null) {
 			gameToJoin.addPlayer(playerUser);
+			usersGame = gameToJoin;
 		}
 	}
 
@@ -627,12 +648,14 @@ public class ClientHandler implements Runnable {
 		// If a Dealer wants to leave a game.
 		if(dealerUser != null && playerUser == null) {
 			gameToLeave.removeDealer(dealerUser);
+			usersGame = null;
 			return;
 		}
 		
 		// If a Player wants to leave a game.
 		if(playerUser != null && dealerUser == null) {
 			gameToLeave.removePlayer(playerUser);
+			usersGame = null;
 		}
 		
 	}
@@ -659,11 +682,41 @@ public class ClientHandler implements Runnable {
 				
 				gameID = g.getID();
 				g.addPlayer(playerUser);
+				usersGame = g;
 				
 				// Update the status of the Message as Success.
 				// Send back the Client a Game's ID.
 				updateMessageSuccess(message, gameID);
 			}
 		}
+	}
+	
+	
+	// A Player wants to see their funds. A Dealer the Casino's funds.
+	// The message is of Type CheckFunds and has the Player/Dealer name.
+	private void checkFunds(Message message) {
+		
+		String username = message.getText();
+		Player player = Server.getTargetPlayer(username);
+		Dealer dealer = Server.getTargetDealer(username);
+		String funds;
+		
+		// Then a player is checking their funds.
+		if(player != null && dealer == null) {
+			
+			funds = String.valueOf(player.getPlayerFunds());
+			updateMessageSuccess(message, funds);
+			return;
+		}
+		
+		// Then its a dealer checking the Casino's funds.
+		else if(dealer != null && player == null) {
+			
+			funds = String.valueOf(Server.getCasinoFunds());
+			updateMessageSuccess(message, funds);
+			return;
+		}
+		
+		updateMessageFailed(message, "");
 	}
 }
