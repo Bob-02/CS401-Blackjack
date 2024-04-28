@@ -2,6 +2,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 
 public class BlackjackGUI {
@@ -11,7 +12,7 @@ public class BlackjackGUI {
     private String iconPath = "icon.png"; // Path to the icon image
     private String credentials;
     private JTextArea gameListArea, playerListArea;
-
+    private Semaphore loginSemaphore = new Semaphore(0);
 
     public BlackjackGUI() {
         initializeGUI();
@@ -87,6 +88,7 @@ public class BlackjackGUI {
             String username = usernameField.getText();  // Fetch the username entered
             String password = new String(passwordField.getPassword());  // Fetch the password entered
             credentials = username + ":" + password;  // Combine username and password with a colon separator 
+            notifyLogin(); // Notify the client that login is complete
             cardLayout.show(cardPanel, "Game");  // Move to the game panel
         });
 
@@ -272,4 +274,16 @@ public class BlackjackGUI {
 		// Somehow we should manage to return string to client in string format. 
 		return credentials;
 	}
+	
+	public void notifyLogin() {
+        loginSemaphore.release();
+    }
+	public String waitForLogin() {
+        try {
+            loginSemaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return credentials;
+    }
 }
