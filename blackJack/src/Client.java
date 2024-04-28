@@ -26,14 +26,14 @@ public class Client {
             BlackjackGUI gui = new BlackjackGUI();
            
             // Send login message
-            String credentials = gui.getLoginCredentials();
-            while (credentials != null) {
-            	sendMessage(new Message(Type.Login, Status.New, credentials));	
+            String credentials = gui.waitForLogin();
+            System.out.println("Credentials about to be sent is : " + credentials);
+            sendMessage(new Message(Type.Login, Status.New, credentials));	
             
 //          sendMessage(new Message(Type.Login, Status.New, credentials));
             System.out.println("Sent Credential-" + credentials);
             //gui.setLoginListener((username, password) -> sendLoginDetails(username, password)); // Set login listener
-            }
+            
 
             // Receive and process response
             Message response = receiveMessage();
