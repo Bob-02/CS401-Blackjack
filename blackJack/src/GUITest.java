@@ -1,15 +1,14 @@
-
 import javax.swing.*;
 import java.awt.*;
 
-public class BlackjackGUI {
+public class GUITest {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private String iconPath = "C:/Users/Zayyyy/Documents/CS401_BlackJack1/CS401-Blackjack/project pictures/icon.png"; // Path to the icon image
 
 
-    public BlackjackGUI() {
+    public GUITest() {
         initializeGUI();
     }
 
@@ -134,47 +133,42 @@ public class BlackjackGUI {
         JPanel blackjackTablePanel = new JPanel(new BorderLayout());
         blackjackTablePanel.setBackground(new Color(0, 102, 0)); // Green table background
 
-        // Dealer area
-        JPanel dealerPanel = new JPanel();
-        dealerPanel.setBackground(new Color(0, 150, 0));
-        JLabel dealerLabel = new JLabel("Dealer: ");
+        // Dealer's area
+        JLabel dealerLabel = new JLabel("Dealer's Area", SwingConstants.CENTER);
         dealerLabel.setForeground(Color.WHITE);
-        dealerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        dealerPanel.add(dealerLabel);
-        blackjackTablePanel.add(dealerPanel, BorderLayout.NORTH);
+        dealerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        blackjackTablePanel.add(dealerLabel, BorderLayout.NORTH);
 
-        // Player area
-        JPanel playerPanel = new JPanel();
-        playerPanel.setBackground(new Color(0, 150, 0));
-        playerPanel.setLayout(new GridLayout(0, 1)); // Vertical layout for multiple players
-        JLabel playerLabel = new JLabel("Player: ");
-        playerLabel.setForeground(Color.WHITE);
-        playerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        playerPanel.add(playerLabel);
+        // Player's area
+        JPanel playerArea = new JPanel();
+        playerArea.setBackground(new Color(0, 150, 0)); // Slightly different green for contrast
+        playerArea.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        // Add components for player actions: Hit, Stand, Double Down, etc.
-        JPanel actionsPanel = new JPanel(new FlowLayout());
+        // Card placeholders for players
+        JLabel card1 = new JLabel(new ImageIcon("path_to_card_image"));
+        JLabel card2 = new JLabel(new ImageIcon("path_to_card_image"));
+        playerArea.add(card1);
+        playerArea.add(card2);
+
+        // Player actions
         JButton hitButton = new JButton("Hit");
         JButton standButton = new JButton("Stand");
         JButton doubleDownButton = new JButton("Double Down");
+        playerArea.add(hitButton);
+        playerArea.add(standButton);
+        playerArea.add(doubleDownButton);
+
         customizeButton(hitButton);
         customizeButton(standButton);
         customizeButton(doubleDownButton);
-        actionsPanel.add(hitButton);
-        actionsPanel.add(standButton);
-        actionsPanel.add(doubleDownButton);
-        playerPanel.add(actionsPanel);
 
-        blackjackTablePanel.add(playerPanel, BorderLayout.CENTER);
+        blackjackTablePanel.add(playerArea, BorderLayout.CENTER);
 
-        // Status and control area
-        JPanel statusPanel = new JPanel();
-        statusPanel.setBackground(new Color(0, 100, 0));
-        JLabel statusLabel = new JLabel("Status: Waiting for players...");
-        statusLabel.setForeground(Color.WHITE);
-        statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        statusPanel.add(statusLabel);
-        blackjackTablePanel.add(statusPanel, BorderLayout.SOUTH);
+        // Status area for messages like "You Win!" or "You Lose!"
+        JLabel statusLabel = new JLabel("Place Your Bets", SwingConstants.CENTER);
+        statusLabel.setForeground(Color.YELLOW);
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        blackjackTablePanel.add(statusLabel, BorderLayout.SOUTH);
 
         cardPanel.add(blackjackTablePanel, "BlackjackTable");
     }
@@ -196,11 +190,6 @@ public class BlackjackGUI {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(BlackjackGUI::new);
+        SwingUtilities.invokeLater(GUITest::new);
     }
-
-	public String getLoginCredentials() {
-		// Somehow we should manage to return string to client in string format. 
-		return "luser1:letmein";
-	}
 }
