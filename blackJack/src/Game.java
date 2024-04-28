@@ -65,7 +65,10 @@ public class Game {
 	}
 
 	public void setDealer(Dealer dealer) {
+		// Auto set for simplicity right now to both the Game and Table
+		
 		this.dealer = dealer;
+		table.dealer = dealer;
 	}
 
 	public static void removePlayer(Player player) {
@@ -76,6 +79,14 @@ public class Game {
 		table.players.remove(player);
 		lobby.remove(player);
 
+	}
+	
+	public static void removeDealer(Dealer dealer) {
+
+		tableStatus = TableStatus.NeedDealer;
+		table.clearDealerHand(dealer);
+		table.dealer = null;
+		dealer = null;
 	}
 
 	public void addPlayer(Player player) {

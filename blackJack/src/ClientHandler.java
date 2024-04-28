@@ -138,7 +138,7 @@ public class ClientHandler implements Runnable {
 			// Acknowledge logout Message
 			msg.setStatus(Status.Success);
 			
-			// Username is supplied in the message.
+			// Username is supplied in the message. Log user out of the Server.
 			logoutUser(msg.getText());
 			
 			// Print message to the terminal (make a log of what happened).
@@ -583,31 +583,37 @@ public class ClientHandler implements Runnable {
 	// to join.
 	private void joinGame(Message message) {
 		
-		// If a Dealer wants to join a game
+		Game gameToJoin = Server.getTargetGame(message.getText());
+		
+		// If a Dealer wants to join a game as a DEALER
 		if(dealerUser != null && playerUser == null) {
 			
+			gameToJoin.setDealer(dealerUser);
+			return;
 		}
 		
 		// If a Player wants to join a game
 		if(playerUser != null && dealerUser == null) {
-			
+			gameToJoin.addPlayer(playerUser);
 		}
-		
 	}
 
 	
 	// The message will have the Game ID. A playerUser or dealerUser will be 
 	// removed from that game.
 	private void leaveGame(Message message) {
+		
+		Game gameToLeave = Server.getTargetGame(message.getText());
 
 		// If a Dealer wants to leave a game.
 		if(dealerUser != null && playerUser == null) {
-			
+			gameToLeave.removeDealer(dealerUser);
+			return;
 		}
 		
 		// If a Player wants to leave a game.
 		if(playerUser != null && dealerUser == null) {
-			
+			gameToLeave.removePlayer(playerUser);
 		}
 		
 	}
