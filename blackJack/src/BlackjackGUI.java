@@ -198,4 +198,9 @@ public class BlackjackGUI {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(BlackjackGUI::new);
     }
+
+	public String getLoginCredentials() {
+		// Somehow we should manage to return string to client in string format. 
+		return "luser1:letmein";
+	}
 }

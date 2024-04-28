@@ -2,13 +2,26 @@
 import java.io.Serializable;
 
 enum Type{
+	// Client related Types
 	Login, Logout, 
-	Text,
+
+	// Funds related Types
 	CheckFunds, CheckFundHistory, AddFunds, CashOut,
-	JoinGame, LeaveGame, OpenGame, CloseGame,
-	JoinTable, LeaveTable,
-	Default
 	
+	// Game class related Types
+	QuickJoin,
+	JoinGame, LeaveGame, OpenGame, CloseGame,
+	
+	// Table class related Types
+	JoinTable, LeaveTable,
+	
+	// Server class, server detail related Types
+	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
+	
+	// Player/Dealer Game actions related Types
+	Bet, Hit, Stand, SettleBet,
+	
+	Default
 	// Add new Types of messages as project features get built out.
 }
 enum Status{
