@@ -3,7 +3,7 @@ import java.io.Serializable;
 
 enum Type{
 	// Client related Types
-	Login, Logout, 
+	Login, Logout, Register,
 
 	// Funds related Types
 	CheckFunds, CheckFundHistory, AddFunds, CashOut,

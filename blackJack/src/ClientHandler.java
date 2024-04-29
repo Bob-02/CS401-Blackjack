@@ -337,6 +337,11 @@ public class ClientHandler implements Runnable {
 		//
 		switch(message.getType()) {
 			
+			// Creates a new Player on the server. Details supplied in message.
+			case Register:
+				registerUser(message);
+				break;
+			
 			// Sends a list of all Games on the server.
 			case ListGames:
 				listGames(message);
@@ -390,7 +395,6 @@ public class ClientHandler implements Runnable {
 				addFunds(message);
 				break;		
 			
-
 			// All Players places their bets for a round of Blackjack. 
 			// Starts a round of blackjack.
 			case Bet:
@@ -405,39 +409,46 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-
-
-	// A request a from the Client to place bets for Players.
-	// this will update usersGame.
-	// The string should come in as follows:
-	// 
-	// username:Bet\n
-	// username:Bet\n
-	// username:Bet
-	//
 	
-	// Need help with logic on how Game works.
+	// The client supplies in a request with the users details. 
+	// Server responds if the user has been registered or if the username
+	// given is taken.
 	//
-	private void playersBet(Message message) {
-		
-		
-		// This should be in game logic
-		/*String bets[] = message.getText().split("\n");
-		
+	// username:password
+	//
+	// Return response to client with whatever Server.registerUser returns.
+	private void registerUser(Message message){
 
+		String status;
 		
-		for(String bet: bets) {
+		try {
 			
-			String b[] = bet.split(":");
-	
-			String name = b[0];
-			Double betAmount = Double.valueOf(b[1]);
+			status = Server.registerUser(message.getText());
+						
+			// If the user is already registered.
+			if(status.equals("taken") ) {
+				
+				updateMessageFailed(message, "Username already taken!");
+				return;
+			}
 			
-			Player player = Server.getTargetPlayer(name);
-			player.currentBet =
-		}*/
-		
+			// If the user was registered.
+			if(status.equals("registerd") ) {
+				
+				updateMessageSuccess(message, 
+									 "You have registered to the Server!");
+			}
+			
+			// If there is a wrong format supplied.
+			updateMessageFailed(message, "Error");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+
+
 
 	// When the dealer wants to start a game of Blackjack in a game. The client
 	// will request that action by sending a request of Type StartRound.
@@ -458,7 +469,16 @@ public class ClientHandler implements Runnable {
 			
 			
 		}
+
 		
+		// A request a from the Client to place bets for Players.
+		// this will update usersGame.
+		// The string should come in as follows:
+		// 
+		// username:Bet\n
+		// username:Bet\n
+		// username:Bet
+		//
 		if(message.getType() == Type.Bet) {
 			// bet does this
 			usersGame.table.shuffleCards();		// Client handler does nothing
