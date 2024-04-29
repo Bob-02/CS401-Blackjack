@@ -11,6 +11,8 @@ public class Client {
     private static BlackjackGUI gui;
     private String messageTogui;
     private static Client client;
+    private static int clickIndex = 0; // To keep track of the index of the next simulated button click
+
 
     public static void main(String[] args) {
     	gui = new BlackjackGUI();
@@ -110,33 +112,54 @@ public class Client {
     
 	private static void createAndSendMessage() {
         // Get button clicks from GUI
-        String buttonClick = gui.buttonClicks();
+//        String buttonClick = gui.buttonClicks();
+        String buttonClick = getNextButtonClick();
         System.out.println("This Button Is Clicked --> " +buttonClick);
 
         // Process button click and send corresponding message to the server
         switch (buttonClick) {
             case "playButtonClicked":
-                sendMessage(new Message(Type.QuickJoin, Status.New, "Play"));
-                Message receivedMessage = receiveMessage();
-                String msgtogui = receivedMessage.getStatus().toString();
-                client.setMessageTogui(msgtogui);
-                System.out.println("Message to GUI SET ="+ msgtogui);
+                sendMessage(new Message(Type.OpenGame, Status.New, ""));
+//                Message receivedMessage = receiveMessage();
+//                String msgtogui = receivedMessage.getStatus().toString();
+//                client.setMessageTogui(msgtogui);
+//                System.out.println("Message to GUI SET ="+ msgtogui);
                 break;
             case "viewGamesButtonClicked":
-                sendMessage(new Message(Type.ListGames, Status.New, "ViewGames"));
-                Message viewgamereceivedMessage = receiveMessage();
-                String viewgamemsgtogui = viewgamereceivedMessage.getStatus().toString();
-                client.setMessageTogui(viewgamemsgtogui);
-                System.out.println("Message to GUI SET ="+ viewgamemsgtogui);
+                sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
+//                Message viewgamereceivedMessage = receiveMessage();
+//                String viewgamemsgtogui = viewgamereceivedMessage.getStatus().toString();
+//                client.setMessageTogui(viewgamemsgtogui);
+//                System.out.println("Message to GUI SET ="+ viewgamemsgtogui);
                 break;
             case "viewPlayersButtonClicked":
-                sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ViewPlayers"));
-                
-                Message playersreceivedMessage = receiveMessage();
-                String viewplayersmsgtogui = playersreceivedMessage.getStatus().toString();
-                client.setMessageTogui(viewplayersmsgtogui);
-                System.out.println("Message to GUI SET ="+ viewplayersmsgtogui);
+                sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
+//                Message playersreceivedMessage = receiveMessage();
+//                String viewplayersmsgtogui = playersreceivedMessage.getStatus().toString();
+//                client.setMessageTogui(viewplayersmsgtogui);
+//                System.out.println("Message to GUI SET ="+ viewplayersmsgtogui);
                 break;
+            case "addfundsButtonClicked":
+            	sendMessage(new Message(Type.AddFunds, Status.New, "luser1:1251"));
+            	System.out.println("Funds Adding functionality Pass");
+            	break;
+            case "listplayersOnlineButtonClicked":
+            	sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
+            	System.out.println("List of Players functionality Pass");
+            	break;
+            case "listdealerOnlineButtonClicked":
+            	sendMessage(new Message(Type.ListDealersOnline, Status.New, "ListDealersOnline"));
+            	break;
+            case "listplayersInGameButtonClicked":
+            	sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
+            	break;
+            case "quickJoinButtonClicked":
+            	sendMessage(new Message(Type.QuickJoin, Status.New, ""));
+            	break;
+            case "logoutButtonClicked":
+            	sendMessage(new Message(Type.Logout, Status.New, "luser1"));
+            	break;
+            	
             default:
                 // Default action if no button is clicked
                 sendMessage(new Message(Type.Default, Status.New, "NoAction"));
@@ -151,6 +174,27 @@ public class Client {
 	public void setMessageTogui(String messageTogui) {
 		this.messageTogui = messageTogui;
 	}
+	
+	private static String getNextButtonClick() {
+        // List of simulated button clicks
+        String[] buttonClicks = {
+                "playButtonClicked",
+                "addfundsButtonClicked",
+                "listplayersOnlineButtonClicked",
+                "listdealerOnlineButtonClicked",
+                "listplayersInGameButtonClicked",
+                "quickJoinButtonClicked",
+                "viewGamesButtonClicked",
+                "viewPlayersButtonClicked",
+                "logoutButtonClicked"
+        };
+
+        // Return the next button click and update the index for the next call
+        String nextButtonClick = buttonClicks[clickIndex];
+        clickIndex = (clickIndex + 1) % buttonClicks.length;
+        return nextButtonClick;
+    }
+	
 	private static void sendMessage(Message message) {
         try {
             objectOutputStream.writeObject(message);
