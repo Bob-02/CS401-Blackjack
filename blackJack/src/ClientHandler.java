@@ -509,7 +509,7 @@ public class ClientHandler implements Runnable {
 		// GameID:TableStatus:DealerName:NumberOfPlayers
 		//
 		
-		String gameListString = null;
+		String gameListString = "";
 		List<Game> gameList = Server.getGames();
 		
 		// If there are no game send back to the Client a Failed message.
@@ -759,11 +759,11 @@ public class ClientHandler implements Runnable {
 	// Return the Game's ID that the player has joined.
 	private void quickJoin(Message message) {
 		
-		String gameID = null;
+		String gameID = "";
 		List<Game> games = Server.getGames();
 		
 		// If there are no game send back to the Client a Failed message.
-		if(games == null) {
+		if(games == null || games.size() == 0) {
 			updateMessageFailed(message, "There are no open Games!");
 			return;
 		}
@@ -788,6 +788,7 @@ public class ClientHandler implements Runnable {
 	
 	// A Player wants to see their funds. A Dealer the Casino's funds.
 	// The message is of Type CheckFunds and has the Player/Dealer name.
+	// 
 	private void checkFunds(Message message) {
 		
 		String username = message.getText();
@@ -825,6 +826,7 @@ public class ClientHandler implements Runnable {
 		String request[] = message.getText().split(":");
 		
 		if(request.length != 2) {
+			updateMessageFailed(message, "");
 			return;
 		}
 		
@@ -832,11 +834,12 @@ public class ClientHandler implements Runnable {
 		Double fundsToAdd = Double.valueOf(request[1]);
 		
 		if(player == null) {
+			updateMessageFailed(message, "");
 			return;
 		}
 		
 		// Just add the funds to the player.
-		player.currentBet += fundsToAdd;
-		
+		player.funds += fundsToAdd;
+		updateMessageSuccess(message, "Funds added!");
 	}
 }
