@@ -120,48 +120,45 @@ public class BlackjackGUI {
         gbcGame.insets = new Insets(20, 0, 20, 0);
         gamePanel.add(welcomeToBlackjack, gbcGame);
 
-        JButton playButton = new JButton("PLAY");
-        customizeButton(playButton);
-        playButton.addActionListener(e -> {
-        	playButtonClicked = true;
-        	buttonClicksemaphore.release();
-        	cardLayout.show(cardPanel, "BlackjackTable");
+        // Quick Join Button replaces Play button
+        JButton quickJoinButton = new JButton("Quick Join");
+        customizeButton(quickJoinButton);
+        quickJoinButton.addActionListener(e -> {
+            quickJoin(); // Handle quick join functionality
         });
         gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(playButton, gbcGame);
+        gamePanel.add(quickJoinButton, gbcGame);
 
-        // Add button to view game list
         JButton viewGamesButton = new JButton("View Game List");
         customizeButton(viewGamesButton);
         viewGamesButton.addActionListener(e -> {
-        	viewGamesButtonClicked = true;
-        	buttonClicksemaphore.release();
-        	cardLayout.show(cardPanel, "Game List");
+            cardLayout.show(cardPanel, "Game List");
+        });
+        gamePanel.add(viewGamesButton, gbcGame);
+        
+        JButton openGameButton = new JButton("Open Game");
+        customizeButton(openGameButton);
+        openGameButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "BlackjackTable"); 
         });
         gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(viewGamesButton, gbcGame);
+        gamePanel.add(openGameButton, gbcGame);
 
-        // Add button to view player list
         JButton viewPlayersButton = new JButton("View Player List");
         customizeButton(viewPlayersButton);
         viewPlayersButton.addActionListener(e -> {
-        	viewPlayersButtonClicked = true;
-        	buttonClicksemaphore.release();
-        	cardLayout.show(cardPanel, "Player List");
+            cardLayout.show(cardPanel, "Player List");
         });
-        gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(viewPlayersButton, gbcGame);
 
         JButton exitButton = new JButton("EXIT");
         customizeButton(exitButton);
         exitButton.addActionListener(e -> frame.dispose());
-        gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(exitButton, gbcGame);
 
         JLabel footerLabel = new JLabel("This game is brought to you by Group 5", SwingConstants.CENTER);
         footerLabel.setForeground(Color.WHITE);
         footerLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        gbcGame.insets = new Insets(40, 0, 0, 0);
         gamePanel.add(footerLabel, gbcGame);
 
         cardPanel.add(gamePanel, "Game");
@@ -243,6 +240,35 @@ public class BlackjackGUI {
 
         cardPanel.add(playerListPanel, "Player List");
     }
+    
+    
+    private void quickJoin() {
+        // Mock implementation, replace with actual server call
+        Message message = new Message(); // Assume Message is a valid type
+        List<Game> games = Server.getGames(); // This call would actually be to the client, which talks to the server
+
+        String gameID = null;
+        if (games == null || games.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "There are no open Games!", "Quick Join Failed", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        for (Game g : games) {
+            if (g.getTableStatus() == TableStatus.Open) {
+                gameID = g.getID();
+                // Assuming addPlayer is a method that adds a player to the game
+                g.addPlayer(playerUser); 
+                break;
+            }
+        }
+
+        if (gameID != null) {
+            JOptionPane.showMessageDialog(frame, "Joined game: " + gameID, "Quick Join Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(frame, "No open games available.", "Quick Join Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     
     
     private void refreshGames() {
