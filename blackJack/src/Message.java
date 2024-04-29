@@ -13,7 +13,7 @@ enum Type{
 	JoinGame, LeaveGame, OpenGame, CloseGame,
 	
 	// Table class related Types
-	JoinTable, LeaveTable,
+	//JoinTable, LeaveTable,
 	
 	// Server class, server detail related Types
 	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
