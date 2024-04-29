@@ -19,7 +19,7 @@ enum Type{
 	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
 	
 	// Player/Dealer Game actions related Types
-	Bet, Hit, Stand, SettleBet, StartRound,
+	Bet, HitOrStand, SettleBet,
 	
 	Default
 	// Add new Types of messages as project features get built out.

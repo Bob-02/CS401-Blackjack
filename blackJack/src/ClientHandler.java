@@ -388,18 +388,15 @@ public class ClientHandler implements Runnable {
 			// A player wants to add funds.
 			case AddFunds:
 				addFunds(message);
-				break;
-				
+				break;		
 			
-			// The Dealer starts a round of Blackjack. Client supplies Game's ID
-			case StartRound:
-				startRound(message);
-				break;
-			
-			// A Player places a bet. 
+
+			// All Players places their bets for a round of Blackjack. 
+			// Starts a round of blackjack.
 			case Bet:
-				playersBet(message);
+				roundOfBlackjack(message);
 				break;
+			
 				
 				
 			// DO NOTHING
@@ -408,40 +405,76 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	// A player wants to add funds to their account by giving a their name and
-	// how much
-	//
-	// username:fundsToAdd
-	//
-	private void addFunds(Message message) {
-		
-		String request[] = message.getText().split(":");
-		
-		Player player = Server.getTargetPlayer(request[0]);
-		Double fundsToAdd = Double.valueOf(request[1]);
-		
-		// Just add the funds to the player.
-		player.currentBet += fundsToAdd;
-		
-	}
+
 
 	// A request a from the Client to place bets for Players.
 	// this will update usersGame.
 	// The string should come in as follows:
 	// 
-	// 
+	// username:Bet\n
+	// username:Bet\n
+	// username:Bet
+	//
+	
+	// Need help with logic on how Game works.
+	//
 	private void playersBet(Message message) {
-		// TODO Auto-generated method stub
+		
+		
+		// This should be in game logic
+		/*String bets[] = message.getText().split("\n");
+		
+
+		
+		for(String bet: bets) {
+			
+			String b[] = bet.split(":");
+	
+			String name = b[0];
+			Double betAmount = Double.valueOf(b[1]);
+			
+			Player player = Server.getTargetPlayer(name);
+			player.currentBet =
+		}*/
 		
 	}
 
 	// When the dealer wants to start a game of Blackjack in a game. The client
 	// will request that action by sending a request of Type StartRound.
 	// This will start a round in the Server.
-	private void startRound(Message message) {
+	private void roundOfBlackjack(Message message) {
 		
-		String gameID = message.getText();
-		Server.startRound(gameID);
+		//String gameID = message.getText();
+		//usersGame = Server.getTargetGame(gameID);
+		
+		// If not a valid game just do nothing.
+		if(usersGame ==  null) {
+			return;
+		}
+		
+		
+		// A while loop switch to control the game.
+		switch(message.getStatus()) {
+			
+			
+		}
+		
+		if(message.getType() == Type.Bet) {
+			// bet does this
+			usersGame.table.shuffleCards();		// Client handler does nothing
+			usersGame.getBets(message.getText());// getBets takes all players bets.
+			usersGame.table.dealCards();		// updates all players hands
+		}
+		
+		// update gui here.. They get to see all new hands and bets.
+		
+		usersGame.checkBlackjack();
+		usersGame.hitOrStand();
+		usersGame.dealerTurn();
+		usersGame.settleBets();
+		usersGame.printFunds();	// might not be needed?
+		usersGame.clearHands();
+		
 	}
 
 	// Sends a String back to the client with a list of all the games on the
@@ -737,5 +770,27 @@ public class ClientHandler implements Runnable {
 		}
 		
 		updateMessageFailed(message, "");
+	}
+	
+	
+	// A player wants to add funds to their account by giving a their name and
+	// how much
+	//
+	// username:fundsToAdd
+	//
+	private void addFunds(Message message) {
+		
+		String request[] = message.getText().split(":");
+		
+		Player player = Server.getTargetPlayer(request[0]);
+		Double fundsToAdd = Double.valueOf(request[1]);
+		
+		if(player == null) {
+			return;
+		}
+		
+		// Just add the funds to the player.
+		player.currentBet += fundsToAdd;
+		
 	}
 }

@@ -217,7 +217,8 @@ public class Server {
 				&& !validDealers.contains(userDetails)) {
 			
 			// Create new Player
-			Player newPlayer = new Player(username, getPlayerFunds(username));
+			// Players are a public class just set its funds a default amount.
+			Player newPlayer = new Player(username, 1000.00);
 			
 			// Add Player to onlinePlayers IFF that Player isn't already logged
 			// in.
@@ -337,31 +338,6 @@ public class Server {
 		return null;
 	}
 	
-	
-	// Runs a round of Blackjack
-	public static void startRound(String GameID) {
-		
-		Game game = getTargetGame(GameID);
-		
-		// If not a valid game just do nothing.
-		if(game ==  null) {
-			return;
-		}
-		
-		game.table.shuffleCards();	// Client handler does nothing
-		game.getBets();				// getBets takes all players bets.
-		game.table.dealCards();		// updates all players hands
-		
-									// update gui here.. They get to see all new hands and bets.
-		
-		game.checkBlackjack();
-		game.hitOrStand();
-		game.dealerTurn();
-		game.settleBets();
-		game.printFunds();	// might not be needed?
-		game.clearHands();
-	}
-    
 }
 
 
