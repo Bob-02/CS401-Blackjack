@@ -237,7 +237,7 @@ public class ClientHandler implements Runnable {
 
 
 	// Prints a log to the terminal saying what was sent to the Client. 
-	private void logMessage(Message message) {
+	private synchronized void logMessage(Message message) {
 		
 		Type request = message.getType();
 		Status status = message.getStatus();
@@ -253,7 +253,7 @@ public class ClientHandler implements Runnable {
 		System.out.println(toPrint);
 		
 		// Append to log file.
-		try (FileWriter file = new FileWriter("ServerLogs.txt")) {
+		try (FileWriter file = new FileWriter("ServerLogs.txt", true)) {
 			
 			file.append(toPrint + "\n");
 			
@@ -500,6 +500,7 @@ public class ClientHandler implements Runnable {
 				
 				updateMessageSuccess(message, 
 									 "You have registered to the Server!");
+				return;
 			}
 			
 			// If there is a wrong format supplied.

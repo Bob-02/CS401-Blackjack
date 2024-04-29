@@ -1,0 +1,148 @@
+Client# 1 <Login>[Success]:2024-04-29 01:44:03.860
+player
+Client# 1 <AddFunds>[Success]:2024-04-29 01:44:03.877
+Funds added!
+Client# 1 <CheckFunds>[Success]:2024-04-29 01:44:03.878
+2111.0
+Client# 1 <OpenGame>[Success]:2024-04-29 01:44:03.882
+1
+Client# 1 <OpenGame>[Success]:2024-04-29 01:44:03.883
+2
+Client# 1 <OpenGame>[Success]:2024-04-29 01:44:03.884
+3
+Client# 1 <OpenGame>[Success]:2024-04-29 01:44:03.885
+4
+Client# 1 <OpenGame>[Success]:2024-04-29 01:44:03.885
+5
+Client# 1 <ListGames>[Success]:2024-04-29 01:44:03.890
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Failed]:2024-04-29 01:44:03.892
+No Game with that ID!
+Client# 1 <ListGames>[Success]:2024-04-29 01:44:03.893
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Failed]:2024-04-29 01:44:03.893
+No Game with that ID!
+Client# 1 <OpenGame>[Success]:2024-04-29 01:44:03.894
+6
+Client# 1 <ListGames>[Success]:2024-04-29 01:44:03.895
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+Client# 1 <CloseGame>[Failed]:2024-04-29 01:44:03.895
+No Game with that ID!
+Client# 1 <ListGames>[Success]:2024-04-29 01:44:03.896
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+Client# 1 <ListPlayersOnline>[Success]:2024-04-29 01:44:03.896
+luser1
+Client# 1 <ListDealersOnline>[Failed]:2024-04-29 01:44:03.897
+There are no Dealers online!
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-29 01:44:03.897
+Game Not Found!
+Client# 1 <Register>[Failed]:2024-04-29 01:44:03.898
+Error
+Client# 1 <QuickJoin>[New]:2024-04-29 01:44:03.898
+
+Client# 1 <Logout>[Success]:2024-04-29 01:44:03.899
+luser1
+Client# 2 <Login>[Success]:2024-04-29 01:45:15.981
+player
+Client# 2 <AddFunds>[Success]:2024-04-29 01:45:15.989
+Funds added!
+Client# 2 <CheckFunds>[Success]:2024-04-29 01:45:15.990
+2111.0
+Client# 2 <OpenGame>[Success]:2024-04-29 01:45:15.990
+7
+Client# 2 <OpenGame>[Success]:2024-04-29 01:45:15.990
+8
+Client# 2 <OpenGame>[Success]:2024-04-29 01:45:15.991
+9
+Client# 2 <OpenGame>[Success]:2024-04-29 01:45:15.991
+10
+Client# 2 <OpenGame>[Success]:2024-04-29 01:45:15.992
+11
+Client# 2 <ListGames>[Success]:2024-04-29 01:45:15.992
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+Client# 2 <CloseGame>[Failed]:2024-04-29 01:45:15.993
+No Game with that ID!
+Client# 2 <ListGames>[Success]:2024-04-29 01:45:15.993
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+Client# 2 <CloseGame>[Failed]:2024-04-29 01:45:15.994
+No Game with that ID!
+Client# 2 <OpenGame>[Success]:2024-04-29 01:45:15.994
+12
+Client# 2 <ListGames>[Success]:2024-04-29 01:45:15.994
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+Client# 2 <CloseGame>[Failed]:2024-04-29 01:45:15.995
+No Game with that ID!
+Client# 2 <ListGames>[Success]:2024-04-29 01:45:15.995
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+Client# 2 <ListPlayersOnline>[Success]:2024-04-29 01:45:15.996
+jabroni345,luser1
+Client# 2 <ListDealersOnline>[Failed]:2024-04-29 01:45:15.996
+There are no Dealers online!
+Client# 2 <ListPlayersInGame>[Failed]:2024-04-29 01:45:15.997
+Game Not Found!
+Client# 2 <Register>[Failed]:2024-04-29 01:45:15.997
+Username already taken!
+Client# 2 <QuickJoin>[New]:2024-04-29 01:45:15.998
+
+Client# 2 <Logout>[Success]:2024-04-29 01:45:15.998
+luser1
