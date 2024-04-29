@@ -21,6 +21,13 @@ public class Table {
 
 	}
 
+	public Table() {
+		this.dealer = null;
+		deck = new PlayingDeck(3);
+		players = new ArrayList<>();
+		payout = 6/5;
+	}
+
 	public String getPlayingDeck() {
 		return deck.toString();
 	}
