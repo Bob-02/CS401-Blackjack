@@ -12,7 +12,11 @@ public class BlackjackGUI {
     private String iconPath = "icon.png"; // Path to the icon image
     private String credentials;
     private JTextArea gameListArea, playerListArea;
+    private boolean playButtonClicked = false;
+    private boolean viewGamesButtonClicked = false;
+    private boolean viewPlayersButtonClicked = false;
     private Semaphore loginSemaphore = new Semaphore(0);
+    private Semaphore buttonClicksemaphore = new Semaphore(0);
 
     public BlackjackGUI() {
         initializeGUI();
@@ -118,21 +122,33 @@ public class BlackjackGUI {
 
         JButton playButton = new JButton("PLAY");
         customizeButton(playButton);
-        playButton.addActionListener(e -> cardLayout.show(cardPanel, "BlackjackTable"));
+        playButton.addActionListener(e -> {
+        	playButtonClicked = true;
+        	buttonClicksemaphore.release();
+        	cardLayout.show(cardPanel, "BlackjackTable");
+        });
         gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(playButton, gbcGame);
 
         // Add button to view game list
         JButton viewGamesButton = new JButton("View Game List");
         customizeButton(viewGamesButton);
-        viewGamesButton.addActionListener(e -> cardLayout.show(cardPanel, "Game List"));
+        viewGamesButton.addActionListener(e -> {
+        	viewGamesButtonClicked = true;
+        	buttonClicksemaphore.release();
+        	cardLayout.show(cardPanel, "Game List");
+        });
         gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(viewGamesButton, gbcGame);
 
         // Add button to view player list
         JButton viewPlayersButton = new JButton("View Player List");
         customizeButton(viewPlayersButton);
-        viewPlayersButton.addActionListener(e -> cardLayout.show(cardPanel, "Player List"));
+        viewPlayersButton.addActionListener(e -> {
+        	viewPlayersButtonClicked = true;
+        	buttonClicksemaphore.release();
+        	cardLayout.show(cardPanel, "Player List");
+        });
         gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(viewPlayersButton, gbcGame);
 
@@ -286,4 +302,28 @@ public class BlackjackGUI {
         }
         return credentials;
     }
+	public String buttonClicks() {
+	//Logic to send what button is clicked to Client in string format	
+		 // Check which button was clicked and return the corresponding action
+		waitForButtonClick();
+	    if (playButtonClicked) {
+	        return "playButtonClicked";
+	    } else if (viewGamesButtonClicked) {
+	        return "viewGamesButtonClicked";
+	    } else if (viewPlayersButtonClicked) {
+	        return "viewPlayersButtonClicked";
+	    } else {
+	        // Default action if no button is clicked
+	        return "noButtonClick";
+	    }
+	}
+
+	public void waitForButtonClick() {
+		try {
+	        buttonClicksemaphore.acquire(); // Wait until a button is clicked
+	    } catch (InterruptedException e) {
+	        e.printStackTrace();
+	    }
+		
+	}
 }
