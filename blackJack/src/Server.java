@@ -256,20 +256,21 @@ public class Server {
 		
 		if(validPlayers.contains(userDetails)) {
 
-			return username + "taken";
+			return "taken";
 		}
 		
 		// add to players file
-		FileWriter file;
-		file = new FileWriter("players.txt");
+		try(FileWriter file = new FileWriter("players.txt", true)) {
+			file.append(userDetails + "\n");
+		}
 		
-		file.append(userDetails);
+		
 		validPlayers.add(userDetails);
 		
 		Player newPlayer = new Player(username, 1000.00);
 		onlinePlayers.add(newPlayer);
 		
-		return username + "registerd";
+		return "registerd";
 	}
 	
 	
