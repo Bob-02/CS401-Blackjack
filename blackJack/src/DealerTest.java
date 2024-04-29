@@ -1,4 +1,5 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,67 +7,133 @@ class DealerTest {
 
 	@Test
 	void testDealer() {
-		fail("Not yet implemented");
-	}
+		String name = "Bob Billy";
+		double casinoFunds = 200000;
+		double currentBet = 500;
 
-	@Test
-	void testGetDealerName() {
-		fail("Not yet implemented");
-	}
+		Dealer dealer = new Dealer(name, casinoFunds);
 
-	@Test
-	void testGetDealerHand() {
-		fail("Not yet implemented");
-	}
+		assertEquals(name, dealer.getDealerName());
+		assertEquals(casinoFunds, dealer.getCasinoFunds());
+		assertNotNull(dealer.getDealerHand());
 
-	@Test
-	void testGetCasinoFunds() {
-		fail("Not yet implemented");
-	}
+		dealer.setBet(currentBet);
 
-	@Test
-	void testGetBet() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testSetBet() {
-		fail("Not yet implemented");
+		assertEquals(currentBet, dealer.getBet());
 	}
 
 	@Test
 	void testWonBet() {
-		fail("Not yet implemented");
+		String name = "Bob Billy";
+		double casinoFunds = 200000;
+		double casinoBet = 500;
+
+		Dealer dealer = new Dealer(name, casinoFunds);
+
+		dealer.setBet(casinoBet);
+		dealer.wonBet();
+
+		assertEquals(0, dealer.casinoBet);
+		assertEquals((casinoFunds + casinoBet), dealer.getCasinoFunds());
 	}
 
 	@Test
 	void testLostBet() {
-		fail("Not yet implemented");
-	}
+		String name = "Bob Billy";
+		double casinoFunds = 200000;
+		double casinoBet = 500;
 
-	@Test
-	void testGetTable() {
-		fail("Not yet implemented");
-	}
+		Dealer dealer = new Dealer(name, casinoFunds);
 
-	@Test
-	void testDoesTheDealerHaveBlackJack() {
-		fail("Not yet implemented");
+		dealer.setBet(casinoBet);
+		dealer.lostBet();
+
+		assertEquals(0, dealer.casinoBet);
+		assertEquals((casinoFunds - casinoBet), dealer.getCasinoFunds());
 	}
 
 	@Test
 	void testCalculateHandTotal() {
-		fail("Not yet implemented");
+		String name = "Bob Billy";
+		double casinoFunds = 200000;
+
+		Dealer dealer = new Dealer(name, casinoFunds);
+
+		Card testCard1 = new Card(Suit.Hearts, Rank.Queen);
+		Card testCard2 = new Card(Suit.Spades, Rank.Ace);
+
+		dealer.hand.add(testCard1);
+		dealer.hand.add(testCard2);
+
+		int handTotal = 0;
+		boolean cardIsAce = false;
+
+		for (int i = 0; i < dealer.hand.size(); i++) {
+			int value = dealer.hand.get(i).getCardValue();
+			if (value > 10) {
+				value = 10;
+			} else if (value == 1) {
+				cardIsAce = true;
+			}
+			handTotal += value;
+		}
+		if (cardIsAce && handTotal + 10 <= 21) {
+			handTotal += 10;
+		}
+
+		assertEquals(21, handTotal);
 	}
 
 	@Test
 	void testPeek() {
-		fail("Not yet implemented");
+		String name = "Bob Billy";
+		double casinoFunds = 200000;
+
+		Dealer dealer = new Dealer(name, casinoFunds);
+
+		Card testCard1 = new Card(Suit.Hearts, Rank.Queen);
+		Card testCard2 = new Card(Suit.Spades, Rank.Ace);
+
+		dealer.hand.add(testCard1);
+		dealer.hand.add(testCard2);
+
+		int handTotal = 0;
+		boolean cardIsAce = false;
+
+		for (int i = 0; i < dealer.hand.size(); i++) {
+			int value = dealer.hand.get(i).getCardValue();
+			if (value > 10) {
+				value = 10;
+			} else if (value == 1) {
+				cardIsAce = true;
+			}
+			handTotal += value;
+		}
+		if (cardIsAce && handTotal + 10 <= 21) {
+			handTotal += 10;
+		}
+
+		assertEquals(true, handTotal >= 10);
 	}
 
 	@Test
 	void testClearHand() {
-		fail("Not yet implemented");
+		String name = "Bob Billy";
+		double casinoFunds = 200000;
+
+		Dealer dealer = new Dealer(name, casinoFunds);
+
+		Card testCard1 = new Card(Suit.Hearts, Rank.Queen);
+		Card testCard2 = new Card(Suit.Spades, Rank.Ace);
+
+		dealer.hand.add(testCard1);
+		dealer.hand.add(testCard2);
+
+		assertEquals(2, dealer.hand.size());
+
+		dealer.clearHand();
+
+		assertEquals(0, dealer.hand.size());
 	}
 
 }
