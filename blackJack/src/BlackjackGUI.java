@@ -3,13 +3,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class BlackjackGUI {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private String iconPath = "icon.png"; // Path to the icon image
+    private String iconPath = "Cards/icon.png"; // Path to the icon image
     private String credentials;
     private JTextArea gameListArea, playerListArea;
     private boolean playButtonClicked = false;
@@ -17,6 +19,10 @@ public class BlackjackGUI {
     private boolean viewPlayersButtonClicked = false;
     private Semaphore loginSemaphore = new Semaphore(0);
     private Semaphore buttonClicksemaphore = new Semaphore(0);
+    private List<fakeCard> dealerCards = new ArrayList<>();
+    private List<fakeCard> playerCards = new ArrayList<>();
+    private JPanel dealerPanel;
+    private JPanel playerPanel;
 
     public BlackjackGUI() {
         initializeGUI();
@@ -165,6 +171,8 @@ public class BlackjackGUI {
     }
 
     private void initializeBlackjackTablePanel() {
+    	dealerPanel = new JPanel();
+        playerPanel = new JPanel();
         JPanel blackjackTablePanel = new JPanel(new BorderLayout());
         blackjackTablePanel.setBackground(new Color(0, 102, 0)); // Green table background
 
@@ -175,6 +183,16 @@ public class BlackjackGUI {
         dealerLabel.setForeground(Color.WHITE);
         dealerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         dealerPanel.add(dealerLabel);
+
+
+        JLabel testLabel = new JLabel(new ImageIcon("Cards/icon.png"));//testing purposes
+        dealerPanel.add(testLabel);
+        dealerPanel.revalidate();
+        dealerPanel.repaint();
+        
+
+        // Assuming dealerCards is a List<fakeCard> holding the dealer's cards
+        displayCards(dealerPanel, dealerCards); // You need to manage when and how to update this list
         blackjackTablePanel.add(dealerPanel, BorderLayout.NORTH);
 
         // Player area
@@ -186,18 +204,8 @@ public class BlackjackGUI {
         playerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         playerPanel.add(playerLabel);
 
-        // Add components for player actions: Hit, Stand, Double Down, etc.
-        JPanel actionsPanel = new JPanel(new FlowLayout());
-        JButton hitButton = new JButton("Hit");
-        JButton standButton = new JButton("Stand");
-        JButton doubleDownButton = new JButton("Double Down");
-        customizeButton(hitButton);
-        customizeButton(standButton);
-        customizeButton(doubleDownButton);
-        actionsPanel.add(hitButton);
-        actionsPanel.add(standButton);
-        actionsPanel.add(doubleDownButton);
-        playerPanel.add(actionsPanel);
+        // Assuming playerCards is a List<fakeCard> holding the player's cards
+        displayCards(playerPanel, playerCards); // Update this similarly
 
         blackjackTablePanel.add(playerPanel, BorderLayout.CENTER);
 
@@ -240,6 +248,32 @@ public class BlackjackGUI {
 
         cardPanel.add(playerListPanel, "Player List");
     }
+    
+    
+    private void displayCards(JPanel panel, List<fakeCard> cards) {
+        panel.removeAll(); // Clear previous card images
+        if (cards != null) {
+            for (fakeCard card : cards) {
+                ImageIcon icon = new ImageIcon(card.getImage().getImage());
+                JLabel cardLabel = new JLabel(icon);
+                panel.add(cardLabel);
+            }
+        }
+        panel.revalidate();
+        panel.repaint();
+    }
+    
+    
+    public void dealToDealer(fakeCard card) {
+        dealerCards.add(card);
+        displayCards(dealerPanel, dealerCards); // Assuming dealerPanel is accessible here
+    }
+
+    public void dealToPlayer(fakeCard card) {
+        playerCards.add(card);
+        displayCards(playerPanel, playerCards); // Assuming playerPanel is accessible here
+    }
+    
     
     
     private void quickJoin() {
@@ -308,6 +342,10 @@ public class BlackjackGUI {
         button.setForeground(Color.WHITE);
     }
 
+    public void navigateToTablePanel() {
+        cardLayout.show(cardPanel, "BlackjackTable");
+    }// for testing purposes
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(BlackjackGUI::new);
     }
