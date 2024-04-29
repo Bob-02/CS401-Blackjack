@@ -373,13 +373,5 @@ public class Server {
 
 		// If not found on the list.
 		return null;
-	}
-	
-	
-	
-	
+	}	
 }
-
-
-
-

@@ -707,25 +707,27 @@ public class ClientHandler implements Runnable {
 
 		Game newGame = new Game();
 		Server.getGames().add(newGame);
-		updateMessageSuccess(message, newGame.getID());
-		
+
+		String gameID = newGame.getID();
+		updateMessageSuccess(message, gameID);
 	}
 	
 	
 	// Closes the game with the supplied Game ID and returns the same ID.
 	private void closeGame(Message message) {
 
-		Game gameToRemove = Server.getTargetGame(message.getText());
+		String gameID = message.getText();
+		Game gameToRemove = Server.getTargetGame(gameID);
 		
 		// If we didn't find the game to remove.
 		if(gameToRemove == null) {
-			updateMessageFailed(message, "No Game with that ID!");
+			updateMessageFailed(message, "Game #" + gameID + "Not Found!");
 			return;
 		}
 		
 		// Else remove the game.
 		Server.getGames().remove(gameToRemove);
-		updateMessageSuccess(message, message.getText());
+		updateMessageSuccess(message, "Game #" + gameID + " has been Closed.");
 	}		
 
 
@@ -733,13 +735,15 @@ public class ClientHandler implements Runnable {
 	// to join.
 	private void joinGame(Message message) {
 		
-		Game gameToJoin = Server.getTargetGame(message.getText());
+		String gameID = message.getText();
+		Game gameToJoin = Server.getTargetGame(gameID);
 		
 		// If a Dealer wants to join a game as a DEALER
 		if(dealerUser != null && playerUser == null) {
 			
 			gameToJoin.setDealer(dealerUser);
 			usersGame = gameToJoin;
+			updateMessageSuccess(message, "Dealer joined Game #" + gameID);
 			return;
 		}
 		
@@ -747,7 +751,11 @@ public class ClientHandler implements Runnable {
 		if(playerUser != null && dealerUser == null) {
 			gameToJoin.addPlayer(playerUser);
 			usersGame = gameToJoin;
+			updateMessageSuccess(message, "Player joined Game #" + gameID);
+			return;
 		}
+		
+		updateMessageFailed(message, "Game #" + gameID + "Not Found!");
 	}
 
 	
@@ -755,12 +763,15 @@ public class ClientHandler implements Runnable {
 	// removed from that game.
 	private void leaveGame(Message message) {
 		
-		Game gameToLeave = Server.getTargetGame(message.getText());
+		String gameID = message.getText();
+		Game gameToLeave = Server.getTargetGame(gameID);
 
 		// If a Dealer wants to leave a game.
 		if(dealerUser != null && playerUser == null) {
 			gameToLeave.removeDealer(dealerUser);
 			usersGame = null;
+			updateMessageSuccess(message, dealerUser.name +" has left Game #"
+								 + gameID);
 			return;
 		}
 		
@@ -768,8 +779,11 @@ public class ClientHandler implements Runnable {
 		if(playerUser != null && dealerUser == null) {
 			gameToLeave.removePlayer(playerUser);
 			usersGame = null;
+			updateMessageSuccess(message, playerUser.name +" has left Game #"
+					 + gameID);
 		}
 		
+		updateMessageFailed(message, "Invalid game request!");
 	}
 	
 	// User join the first Open Game's Table.
