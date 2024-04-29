@@ -404,48 +404,8 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}
-
 	
-	// The client supplies in a request with the users details. 
-	// Server responds if the user has been registered or if the username
-	// given is taken.
-	//
-	// username:password
-	//
-	// Return response to client with whatever Server.registerUser returns.
-	private void registerUser(Message message){
-
-		String status;
-		
-		try {
-			
-			status = Server.registerUser(message.getText());
-						
-			// If the user is already registered.
-			if(status.equals("taken") ) {
-				
-				updateMessageFailed(message, "Username already taken!");
-				return;
-			}
-			
-			// If the user was registered.
-			if(status.equals("registerd") ) {
-				
-				updateMessageSuccess(message, 
-									 "You have registered to the Server!");
-			}
-			
-			// If there is a wrong format supplied.
-			updateMessageFailed(message, "Error");
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-
-
+	
 	// When the dealer wants to start a game of Blackjack in a game. The client
 	// will request that action by sending a request of Type StartRound.
 	// This will start a round in the Server.
@@ -494,6 +454,48 @@ public class ClientHandler implements Runnable {
 		usersGame.clearHands();
 		
 	}
+
+	
+	// The client supplies in a request with the users details. 
+	// Server responds if the user has been registered or if the username
+	// given is taken.
+	//
+	// username:password
+	//
+	// Return response to client with whatever Server.registerUser returns.
+	private void registerUser(Message message){
+
+		String status;
+		
+		try {
+			
+			status = Server.registerUser(message.getText());
+						
+			// If the user is already registered.
+			if(status.equals("taken") ) {
+				
+				updateMessageFailed(message, "Username already taken!");
+				return;
+			}
+			
+			// If the user was registered.
+			if(status.equals("registerd") ) {
+				
+				updateMessageSuccess(message, 
+									 "You have registered to the Server!");
+			}
+			
+			// If there is a wrong format supplied.
+			updateMessageFailed(message, "Error");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+
 
 	// Sends a String back to the client with a list of all the games on the
 	// Server with some details.
@@ -624,6 +626,9 @@ public class ClientHandler implements Runnable {
 	}
 	
 	
+	// Needs to be renamed to what it really is.
+	// Updates the Client with the state in a game of Blackjack.
+	//
 	// Lists the Players within a certain game.
 	// The text area should contain the game's ID that wants to display its 
 	// players.
@@ -813,7 +818,7 @@ public class ClientHandler implements Runnable {
 	// A player wants to add funds to their account by giving a their name and
 	// how much
 	//
-	// username:fundsToAdd
+	// username:0000
 	//
 	private void addFunds(Message message) {
 		
