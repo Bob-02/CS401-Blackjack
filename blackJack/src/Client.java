@@ -7,16 +7,20 @@ public class Client {
 
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;
-    private static final int TIMEOUT_MS = 25000; // 25 seconds
+    //private static final int TIMEOUT_MS = 25000; // 25 seconds
     private static BlackjackGUI gui;
+    private String messageTogui;
+    private static Client client;
 
     public static void main(String[] args) {
     	gui = new BlackjackGUI();
+    	client = new Client();
+    	
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
             System.out.println("Connected to server.");
             
             // Set socket timeout
-            socket.setSoTimeout(TIMEOUT_MS);
+            //socket.setSoTimeout(TIMEOUT_MS);
 
             // Initialize streams
             OutputStream outputStream = socket.getOutputStream();
@@ -104,7 +108,7 @@ public class Client {
 //        sendMessage(new Message(Type.Logout, Status.New, "luser1"));
 //	}
     
-    private static void createAndSendMessage() {
+	private static void createAndSendMessage() {
         // Get button clicks from GUI
         String buttonClick = gui.buttonClicks();
         System.out.println("This Button Is Clicked --> " +buttonClick);
@@ -113,12 +117,25 @@ public class Client {
         switch (buttonClick) {
             case "playButtonClicked":
                 sendMessage(new Message(Type.QuickJoin, Status.New, "Play"));
+                Message receivedMessage = receiveMessage();
+                String msgtogui = receivedMessage.getStatus().toString();
+                client.setMessageTogui(msgtogui);
+                System.out.println("Message to GUI SET ="+ msgtogui);
                 break;
             case "viewGamesButtonClicked":
                 sendMessage(new Message(Type.ListGames, Status.New, "ViewGames"));
+                Message viewgamereceivedMessage = receiveMessage();
+                String viewgamemsgtogui = viewgamereceivedMessage.getStatus().toString();
+                client.setMessageTogui(viewgamemsgtogui);
+                System.out.println("Message to GUI SET ="+ viewgamemsgtogui);
                 break;
             case "viewPlayersButtonClicked":
                 sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ViewPlayers"));
+                
+                Message playersreceivedMessage = receiveMessage();
+                String viewplayersmsgtogui = playersreceivedMessage.getStatus().toString();
+                client.setMessageTogui(viewplayersmsgtogui);
+                System.out.println("Message to GUI SET ="+ viewplayersmsgtogui);
                 break;
             default:
                 // Default action if no button is clicked
@@ -127,6 +144,13 @@ public class Client {
         }
     }
     
+    public String getMessageTogui() {
+		return messageTogui;
+	}
+
+	public void setMessageTogui(String messageTogui) {
+		this.messageTogui = messageTogui;
+	}
 	private static void sendMessage(Message message) {
         try {
             objectOutputStream.writeObject(message);
