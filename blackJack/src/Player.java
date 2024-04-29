@@ -86,8 +86,23 @@ public class Player {
 		//
 		// Card of Suit, Card of Suit, ... , Card of Suit
 		//
+		Card lastCard;
 		
-		Card lastCard = hand.get(hand.size() -1);
+		if(hand.size() < 1) {
+			return "";
+		}
+		
+		// if the size of the hand is 2 or more
+		// fixes out of bounds.
+		if(hand.size() > 1) {
+			lastCard = hand.get(hand.size() -1);
+		}
+		
+		// if only one card
+		else {
+			lastCard = hand.get(0);
+		}
+
 		
 		for(Card c : hand) {
 			
