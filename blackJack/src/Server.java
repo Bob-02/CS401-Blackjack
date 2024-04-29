@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 // make private?
@@ -364,8 +365,12 @@ public class Server {
 		// Go through all the games on the list until we find a matching ID.
 		for(Game g : games) {
 			
+			String gameID = g.getID();
+
 			// If a game matches the ID wanted return that game.
-			if(g.getID() == ID) {
+			// Objects.equals() ensures no NullPointerException if gameID is 
+			// null.
+			if(Objects.equals(gameID, ID) ) {
 				
 				return g;
 			}	
@@ -374,4 +379,6 @@ public class Server {
 		// If not found on the list.
 		return null;
 	}	
+	
+	
 }
