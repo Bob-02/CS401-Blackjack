@@ -3,10 +3,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-	static Table table;
-	static Dealer dealer;
-	static TableStatus tableStatus;
-	static List<Player> lobby;
+	private Table table;
+	private Dealer dealer;
+	private TableStatus tableStatus;
+	private List<Player> lobby;
 	private String timeStamp;
 	private static Scanner gameManager = new Scanner(System.in);
 
@@ -24,10 +24,13 @@ public class Game {
 	}
 
 	public Game() {
+		Dealer nullDealer = new Dealer("", 0);
+		this.dealer = nullDealer;
 		this.lobby = new ArrayList<>();
-		table = new Table(dealer, lobby);
-		this.dealer = null;
-		tableStatus = TableStatus.Open;
+		
+		table = new Table();
+
+		tableStatus = TableStatus.NeedDealer;
 
 		this.timeStamp = new Date().getCurrentDate();
 		this.id = String.valueOf(count++); // Need a way to track game number.
@@ -72,7 +75,7 @@ public class Game {
 		table.dealer = dealer;
 	}
 
-	public static void removePlayer(Player player) {
+	public void removePlayer(Player player) {
 		if (tableStatus == TableStatus.Full) {
 			tableStatus = TableStatus.Open;
 		}
@@ -82,7 +85,7 @@ public class Game {
 
 	}
 
-	public static void removeDealer(Dealer dealer) {
+	public void removeDealer(Dealer dealer) {
 
 		tableStatus = TableStatus.NeedDealer;
 		table.clearDealerHand(dealer);
@@ -100,10 +103,10 @@ public class Game {
 		}
 	}
 
-	public static void getBets(String message) {
+	public void getBets(String message) {
 		String[] serverMessages = message.split("\n");
-		List<String> playerNames = new ArrayList();
-		List<String> playerBets = new ArrayList();
+		List<String> playerNames = new ArrayList<>();
+		List<String> playerBets = new ArrayList<>();
 
 		for (String playerBet : serverMessages) {
 			String[] playerStats = playerBet.split(":");
@@ -128,7 +131,7 @@ public class Game {
 
 	}
 
-	public static void checkBlackjack() { // System.out.println();
+	public void checkBlackjack() { // System.out.println();
 		if (dealer.doesTheDealerHaveBlackJack()) {
 			System.out.println("Dealer has BlackJack!");
 			for (int i = 0; i < table.players.size(); i++) {
@@ -155,7 +158,7 @@ public class Game {
 
 	}
 
-	public static void hitOrStand() {
+	public void hitOrStand() {
 		String command;
 		char c;
 		for (int i = 0; i < table.players.size(); i++) {
@@ -180,7 +183,7 @@ public class Game {
 		}
 	}
 
-	public static void settleBets() {
+	public void settleBets() {
 		System.out.println();
 
 		for (int i = 0; i < table.players.size(); i++) {
@@ -208,7 +211,7 @@ public class Game {
 
 	}
 
-	public static void dealerTurn() {
+	public void dealerTurn() {
 
 		System.out.println();
 		while (dealer.calculateHandTotal() <= 16) {
@@ -224,7 +227,7 @@ public class Game {
 
 	}
 
-	public static void printFunds() {
+	public void printFunds() {
 		for (int i = 0; i < table.players.size(); i++) {
 			if (table.players.get(i).getPlayerFunds() > 0) {
 				System.out.println(
@@ -238,14 +241,14 @@ public class Game {
 		}
 	}
 
-	public static void clearHands() {
+	public void clearHands() {
 		for (int i = 0; i < table.players.size(); i++) {
 			table.players.get(i).clearHand();
 		}
 		dealer.clearHand();
 	}
 
-	public static void printHands() {
+	public void printHands() {
 		for (int i = 0; i < table.players.size(); i++) {
 			if (table.players.get(i).getPlayerFunds() > 0) {
 				System.out.println(table.players.get(i).getPlayerName() + " has "
@@ -255,7 +258,7 @@ public class Game {
 		System.out.println("Dealer has " + dealer.hand.toString());
 	}
 
-	public static void main(String[] args) {
+	public void main(String[] args) {
 		Dealer dealer = new Dealer("Billy", 1000);
 		List<Player> testPlayers = new ArrayList<Player>();
 

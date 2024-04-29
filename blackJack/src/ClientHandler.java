@@ -46,6 +46,7 @@ public class ClientHandler implements Runnable {
 	    	System.out.println(Server.getOnlineDealers());
 	    	System.out.println(Server.getValidPlayers());
 	    	System.out.println(Server.getOnlinePlayers());
+	    	System.out.println("end of server details anything beyond is past respondToClient()\n\n");
 	        
 	        // Get the first message from client. It should be a login message.
 	        // Ignore anything else.
@@ -204,10 +205,6 @@ public class ClientHandler implements Runnable {
 	        		
 	        		dealerUser = Server.getTargetDealer(username);
 	        		playerUser = null;
-	        		
-	        		
-	        		// Print the list of the current online Dealers.
-	        		//System.out.println(Server.getOnlineDealers());
 	        	}
 	        	
 	        	// Set target player to client handler.
@@ -216,10 +213,7 @@ public class ClientHandler implements Runnable {
 	        	if(loginType == "player") {
 	        		
 	        		playerUser = Server.getTargetPlayer(username);
-	        		dealerUser = null;
-	        		
-	        		// Print the list of the current online Players.
-	        		System.out.println(Server.getOnlinePlayers().toString());
+	        		dealerUser = null;	
 	        	}
 	        	
 	        	login.setStatus(Status.Success);
@@ -350,10 +344,12 @@ public class ClientHandler implements Runnable {
 			// Sends a list of all online Players on the Server.
 			case ListPlayersOnline:
 				listPlayersOnline(message);
+				break;
 				
 			// Sends a list of all online Dealers on the Server.
 			case ListDealersOnline:
 				listDealersOnline(message);
+				break;
 				
 			// Sends a list of all Players in a Game by its Game ID.
 			case ListPlayersInGame:
@@ -408,6 +404,56 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}
+	
+	
+	// When the dealer wants to start a game of Blackjack in a game. The client
+	// will request that action by sending a request of Type StartRound.
+	// This will start a round in the Server.
+	private void roundOfBlackjack(Message message) {
+		
+		//String gameID = message.getText();
+		//usersGame = Server.getTargetGame(gameID);
+		
+		// If not a valid game just do nothing.
+		if(usersGame ==  null) {
+			return;
+		}
+		
+		
+		// A while loop switch to control the game.
+		switch(message.getStatus()) {
+			default :
+				break;
+			
+			
+		}
+
+		
+		// A request a from the Client to place bets for Players.
+		// this will update usersGame.
+		// The string should come in as follows:
+		// 
+		// username:Bet\n
+		// username:Bet\n
+		// username:Bet
+		//
+		if(message.getType() == Type.Bet) {
+			// bet does this
+			usersGame.getTable().shuffleCards();		// Client handler does nothing
+			usersGame.getBets(message.getText());// getBets takes all players bets.
+			usersGame.getTable().dealCards();		// updates all players hands
+		}
+		
+		// update gui here.. They get to see all new hands and bets.
+		
+		usersGame.checkBlackjack();
+		usersGame.hitOrStand();
+		usersGame.dealerTurn();
+		usersGame.settleBets();
+		usersGame.printFunds();	// might not be needed?
+		usersGame.clearHands();
+		
+	}
 
 	
 	// The client supplies in a request with the users details. 
@@ -443,59 +489,13 @@ public class ClientHandler implements Runnable {
 			updateMessageFailed(message, "Error");
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 
 
-	// When the dealer wants to start a game of Blackjack in a game. The client
-	// will request that action by sending a request of Type StartRound.
-	// This will start a round in the Server.
-	private void roundOfBlackjack(Message message) {
-		
-		//String gameID = message.getText();
-		//usersGame = Server.getTargetGame(gameID);
-		
-		// If not a valid game just do nothing.
-		if(usersGame ==  null) {
-			return;
-		}
-		
-		
-		// A while loop switch to control the game.
-		switch(message.getStatus()) {
-			
-			
-		}
 
-		
-		// A request a from the Client to place bets for Players.
-		// this will update usersGame.
-		// The string should come in as follows:
-		// 
-		// username:Bet\n
-		// username:Bet\n
-		// username:Bet
-		//
-		if(message.getType() == Type.Bet) {
-			// bet does this
-			usersGame.table.shuffleCards();		// Client handler does nothing
-			usersGame.getBets(message.getText());// getBets takes all players bets.
-			usersGame.table.dealCards();		// updates all players hands
-		}
-		
-		// update gui here.. They get to see all new hands and bets.
-		
-		usersGame.checkBlackjack();
-		usersGame.hitOrStand();
-		usersGame.dealerTurn();
-		usersGame.settleBets();
-		usersGame.printFunds();	// might not be needed?
-		usersGame.clearHands();
-		
-	}
 
 	// Sends a String back to the client with a list of all the games on the
 	// Server with some details.
@@ -522,20 +522,33 @@ public class ClientHandler implements Runnable {
 		
 		for(Game g : gameList) {
 			
+			String ID = g.getID();
+			TableStatus tableStatus = g.getTableStatus();
+			String dealerName = g.getDealer().getDealerName();
+			int numPlayers = g.getTable().getPlayers().size();
+			
+			if(dealerName == null) {
+				dealerName = "No Dealer";
+			}
+			
+			gameListString += ID + ":" + tableStatus + ":" + dealerName + ":"
+				    		  + numPlayers;
+			
 			// If at last game on the list, print without newline character.
-			if(g.equals(lastGame) ) {
+			if(!g.equals(lastGame) ) {
 				
-				gameListString += g.getID() + ":" 
-							    + g.getTableStatus() + ":"
-							    + g.getDealer().getDealerName() + ":"
-							    + g.getTable().getPlayers().size();
+				gameListString += "\n";
+//								g.getID() + ":" 
+//							    + g.getTableStatus() + ":"
+//							    + g.getDealer().getDealerName() + ":"
+//							    + g.getTable().getPlayers().size();
 			}
 			
 			// Else add the details to the string WITH newline characters.
-			gameListString += g.getID() + ":" 
-							+ g.getTableStatus() + ":"
-							+ g.getDealer().getDealerName() + ":"
-							+ g.getTable().getPlayers().size() + "\n";
+//			gameListString += g.getID() + ":" 
+//							+ g.getTableStatus() + ":"
+//							+ g.getDealer().getDealerName() + ":"
+//							+ g.getTable().getPlayers().size() + ;
 		}
 		
 		
@@ -544,30 +557,36 @@ public class ClientHandler implements Runnable {
 		updateMessageSuccess(message, gameListString);
 	}
 	
+	//NEED TO FIX
+	// PRINTS
 	
 	// Lists all Players online in the Server or nothing at all.
 	private void listPlayersOnline(Message message) {
 
-		String playersOnlineString = null;
+		String playersOnlineString = "";
 		List<Player> playersOnline = Server.getOnlinePlayers();
 		
 		// If no Players online send a Success message back to the client.
 		if(playersOnline == null) {
-			updateMessageSuccess(message, "There are no Players online!");
+			updateMessageFailed(message, "There are no Players online!");
 			return;
 		}
 		
 		Player lastPlayer = playersOnline.get(playersOnline.size() -1);
-		
+	
 		// Each player on the list gets printed.
 		for(Player p : playersOnline) {
-			
+	
 			// If at the last Player on the list print w/o the comma.
 			if(p.equals(lastPlayer) ) {
 				playersOnlineString += p.getPlayerName();
+
 			}
 			
-			playersOnlineString += p.getPlayerName() + ",";
+			else {
+				
+				playersOnlineString += p.getPlayerName() + ",";
+			}
 		}
 		
 		// Update the Status of the Message.
@@ -583,8 +602,8 @@ public class ClientHandler implements Runnable {
 		List<Dealer> dealersOnline = Server.getOnlineDealers();
 		
 		// If no Dealers online send a Success message back to the client.
-		if(dealersOnline == null) {
-			updateMessageSuccess(message, "There are no Dealers online!");
+		if(dealersOnline == null || dealersOnline.size() == 0) {
+			updateMessageFailed(message, "There are no Dealers online!");
 			return;
 		}
 		
@@ -607,6 +626,9 @@ public class ClientHandler implements Runnable {
 	}
 	
 	
+	// Needs to be renamed to what it really is.
+	// Updates the Client with the state in a game of Blackjack.
+	//
 	// Lists the Players within a certain game.
 	// The text area should contain the game's ID that wants to display its 
 	// players.
@@ -624,7 +646,7 @@ public class ClientHandler implements Runnable {
 		//
 		// Where Card,...,Card is the players hand.
 		
-		String listOfPlayers = null;
+		String listOfPlayers = "";
 		String gameID = message.getText();
 		
 		Game game = Server.getTargetGame(gameID);
@@ -796,11 +818,15 @@ public class ClientHandler implements Runnable {
 	// A player wants to add funds to their account by giving a their name and
 	// how much
 	//
-	// username:fundsToAdd
+	// username:0000
 	//
 	private void addFunds(Message message) {
 		
 		String request[] = message.getText().split(":");
+		
+		if(request.length != 2) {
+			return;
+		}
 		
 		Player player = Server.getTargetPlayer(request[0]);
 		Double fundsToAdd = Double.valueOf(request[1]);
