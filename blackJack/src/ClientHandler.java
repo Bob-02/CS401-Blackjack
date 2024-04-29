@@ -460,7 +460,13 @@ public class ClientHandler implements Runnable {
 		
 		usersGame.checkBlackjack();
 		usersGame.hitOrStand();
+		
+		// update gui here again.
+		
 		usersGame.dealerTurn();
+		
+		// update gui here again.
+		
 		usersGame.settleBets();
 		
 		// update gui here again.
@@ -480,7 +486,7 @@ public class ClientHandler implements Runnable {
 	// username:password
 	//
 	// Return response to client with whatever Server.registerUser returns.
-	private void registerUser(Message message){
+	private synchronized void registerUser(Message message){
 
 		String status;
 		
@@ -669,31 +675,39 @@ public class ClientHandler implements Runnable {
 		
 		Game game = Server.getTargetGame(gameID);
 		
-		// If there is no game by supplied ID
-		if(game == null) {
-			updateMessageFailed(message, "Game Not Found!");
-			return;
-		}
-		
+		// If there is no game by supplied ID or if there are no games.
+	    // Check if game or table is null
+	    if (game == null || game.getTable() == null) {
+	    	
+	        updateMessageFailed(message, "Game Not Found!");
+	        return;
+	    }	
+	    
 		List<Player> players = game.getTable().getPlayers();
 		
-		Player lastPlayer = players.get(players.size() -1);
+	    // Check if players list is null or empty
+	    if (players == null || players.isEmpty()) {
+	        updateMessageFailed(message, "No Players Found!");
+	        return;
+	    }
+		
+		// If Player logs in there should be at least one player.
+		// If no players and a dealer logs in should return nothing. 
+		Player lastPlayer = players.get(players.size() -1);		
 		
 		for(Player p : players) {
 			
-			// If at the last player on list, print without newline character.
-			if(p.equals(lastPlayer)) {
-				listOfPlayers += p.getPlayerName() + ":"
-							   + p.toStringPlayersHand() + ":"
-							   + p.getPlayerFunds() + ":"
-							   + p.getBet();
-			}
+			String name = p.getPlayerName();
+			String hand = p.toStringPlayersHand();
+			String funds = String.valueOf(p.getPlayerFunds());
+			String bet = String.valueOf(p.getBet());
 			
-			// Else add the details to the string WITH newline characters.
-			listOfPlayers += p.getPlayerName() + ":"
-					   + p.toStringPlayersHand() + ":"
-					   + p.getPlayerFunds() + ":"
-					   + p.getBet() + "\n";
+			listOfPlayers += name + ":" + hand + ":" + funds + ":" + bet;
+			
+			// If at the last player on list, print without newline character.
+			if(!p.equals(lastPlayer)) {
+				listOfPlayers += "\n";
+			}
 		}
 		
 		// Update the Status of the Message.
@@ -733,10 +747,17 @@ public class ClientHandler implements Runnable {
 
 	// The message will have the Game ID that the PlayerUser or DealerUser wants
 	// to join.
-	private void joinGame(Message message) {
+	private synchronized void joinGame(Message message) {
 		
 		String gameID = message.getText();
 		Game gameToJoin = Server.getTargetGame(gameID);
+		
+	    if (gameToJoin == null) {
+	        //System.out.println("No game found with ID: " + gameID);
+	        updateMessageFailed(message, "Game #" + gameID + " not found!");
+	        return;
+	    }
+		
 		
 		// If a Dealer wants to join a game as a DEALER
 		if(dealerUser != null && playerUser == null) {
@@ -744,18 +765,18 @@ public class ClientHandler implements Runnable {
 			gameToJoin.setDealer(dealerUser);
 			usersGame = gameToJoin;
 			updateMessageSuccess(message, "Dealer joined Game #" + gameID);
-			return;
 		}
 		
 		// If a Player wants to join a game
-		if(playerUser != null && dealerUser == null) {
+		else if(playerUser != null && dealerUser == null) {
 			gameToJoin.addPlayer(playerUser);
 			usersGame = gameToJoin;
 			updateMessageSuccess(message, "Player joined Game #" + gameID);
-			return;
 		}
 		
-		updateMessageFailed(message, "Game #" + gameID + "Not Found!");
+		else {
+			updateMessageFailed(message, "Game #" + gameID + "Not Found!");
+		}
 	}
 
 	
@@ -789,7 +810,7 @@ public class ClientHandler implements Runnable {
 	// User join the first Open Game's Table.
 	// Nothing is supplied by the message.
 	// Return the Game's ID that the player has joined.
-	private void quickJoin(Message message) {
+	private synchronized void quickJoin(Message message) {
 		
 		String gameID = "";
 		List<Game> games = Server.getGames();
@@ -853,7 +874,7 @@ public class ClientHandler implements Runnable {
 	//
 	// username:0000
 	//
-	private void addFunds(Message message) {
+	private synchronized void addFunds(Message message) {
 		
 		String request[] = message.getText().split(":");
 		
