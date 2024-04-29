@@ -24,7 +24,7 @@ public class Game {
 	}
 
 	public Game() {
-		Dealer nullDealer = new Dealer("", 0);
+		Dealer nullDealer = new Dealer(" ", 0);
 		this.dealer = nullDealer;
 		this.lobby = new ArrayList<>();
 		
