@@ -8,9 +8,10 @@ public class Client {
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;
     private static final int TIMEOUT_MS = 25000; // 25 seconds
+    private static BlackjackGUI gui;
 
     public static void main(String[] args) {
-    	
+    	gui = new BlackjackGUI();
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
             System.out.println("Connected to server.");
             
@@ -22,9 +23,7 @@ public class Client {
             InputStream inputStream = socket.getInputStream();
             objectOutputStream = new ObjectOutputStream(outputStream);
             objectInputStream = new ObjectInputStream(inputStream);
-            
-            BlackjackGUI gui = new BlackjackGUI();
-           
+                       
             // Send login message
             String credentials = gui.waitForLogin();
             System.out.println("Credentials about to be sent is : " + credentials);
@@ -83,28 +82,51 @@ public class Client {
             e.printStackTrace();
         }
     }
-
+////CreateandSendMessage Playground
+//    private static void createAndSendMessage() {
+//		// TODO Auto-generated method stub
+//    	// Create and send the message
+//        sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
+//        sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
+//    	sendMessage(new Message(Type.OpenGame, Status.New, "luser1"));
+//    	sendMessage(new Message(Type.OpenGame, Status.New, "1user2"));
+////    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+////    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+////    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
+////        sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
+////        sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
+////        sendMessage(new Message(Type.ListDealersOnline, Status.New, "ListDealersOnline"));
+////        sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
+////        sendMessage(new Message(Type.QuickJoin, Status.New, "dealer3"));
+//        sendMessage(new Message(Type.LeaveGame, Status.New, "1"));
+//        sendMessage(new Message(Type.CloseGame, Status.New, "1"));
+//        //sendMessage(new Message(Type.CashOut, Status.New, "CashOut"));
+//        sendMessage(new Message(Type.Logout, Status.New, "luser1"));
+//	}
+    
     private static void createAndSendMessage() {
-		// TODO Auto-generated method stub
-    	// Create and send the message
-        sendMessage(new Message(Type.AddFunds, Status.New, "AddFunds"));
-        sendMessage(new Message(Type.CheckFundHistory, Status.New, "CheckFundHistory"));
-    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-//    	sendMessage(new Message(Type.OpenGame, Status.New, ""));
-//        sendMessage(new Message(Type.ListGames, Status.New, "ListGames"));
-//        sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ListPlayersOnline"));
-//        sendMessage(new Message(Type.ListDealersOnline, Status.New, "ListDealersOnline"));
-//        sendMessage(new Message(Type.ListPlayersInGame, Status.New, "1"));
-        sendMessage(new Message(Type.QuickJoin, Status.New, "dealer3"));
-        sendMessage(new Message(Type.LeaveGame, Status.New, "1"));
-        sendMessage(new Message(Type.CloseGame, Status.New, "1"));
-        //sendMessage(new Message(Type.CashOut, Status.New, "CashOut"));
-        sendMessage(new Message(Type.Logout, Status.New, "dealer3"));
-	}
+        // Get button clicks from GUI
+        String buttonClick = gui.buttonClicks();
+        System.out.println("This Button Is Clicked --> " +buttonClick);
 
+        // Process button click and send corresponding message to the server
+        switch (buttonClick) {
+            case "playButtonClicked":
+                sendMessage(new Message(Type.QuickJoin, Status.New, "Play"));
+                break;
+            case "viewGamesButtonClicked":
+                sendMessage(new Message(Type.ListGames, Status.New, "ViewGames"));
+                break;
+            case "viewPlayersButtonClicked":
+                sendMessage(new Message(Type.ListPlayersOnline, Status.New, "ViewPlayers"));
+                break;
+            default:
+                // Default action if no button is clicked
+                sendMessage(new Message(Type.Default, Status.New, "NoAction"));
+                break;
+        }
+    }
+    
 	private static void sendMessage(Message message) {
         try {
             objectOutputStream.writeObject(message);
@@ -121,5 +143,9 @@ public class Client {
             System.err.println("Error receiving message: " + e.getMessage());
             return null;
         }
+    }
+    public String getButtonClicksFromGui() {
+    	gui.waitForButtonClick();
+    	return gui.buttonClicks();
     }
 }

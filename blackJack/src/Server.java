@@ -217,7 +217,8 @@ public class Server {
 				&& !validDealers.contains(userDetails)) {
 			
 			// Create new Player
-			Player newPlayer = new Player(username, getPlayerFunds(username));
+			// Players are a public class just set its funds a default amount.
+			Player newPlayer = new Player(username, 1000.00);
 			
 			// Add Player to onlinePlayers IFF that Player isn't already logged
 			// in.
@@ -235,6 +236,42 @@ public class Server {
 		return "invalid";
 	}
 
+	
+	// Registers a new Player to the Server.
+	// returns a string as either registered. or User name taken.
+	public static String registerUser(String userDetails) throws IOException {
+		
+		// look up in the list, if in there, return user already registered.
+		// if not add to list
+		
+		String details[] = userDetails.split(":");
+		
+		// Details in the wrong format, immediately ignore.
+		if(details.length != 2) {
+			
+			return "";
+		}
+		
+		String username = details[0];
+		
+		if(validPlayers.contains(userDetails)) {
+
+			return username + "taken";
+		}
+		
+		// add to players file
+		FileWriter file;
+		file = new FileWriter("players.txt");
+		
+		file.append(userDetails);
+		validPlayers.add(userDetails);
+		
+		Player newPlayer = new Player(username, 1000.00);
+		onlinePlayers.add(newPlayer);
+		
+		return username + "registerd";
+	}
+	
 	
 	// Gets funds from Server.
 	private static double getCasinoFunds(String request) {
@@ -336,6 +373,12 @@ public class Server {
 		// If not found on the list.
 		return null;
 	}
-    
+	
+	
+	
+	
 }
+
+
+
 

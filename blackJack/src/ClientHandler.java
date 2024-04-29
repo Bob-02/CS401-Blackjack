@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable {
     // make a SINGLE generic type to hold either Player or Dealer
     private Player playerUser;
     private Dealer dealerUser;
+    private Game usersGame;
 
 	// Constructor
 	public ClientHandler(Socket socket) throws IOException
@@ -71,6 +72,9 @@ public class ClientHandler implements Runnable {
 			else {
 				System.out.println("Invalid credentials supplied, "
 								   	+ "closing socket!");
+				updateMessageFailed(login, login.getText());
+				logMessage(login);
+				
 				clientSocket.close();
 			}
 
@@ -87,16 +91,16 @@ public class ClientHandler implements Runnable {
 			// onlinePlayers or onlineDealers List.
 
 			// Keep reading for messages until we get a logout message.
-			Message current = (Message) objectInputStream.readObject();
+			Message request = (Message) objectInputStream.readObject();
 			
-			while (!isLogginOut(current)) {
+			while (!isLogginOut(request)) {
 				
-				// Send back updated message to the Client.
-				sendToClient(current);
+				// Respond back to Client's request with an updated message.
+				respondToClient(request);
 
 				// Get another message from the client
 				// In the future this might change to a List of Message.
-				current = (Message) objectInputStream.readObject();
+				request = (Message) objectInputStream.readObject();
 			}
 
 			// Don't forget to close the client durr.
@@ -215,19 +219,15 @@ public class ClientHandler implements Runnable {
 	        		dealerUser = null;
 	        		
 	        		// Print the list of the current online Players.
-	        		System.out.println(Server.getOnlinePlayers());
+	        		System.out.println(Server.getOnlinePlayers().toString());
 	        	}
-	        	
-	        	System.out.println("Login Successful -- <" + loginType
-	        			+ "> Client #" + id + "\n");
 	        	
 	        	login.setStatus(Status.Success);
 	        }
 	        
 	        // If neither player or dealer then the login is invalid
 	        else {
-	        	
-	        	System.out.println("Login Failed -- Client #" + id + "\n");
+
 	        	login.setStatus(Status.Failed);
 	        }
 	        
@@ -239,111 +239,6 @@ public class ClientHandler implements Runnable {
 		
 		return login;		
 	}
-	
-	// A general send Message back to Client function.
-	// A Message request is supplied by the Client and gets handled by the 
-	// message handler. Then updates the message accordingly and sends the 
-	// response back to the Client.
-	private void sendToClient(Message message) throws IOException {
-		try {
-
-			// Only brand new Message's with a Status of New will get handled.
-			if(message.getStatus() == Status.New) {
-				
-				// If its a new message then handle that request from the Client
-				handleMessage(message);
-			}
-			
-			// If its not a brand New Message than its an invalid request from 
-			// the Client.
-			else {
-
-				updateMessageFailed(message, 
-						"Invalid Request from the Client!");
-			}
-			
-			// Print message to the terminal (make a log of what happened).
-			logMessage(message);
-			
-			// Send acknowledgment back to the client.
-			objectOutputStream.writeObject(message);
-			
-	
-		} catch (IOException e) {
-			
-			System.out.println("Something Borked! Closing socket!\n");
-			clientSocket.close();
-			
-			e.printStackTrace();
-		}
-
-	}
-	
-
-	
-	
-	// Message handler
-	private void handleMessage(Message message) {
-
-		// Switch to handle all the various types of messages.
-		// Controlled by the Message's Type.
-		// Message request data is supplied in the Message text field. A servers
-		// action should be the Message Type and data associated in the text
-		// area.
-		//
-		// Build out the functions as needed and remember to update
-		// the message before sending to the Client.
-		//
-		switch(message.getType()) {
-			
-			// Sends a list of all Games on the server.
-			case ListGames:
-				listGames(message);
-				break;
-			
-			// Sends a list of all online Players on the Server.
-			case ListPlayersOnline:
-				listPlayersOnline(message);
-				
-			// Sends a list of all online Players on the Server.
-			case ListDealersOnline:
-				listDealersOnline(message);
-				
-			// Sends a list of all Players in a Game by its Game ID.
-			case ListPlayersInGame:
-				listPlayersInGame(message);
-				break;
-				
-			// Opens a new game on the Server and returns the new Game ID.
-			case OpenGame:
-				openGame(message);
-				break;
-				
-			// Closes a Game on the Server using a Game ID from the Client.
-			case CloseGame:
-				closeGame(message);
-				break;
-			
-			// Player/Dealer is added to game. Client supplies the Game's ID.
-			case JoinGame:
-				joinGame(message);
-				break;
-			
-			// Player/Dealer is removed from game. Client supplies Games' ID.
-			case LeaveGame:
-				leaveGame(message);
-				break;
-				
-			// Sends back the Game ID of which game the Player was put into.
-			case QuickJoin:
-				quickJoin(message);
-				break;
-				
-			default:
-				// DO NOTHING
-				break;
-		}
-	}	
 
 
 	// Prints a log to the terminal saying what was sent to the Client. 
@@ -386,6 +281,221 @@ public class ClientHandler implements Runnable {
 		message.setText(text);
 	}
 	
+	
+	// A general send Message back to Client function.
+	// A Message request is supplied by the Client and gets handled by the 
+	// message handler. Then updates the message accordingly and sends the 
+	// response back to the Client.
+	private void respondToClient(Message message) throws IOException {
+		try {
+
+			// Only brand new Message's with a Status of New will get handled.
+			if(message.getStatus() == Status.New) {
+				
+				// If its a new message then handle that request from the Client
+				handleMessage(message);
+			}
+			
+			// If its not a brand New Message than its an invalid request from 
+			// the Client.
+			else {
+
+				updateMessageFailed(message, 
+						"Invalid Request from the Client!");
+			}
+			
+			// Print message to the terminal (make a log of what happened).
+			logMessage(message);
+			
+			// Send acknowledgment back to the client.
+			objectOutputStream.writeObject(message);
+			
+	
+		} catch (IOException e) {
+			
+			System.out.println("Something Borked! Closing socket!\n");
+			clientSocket.close();
+			
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	// Message handler
+	//
+	// Switch to handle all the various types of messages.
+	// Controlled by the Message's Type.
+	// Message's request data is supplied in the Message text field. A servers
+	// action should be tied to the Message Type and data associated in the text
+	// area.
+	//
+	private void handleMessage(Message message) {
+
+		// Build out the functions as needed and remember to update
+		// the message before sending to the Client.
+		//
+		switch(message.getType()) {
+			
+			// Creates a new Player on the server. Details supplied in message.
+			case Register:
+				registerUser(message);
+				break;
+			
+			// Sends a list of all Games on the server.
+			case ListGames:
+				listGames(message);
+				break;
+			
+			// Sends a list of all online Players on the Server.
+			case ListPlayersOnline:
+				listPlayersOnline(message);
+				
+			// Sends a list of all online Dealers on the Server.
+			case ListDealersOnline:
+				listDealersOnline(message);
+				
+			// Sends a list of all Players in a Game by its Game ID.
+			case ListPlayersInGame:
+				listPlayersInGame(message);
+				break;
+				
+			// Opens a new game on the Server and returns the new Game ID.
+			case OpenGame:
+				openGame(message);
+				break;
+				
+			// Closes a Game on the Server using a Game ID from the Client.
+			case CloseGame:
+				closeGame(message);
+				break;
+			
+			// Player/Dealer is added to game. Client supplies the Game's ID.
+			case JoinGame:
+				joinGame(message);
+				break;
+			
+			// Player/Dealer is removed from game. Client supplies Games' ID.
+			case LeaveGame:
+				leaveGame(message);
+				break;
+				
+			// Sends back the Game ID of which game the Player was put into.
+			case QuickJoin:
+				quickJoin(message);
+				break;
+				
+			// A Player wants to see their funds. A Dealer the Casino's funds.
+			case CheckFunds:
+				checkFunds(message);
+				break;
+				
+			// A player wants to add funds.
+			case AddFunds:
+				addFunds(message);
+				break;		
+			
+			// All Players places their bets for a round of Blackjack. 
+			// Starts a round of blackjack.
+			case Bet:
+				roundOfBlackjack(message);
+				break;
+			
+				
+				
+			// DO NOTHING
+			default:
+				break;
+		}
+	}
+
+	
+	// The client supplies in a request with the users details. 
+	// Server responds if the user has been registered or if the username
+	// given is taken.
+	//
+	// username:password
+	//
+	// Return response to client with whatever Server.registerUser returns.
+	private void registerUser(Message message){
+
+		String status;
+		
+		try {
+			
+			status = Server.registerUser(message.getText());
+						
+			// If the user is already registered.
+			if(status.equals("taken") ) {
+				
+				updateMessageFailed(message, "Username already taken!");
+				return;
+			}
+			
+			// If the user was registered.
+			if(status.equals("registerd") ) {
+				
+				updateMessageSuccess(message, 
+									 "You have registered to the Server!");
+			}
+			
+			// If there is a wrong format supplied.
+			updateMessageFailed(message, "Error");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+
+	// When the dealer wants to start a game of Blackjack in a game. The client
+	// will request that action by sending a request of Type StartRound.
+	// This will start a round in the Server.
+	private void roundOfBlackjack(Message message) {
+		
+		//String gameID = message.getText();
+		//usersGame = Server.getTargetGame(gameID);
+		
+		// If not a valid game just do nothing.
+		if(usersGame ==  null) {
+			return;
+		}
+		
+		
+		// A while loop switch to control the game.
+		switch(message.getStatus()) {
+			
+			
+		}
+
+		
+		// A request a from the Client to place bets for Players.
+		// this will update usersGame.
+		// The string should come in as follows:
+		// 
+		// username:Bet\n
+		// username:Bet\n
+		// username:Bet
+		//
+		if(message.getType() == Type.Bet) {
+			// bet does this
+			usersGame.table.shuffleCards();		// Client handler does nothing
+			usersGame.getBets(message.getText());// getBets takes all players bets.
+			usersGame.table.dealCards();		// updates all players hands
+		}
+		
+		// update gui here.. They get to see all new hands and bets.
+		
+		usersGame.checkBlackjack();
+		usersGame.hitOrStand();
+		usersGame.dealerTurn();
+		usersGame.settleBets();
+		usersGame.printFunds();	// might not be needed?
+		usersGame.clearHands();
+		
+	}
 
 	// Sends a String back to the client with a list of all the games on the
 	// Server with some details.
@@ -589,12 +699,14 @@ public class ClientHandler implements Runnable {
 		if(dealerUser != null && playerUser == null) {
 			
 			gameToJoin.setDealer(dealerUser);
+			usersGame = gameToJoin;
 			return;
 		}
 		
 		// If a Player wants to join a game
 		if(playerUser != null && dealerUser == null) {
 			gameToJoin.addPlayer(playerUser);
+			usersGame = gameToJoin;
 		}
 	}
 
@@ -608,12 +720,14 @@ public class ClientHandler implements Runnable {
 		// If a Dealer wants to leave a game.
 		if(dealerUser != null && playerUser == null) {
 			gameToLeave.removeDealer(dealerUser);
+			usersGame = null;
 			return;
 		}
 		
 		// If a Player wants to leave a game.
 		if(playerUser != null && dealerUser == null) {
 			gameToLeave.removePlayer(playerUser);
+			usersGame = null;
 		}
 		
 	}
@@ -640,11 +754,63 @@ public class ClientHandler implements Runnable {
 				
 				gameID = g.getID();
 				g.addPlayer(playerUser);
+				usersGame = g;
 				
 				// Update the status of the Message as Success.
 				// Send back the Client a Game's ID.
 				updateMessageSuccess(message, gameID);
 			}
 		}
+	}
+	
+	
+	// A Player wants to see their funds. A Dealer the Casino's funds.
+	// The message is of Type CheckFunds and has the Player/Dealer name.
+	private void checkFunds(Message message) {
+		
+		String username = message.getText();
+		Player player = Server.getTargetPlayer(username);
+		Dealer dealer = Server.getTargetDealer(username);
+		String funds;
+		
+		// Then a player is checking their funds.
+		if(player != null && dealer == null) {
+			
+			funds = String.valueOf(player.getPlayerFunds());
+			updateMessageSuccess(message, funds);
+			return;
+		}
+		
+		// Then its a dealer checking the Casino's funds.
+		else if(dealer != null && player == null) {
+			
+			funds = String.valueOf(Server.getCasinoFunds());
+			updateMessageSuccess(message, funds);
+			return;
+		}
+		
+		updateMessageFailed(message, "");
+	}
+	
+	
+	// A player wants to add funds to their account by giving a their name and
+	// how much
+	//
+	// username:fundsToAdd
+	//
+	private void addFunds(Message message) {
+		
+		String request[] = message.getText().split(":");
+		
+		Player player = Server.getTargetPlayer(request[0]);
+		Double fundsToAdd = Double.valueOf(request[1]);
+		
+		if(player == null) {
+			return;
+		}
+		
+		// Just add the funds to the player.
+		player.currentBet += fundsToAdd;
+		
 	}
 }

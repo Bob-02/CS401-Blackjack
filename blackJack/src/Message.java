@@ -3,7 +3,7 @@ import java.io.Serializable;
 
 enum Type{
 	// Client related Types
-	Login, Logout, 
+	Login, Logout, Register,
 
 	// Funds related Types
 	CheckFunds, CheckFundHistory, AddFunds, CashOut,
@@ -19,7 +19,7 @@ enum Type{
 	ListGames, ListPlayersOnline, ListPlayersInGame, ListDealersOnline,  
 	
 	// Player/Dealer Game actions related Types
-	Bet, Hit, Stand, SettleBet,
+	Bet, HitOrStand, SettleBet,
 	
 	Default
 	// Add new Types of messages as project features get built out.
