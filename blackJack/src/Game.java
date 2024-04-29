@@ -9,50 +9,50 @@ public class Game {
 	static List<Player> lobby;
 	private String timeStamp;
 	private static Scanner gameManager = new Scanner(System.in);
-	
+
 	private static int count = 1;
-    private final String id;
+	private final String id;
 
 	public Game(Dealer dealer, List<Player> lobby) {
 		this.dealer = dealer;
 		this.lobby = lobby;
 		table = new Table(dealer, lobby);
 		tableStatus = TableStatus.Open;
-		
+
 		this.timeStamp = new Date().getCurrentDate();
-		this.id = String.valueOf(count++);	// Need a way to track game number.
+		this.id = String.valueOf(count++); // Need a way to track game number.
 	}
-	
+
 	public Game() {
 		this.lobby = new ArrayList<>();
 		table = new Table(dealer, lobby);
 		this.dealer = null;
 		tableStatus = TableStatus.Open;
-		
+
 		this.timeStamp = new Date().getCurrentDate();
-		this.id = String.valueOf(count++);	// Need a way to track game number.
+		this.id = String.valueOf(count++); // Need a way to track game number.
 	}
 
 	public Table getTable() {
 		return table;
 	}
-	
+
 	public Dealer getDealer() {
 		return dealer;
 	}
-	
+
 	public TableStatus getTableStatus() {
 		return tableStatus;
 	}
-	
+
 	public List<Player> getLobby() {
 		return lobby;
 	}
-	
+
 	public String getTimeStamp() {
 		return timeStamp;
 	}
-	
+
 	public String getID() {
 		return id;
 	}
@@ -67,7 +67,7 @@ public class Game {
 
 	public void setDealer(Dealer dealer) {
 		// Auto set for simplicity right now to both the Game and Table
-		
+
 		this.dealer = dealer;
 		table.dealer = dealer;
 	}
@@ -81,7 +81,7 @@ public class Game {
 		lobby.remove(player);
 
 	}
-	
+
 	public static void removeDealer(Dealer dealer) {
 
 		tableStatus = TableStatus.NeedDealer;
@@ -100,25 +100,35 @@ public class Game {
 		}
 	}
 
-	public static void getBets() {
-		double betValue;
-		for (int i = 0; i < table.players.size(); i++) {
-			if (table.players.get(i).getPlayerFunds() > 0) {
-				do {
-					System.out.print("How much do you want to bet " + table.players.get(i).getPlayerName()
-							+ (" (1-" + table.players.get(i).getPlayerFunds()) + ")? ");
-					betValue = gameManager.nextDouble();
-					table.players.get(i).setBet(betValue);
-				} while (!(betValue > 0 && betValue <= table.players.get(i).getPlayerFunds()));
-				System.out.println("");
-			}
+	public static void getBets(String message) {
+		String[] serverMessages = message.split("\n");
+		List<String> playerNames = new ArrayList();
+		List<String> playerBets = new ArrayList();
 
+		for (String playerBet : serverMessages) {
+			String[] playerStats = playerBet.split(":");
+			playerNames.add(playerStats[0]);
+			playerBets.add(playerStats[1]);
 		}
+
+		for (int i = 0; i < table.players.size(); i++) {
+			if (table.players.get(i).getPlayerName().equals(playerNames.get(i))) {
+				if (table.players.get(i).getPlayerFunds() > 0) {
+					do {
+						table.players.get(i).setBet(Double.valueOf(playerBets.get(i)));
+					} while (!(Double.valueOf(playerBets.get(i)) > 0
+							&& Double.valueOf(playerBets.get(i)) <= table.players.get(i).getPlayerFunds()));
+				}
+
+			} else {
+				System.out.println("Player name matching error. Table has " + table.players.get(i).getPlayerName()
+						+ " and playerNames list has " + playerNames.get(i));
+			}
+		}
+
 	}
 
-	public static void checkBlackjack() {
-		// System.out.println();
-
+	public static void checkBlackjack() { // System.out.println();
 		if (dealer.doesTheDealerHaveBlackJack()) {
 			System.out.println("Dealer has BlackJack!");
 			for (int i = 0; i < table.players.size(); i++) {
@@ -142,6 +152,7 @@ public class Game {
 				}
 			}
 		}
+
 	}
 
 	public static void hitOrStand() {
@@ -251,18 +262,19 @@ public class Game {
 		Player testPlayer = new Player("Bob", 1000);
 		testPlayers.add(testPlayer);
 
+		Player testPlayer1 = new Player("Billy", 1000);
+		testPlayers.add(testPlayer1);
+
 		Game testGame = new Game(dealer, testPlayers);
 
-		table.shuffleCards();
-		getBets();
-		table.dealCards();
+		// table.shuffleCards();
+		getBets("Bob:500\nBilly:1000\n");
+		// table.dealCards();
 
-		checkBlackjack();
-		hitOrStand();
-		dealerTurn();
-		settleBets();
-		printFunds();
-		clearHands();
+		/*
+		 * checkBlackjack(); hitOrStand(); dealerTurn(); settleBets(); printFunds();
+		 * clearHands();
+		 */
 
 		/*
 		 * testGame.table.dealCards(); testGame.table.dealCards();

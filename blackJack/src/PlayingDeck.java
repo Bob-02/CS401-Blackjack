@@ -41,7 +41,7 @@ public class PlayingDeck {
 	public Card dealACard() {
 
 		if (nextCardIndex < 0 || nextCardIndex > 51) {
-			System.out.println("Future exception goes here");
+			System.out.println("Card index error");
 		}
 		return playingDeck.get(0).cards.get(++nextCardIndex);
 	}
