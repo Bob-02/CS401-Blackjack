@@ -135,6 +135,7 @@ public class Client {
             System.err.println("Error sending message: " + e.getMessage());
         }
     }
+	
 
     private static Message receiveMessage() {
         try {
