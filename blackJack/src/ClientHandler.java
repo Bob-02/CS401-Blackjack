@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable {
     // make a SINGLE generic type to hold either Player or Dealer
     private Player playerUser;
     private Dealer dealerUser;
+    private Game usersGame;
 
 	// Constructor
 	public ClientHandler(Socket socket) throws IOException
@@ -336,6 +337,11 @@ public class ClientHandler implements Runnable {
 		//
 		switch(message.getType()) {
 			
+			// Creates a new Player on the server. Details supplied in message.
+			case Register:
+				registerUser(message);
+				break;
+			
 			// Sends a list of all Games on the server.
 			case ListGames:
 				listGames(message);
@@ -378,16 +384,23 @@ public class ClientHandler implements Runnable {
 			case QuickJoin:
 				quickJoin(message);
 				break;
-			
-			// The Dealer starts a round of Blackjack. Client supplies Game's ID
-			case StartRound:
-				startRound(message);
+				
+			// A Player wants to see their funds. A Dealer the Casino's funds.
+			case CheckFunds:
+				checkFunds(message);
 				break;
+				
+			// A player wants to add funds.
+			case AddFunds:
+				addFunds(message);
+				break;		
 			
-			// A Player places a bet. 
+			// All Players places their bets for a round of Blackjack. 
+			// Starts a round of blackjack.
 			case Bet:
-				playerBet(message);
+				roundOfBlackjack(message);
 				break;
+			
 				
 				
 			// DO NOTHING
@@ -395,15 +408,93 @@ public class ClientHandler implements Runnable {
 				break;
 		}
 	}
+
 	
+	// The client supplies in a request with the users details. 
+	// Server responds if the user has been registered or if the username
+	// given is taken.
+	//
+	// username:password
+	//
+	// Return response to client with whatever Server.registerUser returns.
+	private void registerUser(Message message){
+
+		String status;
+		
+		try {
+			
+			status = Server.registerUser(message.getText());
+						
+			// If the user is already registered.
+			if(status.equals("taken") ) {
+				
+				updateMessageFailed(message, "Username already taken!");
+				return;
+			}
+			
+			// If the user was registered.
+			if(status.equals("registerd") ) {
+				
+				updateMessageSuccess(message, 
+									 "You have registered to the Server!");
+			}
+			
+			// If there is a wrong format supplied.
+			updateMessageFailed(message, "Error");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
 
 	// When the dealer wants to start a game of Blackjack in a game. The client
 	// will request that action by sending a request of Type StartRound.
 	// This will start a round in the Server.
-	private void startRound(Message message) {
+	private void roundOfBlackjack(Message message) {
 		
-		String gameID = message.getText();
-		Server.startRound(gameID);
+		//String gameID = message.getText();
+		//usersGame = Server.getTargetGame(gameID);
+		
+		// If not a valid game just do nothing.
+		if(usersGame ==  null) {
+			return;
+		}
+		
+		
+		// A while loop switch to control the game.
+		switch(message.getStatus()) {
+			
+			
+		}
+
+		
+		// A request a from the Client to place bets for Players.
+		// this will update usersGame.
+		// The string should come in as follows:
+		// 
+		// username:Bet\n
+		// username:Bet\n
+		// username:Bet
+		//
+		if(message.getType() == Type.Bet) {
+			// bet does this
+			usersGame.table.shuffleCards();		// Client handler does nothing
+			usersGame.getBets(message.getText());// getBets takes all players bets.
+			usersGame.table.dealCards();		// updates all players hands
+		}
+		
+		// update gui here.. They get to see all new hands and bets.
+		
+		usersGame.checkBlackjack();
+		usersGame.hitOrStand();
+		usersGame.dealerTurn();
+		usersGame.settleBets();
+		usersGame.printFunds();	// might not be needed?
+		usersGame.clearHands();
+		
 	}
 
 	// Sends a String back to the client with a list of all the games on the
@@ -608,12 +699,14 @@ public class ClientHandler implements Runnable {
 		if(dealerUser != null && playerUser == null) {
 			
 			gameToJoin.setDealer(dealerUser);
+			usersGame = gameToJoin;
 			return;
 		}
 		
 		// If a Player wants to join a game
 		if(playerUser != null && dealerUser == null) {
 			gameToJoin.addPlayer(playerUser);
+			usersGame = gameToJoin;
 		}
 	}
 
@@ -627,12 +720,14 @@ public class ClientHandler implements Runnable {
 		// If a Dealer wants to leave a game.
 		if(dealerUser != null && playerUser == null) {
 			gameToLeave.removeDealer(dealerUser);
+			usersGame = null;
 			return;
 		}
 		
 		// If a Player wants to leave a game.
 		if(playerUser != null && dealerUser == null) {
 			gameToLeave.removePlayer(playerUser);
+			usersGame = null;
 		}
 		
 	}
@@ -659,11 +754,63 @@ public class ClientHandler implements Runnable {
 				
 				gameID = g.getID();
 				g.addPlayer(playerUser);
+				usersGame = g;
 				
 				// Update the status of the Message as Success.
 				// Send back the Client a Game's ID.
 				updateMessageSuccess(message, gameID);
 			}
 		}
+	}
+	
+	
+	// A Player wants to see their funds. A Dealer the Casino's funds.
+	// The message is of Type CheckFunds and has the Player/Dealer name.
+	private void checkFunds(Message message) {
+		
+		String username = message.getText();
+		Player player = Server.getTargetPlayer(username);
+		Dealer dealer = Server.getTargetDealer(username);
+		String funds;
+		
+		// Then a player is checking their funds.
+		if(player != null && dealer == null) {
+			
+			funds = String.valueOf(player.getPlayerFunds());
+			updateMessageSuccess(message, funds);
+			return;
+		}
+		
+		// Then its a dealer checking the Casino's funds.
+		else if(dealer != null && player == null) {
+			
+			funds = String.valueOf(Server.getCasinoFunds());
+			updateMessageSuccess(message, funds);
+			return;
+		}
+		
+		updateMessageFailed(message, "");
+	}
+	
+	
+	// A player wants to add funds to their account by giving a their name and
+	// how much
+	//
+	// username:fundsToAdd
+	//
+	private void addFunds(Message message) {
+		
+		String request[] = message.getText().split(":");
+		
+		Player player = Server.getTargetPlayer(request[0]);
+		Double fundsToAdd = Double.valueOf(request[1]);
+		
+		if(player == null) {
+			return;
+		}
+		
+		// Just add the funds to the player.
+		player.currentBet += fundsToAdd;
+		
 	}
 }
