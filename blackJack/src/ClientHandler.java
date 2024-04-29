@@ -1,5 +1,6 @@
 //ClientHandler class
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -244,11 +245,22 @@ public class ClientHandler implements Runnable {
 		String timeStamp = new Date().getCurrentDate();
 		int id = getClientID();
 		
+		String toPrint = "Client# " + id + " <" + request + ">[" + status 
+				   + "]:" + timeStamp + "\n" + data;
 		
 		// Client# id <type>[status]: timeStamp 
 		// data
-		System.out.println("Client# " + id + " <" + request + ">[" + status 
-						   + "]:" + timeStamp + "\n" + data);
+		System.out.println(toPrint);
+		
+		// Append to log file.
+		try (FileWriter file = new FileWriter("ServerLogs.txt")) {
+			
+			file.append(toPrint + "\n");
+			
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
 	}
 
 
@@ -421,7 +433,7 @@ public class ClientHandler implements Runnable {
 		
 		
 		// A while loop switch to control the game.
-		switch(message.getStatus()) {
+		switch(message.getType()) {
 			default :
 				break;
 			
@@ -450,8 +462,13 @@ public class ClientHandler implements Runnable {
 		usersGame.hitOrStand();
 		usersGame.dealerTurn();
 		usersGame.settleBets();
+		
+		// update gui here again.
+		
 		usersGame.printFunds();	// might not be needed?
 		usersGame.clearHands();
+		
+		// update gui last time here.
 		
 	}
 
