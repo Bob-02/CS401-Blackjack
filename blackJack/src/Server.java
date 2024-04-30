@@ -265,7 +265,7 @@ public class Server {
 			file.append(userDetails + "\n");
 		}
 		
-		
+		// add to validplayers just incase they relog in.
 		validPlayers.add(userDetails);
 		
 		Player newPlayer = new Player(username, 1000.00);
