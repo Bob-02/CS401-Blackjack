@@ -236,7 +236,8 @@ public class ClientHandler implements Runnable {
 	}
 
 
-	// Prints a log to the terminal saying what was sent to the Client. 
+	// Prints a log to the terminal saying what was sent to the Client.
+	// Also writes the log to a log file.
 	private synchronized void logMessage(Message message) {
 		
 		Type request = message.getType();
@@ -388,7 +389,7 @@ public class ClientHandler implements Runnable {
 				leaveGame(message);
 				break;
 				
-			// Sends back the Game ID of which game the Player was put into.
+			// Player joins the first available game.
 			case QuickJoin:
 				quickJoin(message);
 				break;
@@ -420,7 +421,7 @@ public class ClientHandler implements Runnable {
 	
 	
 	// When the dealer wants to start a game of Blackjack in a game. The client
-	// will request that action by sending a request of Type StartRound.
+	// will request that action by sending a request of Type Bet.
 	// This will start a round in the Server.
 	private void roundOfBlackjack(Message message) {
 		
@@ -440,6 +441,8 @@ public class ClientHandler implements Runnable {
 		// username:999\n
 		// username:999
 		//
+		// update gui with current table stuff.
+		
 		if(message.getType() == Type.Bet) {
 			// bet does this
 			usersGame.getTable().shuffleCards();		// Client handler does nothing
@@ -449,6 +452,7 @@ public class ClientHandler implements Runnable {
 		
 		// update gui here.. They get to see all new hands and bets.		
 		usersGame.checkBlackjack();
+<<<<<<< Updated upstream
 
 		
 		// A request a from the Client to place bets for Players.
@@ -473,6 +477,25 @@ public class ClientHandler implements Runnable {
 		}
 
 		// update gui last time here.
+=======
+		usersGame.hitOrStand();
+		
+		// update gui here again. We see who hit who stands.
+		
+		usersGame.dealerTurn();
+		
+		// update gui here again. We see what the dealer did
+		
+		usersGame.settleBets();
+		
+		// update gui here again. We see what everyone did.
+		
+		usersGame.printFunds();	// might not be needed?
+		usersGame.clearHands();
+		
+		// update gui last time here. Clear the table.
+		
+>>>>>>> Stashed changes
 	}
 
 	
@@ -648,7 +671,7 @@ public class ClientHandler implements Runnable {
 	
 	
 	// Needs to be renamed to what it really is.
-	// Updates the Client with the state in a game of Blackjack.
+	// Updates the Client with the state of a game in a game of Blackjack.
 	//
 	// Lists the Players within a certain game.
 	// The text area should contain the game's ID that wants to display its 
@@ -662,9 +685,14 @@ public class ClientHandler implements Runnable {
 		// Iterate through the list of players.
 		// For each Player in the Game concat a string:
 		//
+<<<<<<< Updated upstream
 		// DealerName:Card,...,Card:Funds\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet
+=======
+		// PlayerName:Card,...,Card:Funds:CurrentBet:hitOrStand\n
+		// PlayerName:Card,...,Card:Funds:CurrentBet:hitOrStand
+>>>>>>> Stashed changes
 		//
 		// Where Card,...,Card is the players hand.
 		
@@ -699,6 +727,7 @@ public class ClientHandler implements Runnable {
 			String hand = p.toStringPlayersHand();
 			String funds = String.valueOf(p.getPlayerFunds());
 			String bet = String.valueOf(p.getBet());
+			//String hitOrStand = p.getHitOrStand();
 			
 			listOfPlayers += name + ":" + hand + ":" + funds + ":" + bet;
 			
@@ -814,7 +843,7 @@ public class ClientHandler implements Runnable {
 		List<Game> games = Server.getGames();
 		
 		// If there are no game send back to the Client a Failed message.
-		if(games == null || games.size() == 0) {
+		if(games == null || games.isEmpty()) {
 			updateMessageFailed(message, "There are no open Games!");
 			return;
 		}
