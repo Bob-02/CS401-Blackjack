@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable {
 
 	public void run()
 	{
-		try {
+		try {/*
 			System.out.println(Server.getServerName());
 	    	System.out.println(Server.getCasinoFunds());
 	    	System.out.println(Server.getValidDealers());
@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
 	    	System.out.println(Server.getValidPlayers());
 	    	System.out.println(Server.getOnlinePlayers());
 	    	System.out.println("end of server details anything beyond is past respondToClient()\n\n");
-	        
+	        */
 	        // Get the first message from client. It should be a login message.
 	        // Ignore anything else.
 	        Message login = (Message) objectInputStream.readObject();
@@ -191,14 +191,14 @@ public class ClientHandler implements Runnable {
 
 	        // Login user will return a string as either a:
 			// "dealer", "player" or "invalid".
-        	String loginType = Server.loginUser(login.getText());
+			String loginInfo = login.getText();
+        	String loginType = Server.loginUser(loginInfo);
+        	String details[] = loginInfo.split(":");
+    		String username = details[0];
         	
         	// IF account details found Set status to success
 	        if(loginType == "dealer" || loginType == "player") {
-	        	
-	        	String details[] = login.getText().split(":");
-	    		String username = details[0];
-	        	
+
 	    		// Set target dealer to the client handler.
 	    		// Set Player to null.
 	    		// Get the Dealer from Server.getTargetDealer();
@@ -227,7 +227,7 @@ public class ClientHandler implements Runnable {
 	        }
 	        
 	        // Login should still contain the User Details.
-	        login.setText(loginType);
+	        login.setText(username + " has logged in.");
 		}
 		// Print message to the terminal (make a log of what happened).
 		logMessage(login);
