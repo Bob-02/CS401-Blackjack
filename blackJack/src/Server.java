@@ -10,25 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-// make private?
-// make a Server variable and refer to itself in constructor.
-// make a getter for Server so that client handler can user getters from here?
+
 public class Server {
     public static void main(String[] args) 
     		throws IOException, ClassNotFoundException {
-
-    	// Initiate server values when the server starts up.
-    	//Server initServerDetails = new Server();
-    	
-    	
-    	
-    	
-//    	System.out.println(Server.getServerName());
-//    	System.out.println(Server.getCasinoFunds());
-//    	System.out.println(Server.getValidDealers());
-//    	System.out.println(Server.getValidPlayers());
-    	
-    	
+   	
     	// Load valid registered Players and Dealers from both files.
     	loadValidUsers("dealers.txt", "players.txt");
 
@@ -45,11 +31,11 @@ public class Server {
         System.out.println("Server awaiting connections...");
         
         try(FileWriter file = new FileWriter("ServerLogs.txt", true)){
+        	file.append(localHost.getHostAddress());
             file.append("Server start time: " + new Date().getCurrentDate() 
             			+ "\n");
             file.append("Server awaiting connections...\n");
         }
-
 
         try {
 
@@ -68,6 +54,7 @@ public class Server {
 						   		   + " at " + new Date().getCurrentDate();
 				
 				System.out.println(newClient);
+				
 				try(FileWriter file = new FileWriter("ServerLogs.txt", true)){
 					file.append(newClient + "\n");
 				}
@@ -403,5 +390,14 @@ public class Server {
 		return null;
 	}	
 	
+	// Game class needs a list to hold all players actions before starting a 
+	// round of blackjack.
+	
+	// Function to hold Player's actions before calling Bets/HitOrStand.
+	public static void collectPlayerAction(String action) {
+		
+		
+		
+	}
 	
 }

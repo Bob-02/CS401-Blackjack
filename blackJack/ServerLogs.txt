@@ -6,3 +6,310 @@ Client# 2 <Login>[Failed]:2024-04-30 04:26:18.745
 invalid
 Client# 2 <Login>[Failed]:2024-04-30 04:26:18.746
 invalid
+Server start time: 2024-04-30 09:56:57.252
+Server awaiting connections...
+New client connected from: 127.0.0.1 at 2024-04-30 09:57:06.656
+Client# 1 <Login>[Success]:2024-04-30 09:57:06.712
+luser1 has logged in.
+Client# 1 <AddFunds>[Success]:2024-04-30 09:57:06.728
+Funds added!
+Client# 1 <CheckFunds>[Success]:2024-04-30 09:57:06.730
+2111.0
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.736
+1
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.737
+2
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.737
+3
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.738
+4
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.739
+5
+Client# 1 <ListGames>[Success]:2024-04-30 09:57:06.743
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 09:57:06.744
+Game #1 has been Closed.
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-30 09:57:06.745
+Game Not Found!
+Client# 1 <ListGames>[Success]:2024-04-30 09:57:06.745
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 09:57:06.746
+Game #4 has been Closed.
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.747
+6
+Client# 1 <ListGames>[Success]:2024-04-30 09:57:06.747
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 09:57:06.748
+Game #6 has been Closed.
+Client# 1 <ListGames>[Success]:2024-04-30 09:57:06.748
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <OpenGame>[Success]:2024-04-30 09:57:06.749
+7
+Client# 1 <JoinGame>[Success]:2024-04-30 09:57:06.749
+Player joined Game #2
+Client# 1 <LeaveGame>[Failed]:2024-04-30 09:57:06.750
+Invalid game request!
+Client# 1 <ListGames>[Success]:2024-04-30 09:57:06.750
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-30 09:57:06.753
+No Players Found!
+Client# 1 <ListPlayersOnline>[Success]:2024-04-30 09:57:06.754
+luser1
+Client# 1 <ListDealersOnline>[Failed]:2024-04-30 09:57:06.754
+There are no Dealers online!
+Client# 1 <Register>[Failed]:2024-04-30 09:57:06.755
+Username already taken!
+Client# 1 <Logout>[Success]:2024-04-30 09:57:06.755
+luser1
+Server start time: 2024-04-30 10:00:10.472
+Server awaiting connections...
+New client connected from: 127.0.0.1 at 2024-04-30 10:00:29.538
+Client# 1 <Login>[Success]:2024-04-30 10:00:29.595
+luser1 has logged in.
+Client# 1 <AddFunds>[Success]:2024-04-30 10:00:29.611
+Funds added!
+Client# 1 <CheckFunds>[Success]:2024-04-30 10:00:29.612
+2111.0
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.615
+1
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.616
+2
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.617
+3
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.617
+4
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.618
+5
+Client# 1 <ListGames>[Success]:2024-04-30 10:00:29.622
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 10:00:29.623
+Game #1 has been Closed.
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-30 10:00:29.624
+Game Not Found!
+Client# 1 <ListGames>[Success]:2024-04-30 10:00:29.625
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 10:00:29.625
+Game #4 has been Closed.
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.626
+6
+Client# 1 <ListGames>[Success]:2024-04-30 10:00:29.627
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 10:00:29.627
+Game #6 has been Closed.
+Client# 1 <ListGames>[Success]:2024-04-30 10:00:29.628
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <OpenGame>[Success]:2024-04-30 10:00:29.628
+7
+Client# 1 <JoinGame>[Success]:2024-04-30 10:00:29.629
+Player joined Game #2
+Client# 1 <LeaveGame>[Failed]:2024-04-30 10:00:29.630
+Invalid game request!
+Client# 1 <ListGames>[Success]:2024-04-30 10:00:29.630
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-30 10:00:29.633
+No Players Found!
+Client# 1 <ListPlayersOnline>[Success]:2024-04-30 10:00:29.634
+luser1
+Client# 1 <ListDealersOnline>[Failed]:2024-04-30 10:00:29.634
+There are no Dealers online!
+Client# 1 <Register>[Failed]:2024-04-30 10:00:29.634
+Username already taken!
+Client# 1 <Logout>[Success]:2024-04-30 10:00:29.635
+luser1
+172.30.32.1Server start time: 2024-04-30 10:38:58.283
+Server awaiting connections...
+New client connected from: 127.0.0.1 at 2024-04-30 10:39:06.929
+Client# 1 <Login>[Success]:2024-04-30 10:39:06.983
+DiceDuchess has logged in.
+Client# 1 <AddFunds>[Failed]:2024-04-30 10:39:07.000
+
+Client# 1 <CheckFunds>[Failed]:2024-04-30 10:39:07.001
+
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.004
+1
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.005
+2
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.006
+3
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.006
+4
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.007
+5
+Client# 1 <ListGames>[Success]:2024-04-30 10:39:07.011
+1:NeedDealer: :0
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 10:39:07.012
+Game #1 has been Closed.
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-30 10:39:07.013
+Game Not Found!
+Client# 1 <ListGames>[Success]:2024-04-30 10:39:07.013
+2:NeedDealer: :0
+3:NeedDealer: :0
+4:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 10:39:07.013
+Game #4 has been Closed.
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.014
+6
+Client# 1 <ListGames>[Success]:2024-04-30 10:39:07.015
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+6:NeedDealer: :0
+Client# 1 <CloseGame>[Success]:2024-04-30 10:39:07.015
+Game #6 has been Closed.
+Client# 1 <ListGames>[Success]:2024-04-30 10:39:07.016
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+Client# 1 <OpenGame>[Success]:2024-04-30 10:39:07.017
+7
+Client# 1 <JoinGame>[Success]:2024-04-30 10:39:07.017
+Player joined Game #2
+Client# 1 <LeaveGame>[Failed]:2024-04-30 10:39:07.018
+Invalid game request!
+Client# 1 <ListGames>[Success]:2024-04-30 10:39:07.019
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+Client# 1 <ListPlayersInGame>[Failed]:2024-04-30 10:39:07.021
+No Players Found!
+Client# 1 <ListPlayersOnline>[Success]:2024-04-30 10:39:07.022
+DiceDuchess
+Client# 1 <ListDealersOnline>[Failed]:2024-04-30 10:39:07.022
+There are no Dealers online!
+Client# 1 <Register>[Success]:2024-04-30 10:39:07.023
+You have registered to the Server!
+Client# 1 <Logout>[Success]:2024-04-30 10:39:07.024
+luser1
+New client connected from: 127.0.0.1 at 2024-04-30 10:39:20.049
+Client# 2 <Login>[Success]:2024-04-30 10:39:20.082
+dealer1 has logged in.
+Client# 2 <AddFunds>[Failed]:2024-04-30 10:39:20.091
+
+Client# 2 <CheckFunds>[Failed]:2024-04-30 10:39:20.092
+
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.092
+8
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.093
+9
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.093
+10
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.094
+11
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.094
+12
+Client# 2 <ListGames>[Success]:2024-04-30 10:39:20.095
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+Client# 2 <CloseGame>[Failed]:2024-04-30 10:39:20.095
+Game #1Not Found!
+Client# 2 <ListPlayersInGame>[Failed]:2024-04-30 10:39:20.096
+Game Not Found!
+Client# 2 <ListGames>[Success]:2024-04-30 10:39:20.096
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+Client# 2 <CloseGame>[Failed]:2024-04-30 10:39:20.097
+Game #4Not Found!
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.097
+13
+Client# 2 <ListGames>[Success]:2024-04-30 10:39:20.097
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+13:NeedDealer: :0
+Client# 2 <CloseGame>[Failed]:2024-04-30 10:39:20.098
+Game #6Not Found!
+Client# 2 <ListGames>[Success]:2024-04-30 10:39:20.098
+2:NeedDealer: :0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+13:NeedDealer: :0
+Client# 2 <OpenGame>[Success]:2024-04-30 10:39:20.099
+14
+Client# 2 <JoinGame>[Success]:2024-04-30 10:39:20.099
+Dealer joined Game #2
+Client# 2 <LeaveGame>[Success]:2024-04-30 10:39:20.100
+dealer1 has left Game #2
+Client# 2 <ListGames>[Success]:2024-04-30 10:39:20.101
+2:NeedDealer:dealer1:0
+3:NeedDealer: :0
+5:NeedDealer: :0
+7:NeedDealer: :0
+8:NeedDealer: :0
+9:NeedDealer: :0
+10:NeedDealer: :0
+11:NeedDealer: :0
+12:NeedDealer: :0
+13:NeedDealer: :0
+14:NeedDealer: :0
+Client# 2 <ListPlayersInGame>[Failed]:2024-04-30 10:39:20.101
+No Players Found!
+Client# 2 <ListPlayersOnline>[Success]:2024-04-30 10:39:20.101
+DiceDuchess,BearlyFunctioning89
+Client# 2 <ListDealersOnline>[Success]:2024-04-30 10:39:20.102
+nulldealer1dealer1,
+Client# 2 <Register>[Success]:2024-04-30 10:39:20.103
+You have registered to the Server!
+Client# 2 <Logout>[Success]:2024-04-30 10:39:20.103
+luser1

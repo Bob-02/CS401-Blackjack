@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable {
 
 	public void run()
 	{
-		try {/*
+		try {
 			System.out.println(Server.getServerName());
 	    	System.out.println(Server.getCasinoFunds());
 	    	System.out.println(Server.getValidDealers());
@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
 	    	System.out.println(Server.getValidPlayers());
 	    	System.out.println(Server.getOnlinePlayers());
 	    	System.out.println("end of server details anything beyond is past respondToClient()\n\n");
-	        */
+	        
 	        // Get the first message from client. It should be a login message.
 	        // Ignore anything else.
 	        Message login = (Message) objectInputStream.readObject();
@@ -345,6 +345,7 @@ public class ClientHandler implements Runnable {
 		switch(message.getType()) {
 			
 			// Creates a new Player on the server. Details supplied in message.
+			// Needs to be moved outside switch when GUI is implemented!!
 			case Register:
 				registerUser(message);
 				break;
@@ -432,6 +433,8 @@ public class ClientHandler implements Runnable {
 		if(usersGame ==  null) {
 			return;
 		}
+		
+		//collectPlayerAction();
 
 		// A request a from the Client to place bets for Players.
 		// this will update usersGame.
@@ -460,6 +463,10 @@ public class ClientHandler implements Runnable {
 		// username:s\n
 		// username:h
 		//
+		// The game logic should have a counter or list when they get all player
+		// input from server.
+		//
+		
 		if(message.getType() == Type.HitOrStand) {
 			//usersGame.hitOrStand(message.getText()); // 
 			// update gui here again.
