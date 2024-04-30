@@ -1,3 +1,4 @@
 /.metadata/
 blackJack/.project
 blackJack/src/TesterClient.java
+blackJack/src/GUITest.java
