@@ -132,6 +132,9 @@ public class Client {
 		case "opengameButtonClicked":
 			sendMessage(new Message(Type.OpenGame, Status.New, ""));
 			break;
+		
+		case "openGameForDealer":
+			sendMessage(new Message(Type.JoinGame, Status.New, "1"));
 			
 		case "checkFundButtonClicked":
 			sendMessage(new Message(Type.CheckFunds,Status.New,"luser2"));
