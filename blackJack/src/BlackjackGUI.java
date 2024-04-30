@@ -10,6 +10,7 @@ public class BlackjackGUI {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private String iconPath = "Cards/icon.png"; // Path to the icon image
+    private String designPath = "Cards/icon.png";
     private String credentials;
     private JTextArea gameListArea, playerListArea;
     private boolean playButtonClicked = false;
@@ -134,14 +135,14 @@ public class BlackjackGUI {
         });
         gamePanel.add(viewGamesButton, gbcGame);
         
-        JButton openGameButton = new JButton("Open Game");
-        customizeButton(openGameButton);
-        openGameButton.addActionListener(e -> {
+        JButton PlayOfflineButton = new JButton("Play Offline");
+        customizeButton(PlayOfflineButton);
+        PlayOfflineButton.addActionListener(e -> {
             BlackJack blackJack = new BlackJack(); // Creates a new instance of BlackJack
             // Note: No panel switch occurs here, just game initialization
         });
         gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(openGameButton, gbcGame);
+        gamePanel.add(PlayOfflineButton, gbcGame);
 
         JButton viewPlayersButton = new JButton("View Player List");
         customizeButton(viewPlayersButton);
