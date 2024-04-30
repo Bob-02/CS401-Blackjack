@@ -160,14 +160,6 @@ public class Client {
 			sendMessage(new Message(Type.Bet,Status.New,"luser1:500\n1user2:500"));
 			break;
 			
-		case "hitButtonClicked":
-			sendMessage(new Message(Type.HitOrStand,Status.New,"luser1:h"));
-			break;
-			
-		case "standButtonClicked":
-			sendMessage(new Message(Type.HitOrStand,Status.New,"1user1:s"));
-			break;
-			
 		case "addfundsButtonClicked":
 			sendMessage(new Message(Type.AddFunds, Status.New, "luser1:1251"));
 			System.out.println("Funds Adding functionality Pass");
@@ -229,8 +221,6 @@ public class Client {
 				"joingameButtonClicked",
 				"listplayersInGameButtonClicked",
 				"checkFundButtonClicked",
-				"placeBetButtonClicked",
-				"hitButtonClicked",
 				"listplayersInGameButtonClicked",
 				"quickJoinButtonClicked",
 				"viewGamesButtonClicked", 
