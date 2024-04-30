@@ -18,12 +18,19 @@ public class Server {
     		throws IOException, ClassNotFoundException {
 
     	// Initiate server values when the server starts up.
-    	Server initServerDetails = new Server();
+    	//Server initServerDetails = new Server();
+    	
+    	
+    	
     	
 //    	System.out.println(Server.getServerName());
 //    	System.out.println(Server.getCasinoFunds());
 //    	System.out.println(Server.getValidDealers());
 //    	System.out.println(Server.getValidPlayers());
+    	
+    	
+    	// Load valid registered Players and Dealers from both files.
+    	loadValidUsers("dealers.txt", "players.txt");
 
     	// Print local host to console. Let others know where to connect.
         InetAddress localHost = InetAddress.getLocalHost();
@@ -35,7 +42,14 @@ public class Server {
         
         // Print date and time server starts.
         System.out.println("Server start time: " + new Date().getCurrentDate());
-        System.out.println("Server awaiting connections...\n");
+        System.out.println("Server awaiting connections...");
+        
+        try(FileWriter file = new FileWriter("ServerLogs.txt", true)){
+            file.append("Server start time: " + new Date().getCurrentDate() 
+            			+ "\n");
+            file.append("Server awaiting connections...\n");
+        }
+
 
         try {
 
@@ -49,9 +63,15 @@ public class Server {
 
 				// Displaying that new client is connected
 				// to server
-				System.out.println("New client connected from: "
-								   + client.getInetAddress().getHostAddress()
-								   + " at " + new Date().getCurrentDate());
+				String newClient = "New client connected from: "
+						   		   + client.getInetAddress().getHostAddress()
+						   		   + " at " + new Date().getCurrentDate();
+				
+				System.out.println(newClient);
+				try(FileWriter file = new FileWriter("ServerLogs.txt", true)){
+					file.append(newClient + "\n");
+				}
+				
 
 				// create a new thread object
 				ClientHandler clientSock = new ClientHandler(client);
@@ -77,19 +97,22 @@ public class Server {
 		}
     }
     
-    // Server details go here. They must be static because main is static.
-	private static String serverName;			
-	private static List<Game> games;			
-	private static List<String> validPlayers;	
-	private static List<String> validDealers;	
-	private static List<Player> onlinePlayers;	
-	private static List<Dealer> onlineDealers;	
-	private static BigDecimal casinoFunds;
+    // Server details go here. 
+	private static String serverName = "Group 5 Blackjack Server.";	
+	
+	private static List<Game> games = new ArrayList<>();			
+	private static List<String> validPlayers =  new ArrayList<>();	
+	private static List<String> validDealers =  new ArrayList<>();	
+	private static List<Player> onlinePlayers =  new ArrayList<>();	
+	private static List<Dealer> onlineDealers =  new ArrayList<>();	
+	
+	// Casino starts off with 2 million bucks.
+	private static BigDecimal casinoFunds = new BigDecimal("2000000.00");
 	
 	
 	// Startup of server should initiate new variables. Give server a name, 
 	// start up new instances of the variables. Add casino funds.
-	public Server() {
+	/*public Server() {
 		Server.serverName = "Group 5 Blackjack Server.";
 		Server.games = new ArrayList<>();
 		Server.validPlayers =  new ArrayList<>();
@@ -103,7 +126,7 @@ public class Server {
     	// Load valid registered Players and Dealers from both files.
     	loadValidUsers("dealers.txt", "players.txt");
 		
-	}
+	}*/
     
 	public static BigDecimal getCasinoFunds() {
 		return casinoFunds;
