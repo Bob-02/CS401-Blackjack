@@ -23,9 +23,11 @@ public class BlackjackGUI {
     private List<fakeCard> playerCards = new ArrayList<>();
     private JPanel dealerPanel;
     private JPanel playerPanel;
+    private Client client;
 
-    public BlackjackGUI() {
-        initializeGUI();
+    public BlackjackGUI(Client client) {
+        this.client = client;
+    	initializeGUI();
     }
 
     private void initializeGUI() {
@@ -45,6 +47,11 @@ public class BlackjackGUI {
 
         frame.add(cardPanel);
         frame.setVisible(true);
+    }
+    
+    
+    public void setVisible(boolean visible) {
+        frame.setVisible(visible);
     }
 
     private void initializeLoginPanel() {
@@ -130,37 +137,26 @@ public class BlackjackGUI {
         JButton quickJoinButton = new JButton("Quick Join");
         customizeButton(quickJoinButton);
         quickJoinButton.addActionListener(e -> {
-            quickJoin(); // Handle quick join functionality
+            client.sendMessage(new Message(Type.QuickJoin, Status.New, ""));
         });
-        gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(quickJoinButton, gbcGame);
 
         JButton viewGamesButton = new JButton("View Game List");
         customizeButton(viewGamesButton);
         viewGamesButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "Game List");
+            client.sendMessage(new Message(Type.ListGames, Status.New, ""));
         });
-        gamePanel.add(viewGamesButton, gbcGame);
-        
+
         JButton openGameButton = new JButton("Open Game");
         customizeButton(openGameButton);
         openGameButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "BlackjackTable"); 
+            client.sendMessage(new Message(Type.OpenGame, Status.New, ""));
         });
-        gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(openGameButton, gbcGame);
 
         JButton viewPlayersButton = new JButton("View Player List");
         customizeButton(viewPlayersButton);
         viewPlayersButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "Player List");
+            client.sendMessage(new Message(Type.ListPlayersOnline, Status.New, ""));
         });
-        gamePanel.add(viewPlayersButton, gbcGame);
-
-        JButton exitButton = new JButton("EXIT");
-        customizeButton(exitButton);
-        exitButton.addActionListener(e -> frame.dispose());
-        gamePanel.add(exitButton, gbcGame);
 
         JLabel footerLabel = new JLabel("This game is brought to you by Group 5", SwingConstants.CENTER);
         footerLabel.setForeground(Color.WHITE);
@@ -275,7 +271,6 @@ public class BlackjackGUI {
     }
     
     
-    
     private void quickJoin() {
         // Mock implementation, replace with actual server call
         Message message = new Message(); // Assume Message is a valid type
@@ -285,15 +280,6 @@ public class BlackjackGUI {
         if (games == null || games.isEmpty()) {
             JOptionPane.showMessageDialog(frame, "There are no open Games!", "Quick Join Failed", JOptionPane.ERROR_MESSAGE);
             return;
-        }
-
-        for (Game g : games) {
-            if (g.getTableStatus() == TableStatus.Open) {
-                gameID = g.getID();
-                // Assuming addPlayer is a method that adds a player to the game
-                g.addPlayer(playerUser); 
-                break;
-            }
         }
 
         if (gameID != null) {
@@ -347,7 +333,10 @@ public class BlackjackGUI {
     }// for testing purposes
     
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(BlackjackGUI::new);
+        SwingUtilities.invokeLater(() -> {
+            Client client = new Client();  // Assuming Client has a suitable constructor
+            new BlackjackGUI(client).setVisible(true);
+        });
     }
 
 	public String getLoginCredentials() {

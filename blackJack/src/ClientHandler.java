@@ -895,4 +895,15 @@ public class ClientHandler implements Runnable {
 		player.funds += fundsToAdd;
 		updateMessageSuccess(message, "Funds added!");
 	}
+	
+	public Player getPlayerUser() {
+	    return playerUser;
+	}
+
+	public void setPlayerUser(Player playerUser) {
+	    this.playerUser = playerUser;
+	}
+	
+	
+	
 }
