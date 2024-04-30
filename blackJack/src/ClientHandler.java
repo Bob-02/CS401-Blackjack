@@ -448,13 +448,10 @@ public class ClientHandler implements Runnable {
 			usersGame.getTable().shuffleCards();		// Client handler does nothing
 			usersGame.getBets(message.getText());// getBets takes all players bets.
 			usersGame.getTable().dealCards();		// updates all players hands
+			// update gui here.. They get to see all new hands and bets.		
+			usersGame.checkBlackjack();
 		}
-		
-		// update gui here.. They get to see all new hands and bets.		
-		usersGame.checkBlackjack();
-<<<<<<< Updated upstream
 
-		
 		// A request a from the Client to place bets for Players.
 		// this will update usersGame.
 		// The string should come in as follows:
@@ -475,27 +472,6 @@ public class ClientHandler implements Runnable {
 			usersGame.printFunds();	// might not be needed?
 			usersGame.clearHands();
 		}
-
-		// update gui last time here.
-=======
-		usersGame.hitOrStand();
-		
-		// update gui here again. We see who hit who stands.
-		
-		usersGame.dealerTurn();
-		
-		// update gui here again. We see what the dealer did
-		
-		usersGame.settleBets();
-		
-		// update gui here again. We see what everyone did.
-		
-		usersGame.printFunds();	// might not be needed?
-		usersGame.clearHands();
-		
-		// update gui last time here. Clear the table.
-		
->>>>>>> Stashed changes
 	}
 
 	
@@ -685,14 +661,11 @@ public class ClientHandler implements Runnable {
 		// Iterate through the list of players.
 		// For each Player in the Game concat a string:
 		//
-<<<<<<< Updated upstream
+
 		// DealerName:Card,...,Card:Funds\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet
-=======
-		// PlayerName:Card,...,Card:Funds:CurrentBet:hitOrStand\n
-		// PlayerName:Card,...,Card:Funds:CurrentBet:hitOrStand
->>>>>>> Stashed changes
+
 		//
 		// Where Card,...,Card is the players hand.
 		
@@ -708,6 +681,14 @@ public class ClientHandler implements Runnable {
 	        updateMessageFailed(message, "Game Not Found!");
 	        return;
 	    }	
+	    
+	    Dealer dealer = game.getDealer();
+	    String dealerName = dealer.getDealerName();
+	    String dealerHand = dealer.toStringDealersHand();
+	    String dealerFunds = String.valueOf(dealer.getCasinoFunds());
+	    
+	    listOfPlayers += dealerName + ":" + dealerHand + ":" + dealerFunds 
+	    				 + "\n";
 	    
 		List<Player> players = game.getTable().getPlayers();
 		
