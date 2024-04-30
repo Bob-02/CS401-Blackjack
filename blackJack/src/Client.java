@@ -60,6 +60,8 @@ public class Client {
                     Message receivedMessage = receiveMessage();
                     if (receivedMessage != null) {
                         System.out.println("Received: " + receivedMessage.getText());
+                        client.setMessageTogui(receivedMessage.status.toString());
+                        
 
                         // Check if it's a logout message
                         if (receivedMessage.getType() == Type.Logout && receivedMessage.getStatus() == Status.Success) {
@@ -173,6 +175,7 @@ public class Client {
 
 	public void setMessageTogui(String messageTogui) {
 		this.messageTogui = messageTogui;
+		System.out.println("This message is sent to Gui:" +messageTogui);
 	}
 	
 	private static String getNextButtonClick() {
@@ -195,7 +198,7 @@ public class Client {
         return nextButtonClick;
     }
 	
-	private static void sendMessage(Message message) {
+	public static void sendMessage(Message message) {
         try {
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
