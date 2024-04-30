@@ -27,7 +27,7 @@ public class Game {
 		Dealer nullDealer = new Dealer(" ", 0);
 		this.dealer = nullDealer;
 		this.lobby = new ArrayList<>();
-		
+
 		table = new Table();
 
 		tableStatus = TableStatus.NeedDealer;
@@ -131,7 +131,7 @@ public class Game {
 
 	}
 
-	public void checkBlackjack() { // System.out.println();
+	public void checkBlackjack() {
 		if (dealer.doesTheDealerHaveBlackJack()) {
 			System.out.println("Dealer has BlackJack!");
 			for (int i = 0; i < table.players.size(); i++) {
@@ -158,33 +158,30 @@ public class Game {
 
 	}
 
-	public void hitOrStand() {
-		String command;
-		char c;
-		for (int i = 0; i < table.players.size(); i++) {
-			if (table.players.get(i).getBet() > 0) {
-				System.out.println();
-				System.out
-						.println(table.players.get(i).getPlayerName() + " has " + table.players.get(i).hand.toString());
+	public void hitOrStand(String message) {
+		String[] serverMessages = message.split("\n");
+		List<String> playerNames = new ArrayList<>();
+		List<String> playerChoices = new ArrayList<>();
 
-				do {
-					do {
-						System.out.print(table.players.get(i).getPlayerName() + " (H)it or (S)tand? ");
-						command = gameManager.next();
-						c = command.toUpperCase().charAt(0);
-					} while (!(c == 'H' || c == 'S'));
-					if (c == 'H') {
-						table.addCardToPlayerHand(table.players.get(i), table.deal());
-						System.out.println(table.players.get(i).getPlayerName() + " has "
-								+ table.players.get(i).getPlayerHand().toString());
-					}
-				} while (c != 'S' && table.players.get(i).calculateHandTotal() <= 21);
+		for (String playerMessage : serverMessages) {
+			String[] playerStats = playerMessage.split(":");
+			playerNames.add(playerStats[0]);
+			playerChoices.add(playerStats[1]);
+		}
+
+		for (int i = 0; i < table.players.size(); i++) {
+			if (table.players.get(i).getPlayerName().equals(playerNames.get(i))) {
+				if (playerChoices.get(i).equals("H")) {
+					table.addCardToPlayerHand(table.players.get(i), table.deal());
+				}
+			} else {
+				System.out.println("Player name matching error. Table has " + table.players.get(i).getPlayerName()
+						+ " and playerNames list has " + playerNames.get(i));
 			}
 		}
 	}
 
 	public void settleBets() {
-		System.out.println();
 
 		for (int i = 0; i < table.players.size(); i++) {
 			if (table.players.get(i).getBet() > 0) {
@@ -213,7 +210,6 @@ public class Game {
 
 	public void dealerTurn() {
 
-		System.out.println();
 		while (dealer.calculateHandTotal() <= 16) {
 			System.out.println("Dealer has " + dealer.calculateHandTotal() + " and hits");
 			table.addCardToDealerHand(dealer, table.deck.dealACard());
@@ -271,7 +267,8 @@ public class Game {
 		Game testGame = new Game(dealer, testPlayers);
 
 		// table.shuffleCards();
-		getBets("Bob:500\nBilly:1000\n");
+		// getBets("Bob:H\nBilly:S\n");
+		// hitOrStand("Bob:H\nBilly:S\n");
 		// table.dealCards();
 
 		/*
