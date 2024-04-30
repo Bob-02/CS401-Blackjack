@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 // make private?
@@ -256,20 +257,21 @@ public class Server {
 		
 		if(validPlayers.contains(userDetails)) {
 
-			return username + "taken";
+			return "taken";
 		}
 		
 		// add to players file
-		FileWriter file;
-		file = new FileWriter("players.txt");
+		try(FileWriter file = new FileWriter("players.txt", true)) {
+			file.append(userDetails + "\n");
+		}
 		
-		file.append(userDetails);
+		// add to validplayers just incase they relog in.
 		validPlayers.add(userDetails);
 		
 		Player newPlayer = new Player(username, 1000.00);
 		onlinePlayers.add(newPlayer);
 		
-		return username + "registerd";
+		return "registerd";
 	}
 	
 	
@@ -363,8 +365,12 @@ public class Server {
 		// Go through all the games on the list until we find a matching ID.
 		for(Game g : games) {
 			
+			String gameID = g.getID();
+
 			// If a game matches the ID wanted return that game.
-			if(g.getID() == ID) {
+			// Objects.equals() ensures no NullPointerException if gameID is 
+			// null.
+			if(Objects.equals(gameID, ID) ) {
 				
 				return g;
 			}	
@@ -372,13 +378,7 @@ public class Server {
 
 		// If not found on the list.
 		return null;
-	}
-	
-	
+	}	
 	
 	
 }
-
-
-
-

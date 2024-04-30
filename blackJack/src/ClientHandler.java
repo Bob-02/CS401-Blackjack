@@ -1,5 +1,6 @@
 //ClientHandler class
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -235,8 +236,9 @@ public class ClientHandler implements Runnable {
 	}
 
 
-	// Prints a log to the terminal saying what was sent to the Client. 
-	private void logMessage(Message message) {
+	// Prints a log to the terminal saying what was sent to the Client.
+	// Also writes the log to a log file.
+	private synchronized void logMessage(Message message) {
 		
 		Type request = message.getType();
 		Status status = message.getStatus();
@@ -244,11 +246,22 @@ public class ClientHandler implements Runnable {
 		String timeStamp = new Date().getCurrentDate();
 		int id = getClientID();
 		
+		String toPrint = "Client# " + id + " <" + request + ">[" + status 
+				   + "]:" + timeStamp + "\n" + data;
 		
 		// Client# id <type>[status]: timeStamp 
 		// data
-		System.out.println("Client# " + id + " <" + request + ">[" + status 
-						   + "]:" + timeStamp + "\n" + data);
+		System.out.println(toPrint);
+		
+		// Append to log file.
+		try (FileWriter file = new FileWriter("ServerLogs.txt", true)) {
+			
+			file.append(toPrint + "\n");
+			
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
 	}
 
 
@@ -376,7 +389,7 @@ public class ClientHandler implements Runnable {
 				leaveGame(message);
 				break;
 				
-			// Sends back the Game ID of which game the Player was put into.
+			// Player joins the first available game.
 			case QuickJoin:
 				quickJoin(message);
 				break;
@@ -394,6 +407,7 @@ public class ClientHandler implements Runnable {
 			// All Players places their bets for a round of Blackjack. 
 			// Starts a round of blackjack.
 			case Bet:
+			case HitOrStand:
 				roundOfBlackjack(message);
 				break;
 			
@@ -407,7 +421,7 @@ public class ClientHandler implements Runnable {
 	
 	
 	// When the dealer wants to start a game of Blackjack in a game. The client
-	// will request that action by sending a request of Type StartRound.
+	// will request that action by sending a request of Type Bet.
 	// This will start a round in the Server.
 	private void roundOfBlackjack(Message message) {
 		
@@ -418,41 +432,46 @@ public class ClientHandler implements Runnable {
 		if(usersGame ==  null) {
 			return;
 		}
-		
-		
-		// A while loop switch to control the game.
-		switch(message.getStatus()) {
-			default :
-				break;
-			
-			
-		}
 
-		
 		// A request a from the Client to place bets for Players.
 		// this will update usersGame.
 		// The string should come in as follows:
 		// 
-		// username:Bet\n
-		// username:Bet\n
-		// username:Bet
+		// username:999\n
+		// username:999\n
+		// username:999
 		//
+		// update gui with current table stuff.
+		
 		if(message.getType() == Type.Bet) {
 			// bet does this
 			usersGame.getTable().shuffleCards();		// Client handler does nothing
 			usersGame.getBets(message.getText());// getBets takes all players bets.
 			usersGame.getTable().dealCards();		// updates all players hands
+			// update gui here.. They get to see all new hands and bets.		
+			usersGame.checkBlackjack();
 		}
-		
-		// update gui here.. They get to see all new hands and bets.
-		
-		usersGame.checkBlackjack();
-		usersGame.hitOrStand();
-		usersGame.dealerTurn();
-		usersGame.settleBets();
-		usersGame.printFunds();	// might not be needed?
-		usersGame.clearHands();
-		
+
+		// A request a from the Client to place bets for Players.
+		// this will update usersGame.
+		// The string should come in as follows:
+		// 
+		// username:h\n
+		// username:s\n
+		// username:h
+		//
+		if(message.getType() == Type.HitOrStand) {
+			//usersGame.hitOrStand(message.getText()); // 
+			// update gui here again.
+			usersGame.dealerTurn();
+			
+			// update gui here again.
+			usersGame.settleBets();
+			
+			// update gui here again.
+			usersGame.printFunds();	// might not be needed?
+			usersGame.clearHands();
+		}
 	}
 
 	
@@ -463,7 +482,7 @@ public class ClientHandler implements Runnable {
 	// username:password
 	//
 	// Return response to client with whatever Server.registerUser returns.
-	private void registerUser(Message message){
+	private synchronized void registerUser(Message message){
 
 		String status;
 		
@@ -483,6 +502,7 @@ public class ClientHandler implements Runnable {
 				
 				updateMessageSuccess(message, 
 									 "You have registered to the Server!");
+				return;
 			}
 			
 			// If there is a wrong format supplied.
@@ -627,7 +647,7 @@ public class ClientHandler implements Runnable {
 	
 	
 	// Needs to be renamed to what it really is.
-	// Updates the Client with the state in a game of Blackjack.
+	// Updates the Client with the state of a game in a game of Blackjack.
 	//
 	// Lists the Players within a certain game.
 	// The text area should contain the game's ID that wants to display its 
@@ -641,8 +661,11 @@ public class ClientHandler implements Runnable {
 		// Iterate through the list of players.
 		// For each Player in the Game concat a string:
 		//
+
+		// DealerName:Card,...,Card:Funds\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet
+
 		//
 		// Where Card,...,Card is the players hand.
 		
@@ -651,31 +674,48 @@ public class ClientHandler implements Runnable {
 		
 		Game game = Server.getTargetGame(gameID);
 		
-		// If there is no game by supplied ID
-		if(game == null) {
-			updateMessageFailed(message, "Game Not Found!");
-			return;
-		}
-		
+		// If there is no game by supplied ID or if there are no games.
+	    // Check if game or table is null
+	    if (game == null || game.getTable() == null) {
+	    	
+	        updateMessageFailed(message, "Game Not Found!");
+	        return;
+	    }	
+	    
+	    Dealer dealer = game.getDealer();
+	    String dealerName = dealer.getDealerName();
+	    String dealerHand = dealer.toStringDealersHand();
+	    String dealerFunds = String.valueOf(dealer.getCasinoFunds());
+	    
+	    listOfPlayers += dealerName + ":" + dealerHand + ":" + dealerFunds 
+	    				 + "\n";
+	    
 		List<Player> players = game.getTable().getPlayers();
 		
-		Player lastPlayer = players.get(players.size() -1);
+	    // Check if players list is null or empty
+	    if (players == null || players.isEmpty()) {
+	        updateMessageFailed(message, "No Players Found!");
+	        return;
+	    }
+		
+		// If Player logs in there should be at least one player.
+		// If no players and a dealer logs in should return nothing. 
+		Player lastPlayer = players.get(players.size() -1);		
 		
 		for(Player p : players) {
 			
-			// If at the last player on list, print without newline character.
-			if(p.equals(lastPlayer)) {
-				listOfPlayers += p.getPlayerName() + ":"
-							   + p.toStringPlayersHand() + ":"
-							   + p.getPlayerFunds() + ":"
-							   + p.getBet();
-			}
+			String name = p.getPlayerName();
+			String hand = p.toStringPlayersHand();
+			String funds = String.valueOf(p.getPlayerFunds());
+			String bet = String.valueOf(p.getBet());
+			//String hitOrStand = p.getHitOrStand();
 			
-			// Else add the details to the string WITH newline characters.
-			listOfPlayers += p.getPlayerName() + ":"
-					   + p.toStringPlayersHand() + ":"
-					   + p.getPlayerFunds() + ":"
-					   + p.getBet() + "\n";
+			listOfPlayers += name + ":" + hand + ":" + funds + ":" + bet;
+			
+			// If at the last player on list, print without newline character.
+			if(!p.equals(lastPlayer)) {
+				listOfPlayers += "\n";
+			}
 		}
 		
 		// Update the Status of the Message.
@@ -689,46 +729,61 @@ public class ClientHandler implements Runnable {
 
 		Game newGame = new Game();
 		Server.getGames().add(newGame);
-		updateMessageSuccess(message, newGame.getID());
-		
+
+		String gameID = newGame.getID();
+		updateMessageSuccess(message, gameID);
 	}
 	
 	
 	// Closes the game with the supplied Game ID and returns the same ID.
 	private void closeGame(Message message) {
 
-		Game gameToRemove = Server.getTargetGame(message.getText());
+		String gameID = message.getText();
+		Game gameToRemove = Server.getTargetGame(gameID);
 		
 		// If we didn't find the game to remove.
 		if(gameToRemove == null) {
-			updateMessageFailed(message, "No Game with that ID!");
+			updateMessageFailed(message, "Game #" + gameID + "Not Found!");
 			return;
 		}
 		
 		// Else remove the game.
 		Server.getGames().remove(gameToRemove);
-		updateMessageSuccess(message, message.getText());
+		updateMessageSuccess(message, "Game #" + gameID + " has been Closed.");
 	}		
 
 
 	// The message will have the Game ID that the PlayerUser or DealerUser wants
 	// to join.
-	private void joinGame(Message message) {
+	private synchronized void joinGame(Message message) {
 		
-		Game gameToJoin = Server.getTargetGame(message.getText());
+		String gameID = message.getText();
+		Game gameToJoin = Server.getTargetGame(gameID);
+		
+	    if (gameToJoin == null) {
+	        //System.out.println("No game found with ID: " + gameID);
+	        updateMessageFailed(message, "Game #" + gameID + " not found!");
+	        return;
+	    }
+		
 		
 		// If a Dealer wants to join a game as a DEALER
 		if(dealerUser != null && playerUser == null) {
 			
 			gameToJoin.setDealer(dealerUser);
 			usersGame = gameToJoin;
-			return;
+			updateMessageSuccess(message, "Dealer joined Game #" + gameID);
 		}
 		
 		// If a Player wants to join a game
-		if(playerUser != null && dealerUser == null) {
+		else if(playerUser != null && dealerUser == null) {
 			gameToJoin.addPlayer(playerUser);
 			usersGame = gameToJoin;
+			updateMessageSuccess(message, "Player joined Game #" + gameID);
+		}
+		
+		else {
+			updateMessageFailed(message, "Game #" + gameID + "Not Found!");
 		}
 	}
 
@@ -737,12 +792,15 @@ public class ClientHandler implements Runnable {
 	// removed from that game.
 	private void leaveGame(Message message) {
 		
-		Game gameToLeave = Server.getTargetGame(message.getText());
+		String gameID = message.getText();
+		Game gameToLeave = Server.getTargetGame(gameID);
 
 		// If a Dealer wants to leave a game.
 		if(dealerUser != null && playerUser == null) {
 			gameToLeave.removeDealer(dealerUser);
 			usersGame = null;
+			updateMessageSuccess(message, dealerUser.name +" has left Game #"
+								 + gameID);
 			return;
 		}
 		
@@ -750,20 +808,23 @@ public class ClientHandler implements Runnable {
 		if(playerUser != null && dealerUser == null) {
 			gameToLeave.removePlayer(playerUser);
 			usersGame = null;
+			updateMessageSuccess(message, playerUser.name +" has left Game #"
+					 + gameID);
 		}
 		
+		updateMessageFailed(message, "Invalid game request!");
 	}
 	
 	// User join the first Open Game's Table.
 	// Nothing is supplied by the message.
 	// Return the Game's ID that the player has joined.
-	private void quickJoin(Message message) {
+	private synchronized void quickJoin(Message message) {
 		
 		String gameID = "";
 		List<Game> games = Server.getGames();
 		
 		// If there are no game send back to the Client a Failed message.
-		if(games == null || games.size() == 0) {
+		if(games == null || games.isEmpty()) {
 			updateMessageFailed(message, "There are no open Games!");
 			return;
 		}
@@ -821,7 +882,7 @@ public class ClientHandler implements Runnable {
 	//
 	// username:0000
 	//
-	private void addFunds(Message message) {
+	private synchronized void addFunds(Message message) {
 		
 		String request[] = message.getText().split(":");
 		
@@ -842,4 +903,15 @@ public class ClientHandler implements Runnable {
 		player.funds += fundsToAdd;
 		updateMessageSuccess(message, "Funds added!");
 	}
+	
+	public Player getPlayerUser() {
+	    return playerUser;
+	}
+
+	public void setPlayerUser(Player playerUser) {
+	    this.playerUser = playerUser;
+	}
+	
+	
+	
 }

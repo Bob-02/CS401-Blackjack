@@ -82,4 +82,46 @@ public class Dealer {
 	public void clearHand() {
 		hand.clear();
 	}
+	
+	
+	// Prints all cards in the players hand.
+	public String toStringDealersHand() {
+		String playersHand = null;
+		
+		// For every card in the hand add it to the string.
+		//
+		// Card of Suit, Card of Suit, ... , Card of Suit
+		//
+		Card lastCard;
+		
+		if(hand.size() < 1) {
+			return "";
+		}
+		
+		// if the size of the hand is 2 or more
+		// fixes out of bounds.
+		if(hand.size() > 1) {
+			lastCard = hand.get(hand.size() -1);
+		}
+		
+		// if only one card
+		else {
+			lastCard = hand.get(0);
+		}
+
+		
+		for(Card c : hand) {
+			
+			// If on the last card don't print with a comma.
+			if(c.equals(lastCard) ) {
+				playersHand += c.toString();
+			}
+			
+			playersHand += c.toString() + ",";
+			
+		}
+		
+		return playersHand;
+	}
+	
 }

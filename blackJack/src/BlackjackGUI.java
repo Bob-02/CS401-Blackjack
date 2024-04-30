@@ -3,8 +3,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class BlackjackGUI {
@@ -19,10 +17,6 @@ public class BlackjackGUI {
     private boolean viewPlayersButtonClicked = false;
     private Semaphore loginSemaphore = new Semaphore(0);
     private Semaphore buttonClicksemaphore = new Semaphore(0);
-    private List<fakeCard> dealerCards = new ArrayList<>();
-    private List<fakeCard> playerCards = new ArrayList<>();
-    private JPanel dealerPanel;
-    private JPanel playerPanel;
 
     public BlackjackGUI() {
         initializeGUI();
@@ -126,12 +120,10 @@ public class BlackjackGUI {
         gbcGame.insets = new Insets(20, 0, 20, 0);
         gamePanel.add(welcomeToBlackjack, gbcGame);
 
-        // Quick Join Button replaces Play button
+        // Quick Join Button
         JButton quickJoinButton = new JButton("Quick Join");
         customizeButton(quickJoinButton);
-        quickJoinButton.addActionListener(e -> {
-            quickJoin(); // Handle quick join functionality
-        });
+        quickJoinButton.addActionListener(e -> quickJoin());
         gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(quickJoinButton, gbcGame);
 
@@ -145,7 +137,8 @@ public class BlackjackGUI {
         JButton openGameButton = new JButton("Open Game");
         customizeButton(openGameButton);
         openGameButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "BlackjackTable"); 
+            BlackJack blackJack = new BlackJack(); // Creates a new instance of BlackJack
+            // Note: No panel switch occurs here, just game initialization
         });
         gbcGame.insets = new Insets(10, 0, 10, 0);
         gamePanel.add(openGameButton, gbcGame);
@@ -169,10 +162,9 @@ public class BlackjackGUI {
 
         cardPanel.add(gamePanel, "Game");
     }
-
+    
+    
     private void initializeBlackjackTablePanel() {
-    	dealerPanel = new JPanel();
-        playerPanel = new JPanel();
         JPanel blackjackTablePanel = new JPanel(new BorderLayout());
         blackjackTablePanel.setBackground(new Color(0, 102, 0)); // Green table background
 
@@ -183,16 +175,6 @@ public class BlackjackGUI {
         dealerLabel.setForeground(Color.WHITE);
         dealerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         dealerPanel.add(dealerLabel);
-
-
-        JLabel testLabel = new JLabel(new ImageIcon("Cards/icon.png"));//testing purposes
-        dealerPanel.add(testLabel);
-        dealerPanel.revalidate();
-        dealerPanel.repaint();
-        
-
-        // Assuming dealerCards is a List<fakeCard> holding the dealer's cards
-        displayCards(dealerPanel, dealerCards); // You need to manage when and how to update this list
         blackjackTablePanel.add(dealerPanel, BorderLayout.NORTH);
 
         // Player area
@@ -204,8 +186,18 @@ public class BlackjackGUI {
         playerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         playerPanel.add(playerLabel);
 
-        // Assuming playerCards is a List<fakeCard> holding the player's cards
-        displayCards(playerPanel, playerCards); // Update this similarly
+        // Add components for player actions: Hit, Stand, Double Down, etc.
+        JPanel actionsPanel = new JPanel(new FlowLayout());
+        JButton hitButton = new JButton("Hit");
+        JButton standButton = new JButton("Stand");
+        JButton doubleDownButton = new JButton("Double Down");
+        customizeButton(hitButton);
+        customizeButton(standButton);
+        customizeButton(doubleDownButton);
+        actionsPanel.add(hitButton);
+        actionsPanel.add(standButton);
+        actionsPanel.add(doubleDownButton);
+        playerPanel.add(actionsPanel);
 
         blackjackTablePanel.add(playerPanel, BorderLayout.CENTER);
 
@@ -250,32 +242,6 @@ public class BlackjackGUI {
     }
     
     
-    private void displayCards(JPanel panel, List<fakeCard> cards) {
-        panel.removeAll(); // Clear previous card images
-        if (cards != null) {
-            for (fakeCard card : cards) {
-                ImageIcon icon = new ImageIcon(card.getImage().getImage());
-                JLabel cardLabel = new JLabel(icon);
-                panel.add(cardLabel);
-            }
-        }
-        panel.revalidate();
-        panel.repaint();
-    }
-    
-    
-    public void dealToDealer(fakeCard card) {
-        dealerCards.add(card);
-        displayCards(dealerPanel, dealerCards); // Assuming dealerPanel is accessible here
-    }
-
-    public void dealToPlayer(fakeCard card) {
-        playerCards.add(card);
-        displayCards(playerPanel, playerCards); // Assuming playerPanel is accessible here
-    }
-    
-    
-    
     private void quickJoin() {
         // Mock implementation, replace with actual server call
         Message message = new Message(); // Assume Message is a valid type
@@ -287,20 +253,6 @@ public class BlackjackGUI {
             return;
         }
 
-        for (Game g : games) {
-            if (g.getTableStatus() == TableStatus.Open) {
-                gameID = g.getID();
-                // Assuming addPlayer is a method that adds a player to the game
-                g.addPlayer(playerUser); 
-                break;
-            }
-        }
-
-        if (gameID != null) {
-            JOptionPane.showMessageDialog(frame, "Joined game: " + gameID, "Quick Join Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(frame, "No open games available.", "Quick Join Failed", JOptionPane.ERROR_MESSAGE);
-        }
     }
     
     
@@ -342,10 +294,6 @@ public class BlackjackGUI {
         button.setForeground(Color.WHITE);
     }
 
-    public void navigateToTablePanel() {
-        cardLayout.show(cardPanel, "BlackjackTable");
-    }// for testing purposes
-    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(BlackjackGUI::new);
     }
