@@ -406,6 +406,7 @@ public class ClientHandler implements Runnable {
 			// All Players places their bets for a round of Blackjack. 
 			// Starts a round of blackjack.
 			case Bet:
+			case HitOrStand:
 				roundOfBlackjack(message);
 				break;
 			
@@ -430,24 +431,14 @@ public class ClientHandler implements Runnable {
 		if(usersGame ==  null) {
 			return;
 		}
-		
-		
-		// A while loop switch to control the game.
-		switch(message.getType()) {
-			default :
-				break;
-			
-			
-		}
 
-		
 		// A request a from the Client to place bets for Players.
 		// this will update usersGame.
 		// The string should come in as follows:
 		// 
-		// username:Bet\n
-		// username:Bet\n
-		// username:Bet
+		// username:999\n
+		// username:999\n
+		// username:999
 		//
 		if(message.getType() == Type.Bet) {
 			// bet does this
@@ -456,26 +447,32 @@ public class ClientHandler implements Runnable {
 			usersGame.getTable().dealCards();		// updates all players hands
 		}
 		
-		// update gui here.. They get to see all new hands and bets.
-		
+		// update gui here.. They get to see all new hands and bets.		
 		usersGame.checkBlackjack();
-		usersGame.hitOrStand();
+
 		
-		// update gui here again.
-		
-		usersGame.dealerTurn();
-		
-		// update gui here again.
-		
-		usersGame.settleBets();
-		
-		// update gui here again.
-		
-		usersGame.printFunds();	// might not be needed?
-		usersGame.clearHands();
-		
+		// A request a from the Client to place bets for Players.
+		// this will update usersGame.
+		// The string should come in as follows:
+		// 
+		// username:h\n
+		// username:s\n
+		// username:h
+		//
+		if(message.getType() == Type.HitOrStand) {
+			//usersGame.hitOrStand(message.getText()); // 
+			// update gui here again.
+			usersGame.dealerTurn();
+			
+			// update gui here again.
+			usersGame.settleBets();
+			
+			// update gui here again.
+			usersGame.printFunds();	// might not be needed?
+			usersGame.clearHands();
+		}
+
 		// update gui last time here.
-		
 	}
 
 	
@@ -665,6 +662,7 @@ public class ClientHandler implements Runnable {
 		// Iterate through the list of players.
 		// For each Player in the Game concat a string:
 		//
+		// DealerName:Card,...,Card:Funds\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet\n
 		// PlayerName:Card,...,Card:Funds:CurrentBet
 		//
