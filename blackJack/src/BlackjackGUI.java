@@ -1,4 +1,4 @@
-//Black Jack GUI
+//My BlackJack
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -13,9 +13,9 @@ public class BlackjackGUI {
     private String designPath = "Cards/icon.png";
     private String credentials;
     private JTextArea gameListArea, playerListArea;
-    private boolean playButtonClicked = false;
-    private boolean viewGamesButtonClicked = false;
-    private boolean viewPlayersButtonClicked = false;
+    private boolean playButtonClicked;
+    private boolean viewGamesButtonClicked;
+    private boolean viewPlayersButtonClicked;
     private Semaphore loginSemaphore = new Semaphore(0);
     private Semaphore buttonClicksemaphore = new Semaphore(0);
 
@@ -26,7 +26,7 @@ public class BlackjackGUI {
     private void initializeGUI() {
         frame = new JFrame("BLACKJACK");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(2000, 1000);
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
@@ -101,10 +101,18 @@ public class BlackjackGUI {
         customizeButton(registerButton);
         gbc.gridy++;
         loginPanel.add(registerButton, gbc);
+        
+        registerButton.addActionListener(e -> {
+            String rusername = usernameField.getText();  // Fetch the username entered
+            String rpassword = new String(passwordField.getPassword());  // Fetch the password entered
+            credentials = rusername + ":" + rpassword;  // Combine username and password with a colon separator 
+            notifyLogin(); // Notify the client that login is complete
+            cardLayout.show(cardPanel, "Game");  // Move to the game panel
+        });
 
         cardPanel.add(loginPanel, "Login");
         loginButton.addActionListener(e -> cardLayout.show(cardPanel, "Game"));
-        registerButton.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Registration not implemented"));
+        registerButton.addActionListener(e -> cardLayout.show(cardPanel, "Game"));
     }
 
     private void initializeGamePanel() {
@@ -135,14 +143,13 @@ public class BlackjackGUI {
         });
         gamePanel.add(viewGamesButton, gbcGame);
         
-        JButton PlayOfflineButton = new JButton("Play Offline");
-        customizeButton(PlayOfflineButton);
-        PlayOfflineButton.addActionListener(e -> {
+        JButton PlayGameButton = new JButton("Play Game");
+        customizeButton(PlayGameButton);
+        PlayGameButton.addActionListener(e -> {
             BlackJack blackJack = new BlackJack(); // Creates a new instance of BlackJack
-            // Note: No panel switch occurs here, just game initialization
         });
         gbcGame.insets = new Insets(10, 0, 10, 0);
-        gamePanel.add(PlayOfflineButton, gbcGame);
+        gamePanel.add(PlayGameButton, gbcGame);
 
         JButton viewPlayersButton = new JButton("View Player List");
         customizeButton(viewPlayersButton);
@@ -158,7 +165,7 @@ public class BlackjackGUI {
 
         JLabel footerLabel = new JLabel("This game is brought to you by Group 5", SwingConstants.CENTER);
         footerLabel.setForeground(Color.WHITE);
-        footerLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        footerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gamePanel.add(footerLabel, gbcGame);
 
         cardPanel.add(gamePanel, "Game");
