@@ -2,19 +2,19 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client {
-	private static final String SERVER_ADDRESS = "localhost";
-	private static final int SERVER_PORT = 7777;
+	static final String SERVER_ADDRESS = "localhost";
+	static final int SERVER_PORT = 7777;
 
-	private static ObjectOutputStream objectOutputStream;
-	private static ObjectInputStream objectInputStream;
+	static ObjectOutputStream objectOutputStream;
+	static ObjectInputStream objectInputStream;
 	// private static final int TIMEOUT_MS = 25000; // 25 seconds
 	private static BlackjackGUI gui;
 	private String messageTogui;
 	private static Client client;
-	private static int clickIndex = 0; // To keep track of the index of the next simulated button click
+	static int clickIndex = 0; // To keep track of the index of the next simulated button click
 
 	public static void main(String[] args) {
-		gui = new BlackjackGUI(client);
+		gui = new BlackjackGUI();
 		client = new Client();
 
 		try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
@@ -110,7 +110,7 @@ public class Client {
 //        sendMessage(new Message(Type.Logout, Status.New, "luser1"));
 //	}
 
-	private static void createAndSendMessage() {
+	public static void createAndSendMessage() {
 		// Get button clicks from GUI
 //        String buttonClick = gui.buttonClicks();
 		String buttonClick = getNextButtonClick();
@@ -132,6 +132,9 @@ public class Client {
 		case "opengameButtonClicked":
 			sendMessage(new Message(Type.OpenGame, Status.New, ""));
 			break;
+		
+		case "openGameForDealer":
+			sendMessage(new Message(Type.JoinGame, Status.New, "1"));
 			
 		case "checkFundButtonClicked":
 			sendMessage(new Message(Type.CheckFunds,Status.New,"luser2"));
@@ -155,14 +158,6 @@ public class Client {
 			
 		case "placeBetButtonClicked":
 			sendMessage(new Message(Type.Bet,Status.New,"luser1:500\n1user2:500"));
-			break;
-			
-		case "hitButtonClicked":
-			sendMessage(new Message(Type.HitOrStand,Status.New,"luser1:h"));
-			break;
-			
-		case "standButtonClicked":
-			sendMessage(new Message(Type.HitOrStand,Status.New,"1user1:s"));
 			break;
 			
 		case "addfundsButtonClicked":
@@ -211,7 +206,7 @@ public class Client {
 		//System.out.println("This message is sent to Gui:" + messageTogui);
 	}
 
-	private static String getNextButtonClick() {
+	public static String getNextButtonClick() {
 		// List of simulated button clicks
 		String[] buttonClicks = 
 			{ 
@@ -226,8 +221,6 @@ public class Client {
 				"joingameButtonClicked",
 				"listplayersInGameButtonClicked",
 				"checkFundButtonClicked",
-				"placeBetButtonClicked",
-				"hitButtonClicked",
 				"listplayersInGameButtonClicked",
 				"quickJoinButtonClicked",
 				"viewGamesButtonClicked", 
@@ -251,7 +244,7 @@ public class Client {
 		}
 	}
 
-	private static Message receiveMessage() {
+	public static Message receiveMessage() {
 		try {
 			return (Message) objectInputStream.readObject();
 		} catch (IOException | ClassNotFoundException e) {
